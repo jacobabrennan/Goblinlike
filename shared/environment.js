@@ -6,6 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
+var VERSION = 'Alpha3';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
     // Directions:
@@ -39,6 +40,8 @@ var COMMAND_HELP    = 77;
 var COMMAND_CLOSE   = 78;
 var COMMAND_PAGEDOWN= 79;
 var COMMAND_PAGEUP  = 80;
+var COMMAND_ENTER   = 81;
+var COMMAND_NONE    = 82;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;

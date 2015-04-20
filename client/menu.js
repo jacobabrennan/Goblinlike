@@ -79,7 +79,7 @@ var menu = Object.create(driver, {
         var messages = arguments[0];
         if(messages && messages.shift){ // Test if messages is an array.
             infoMenu.pendingMessages = messages;
-            infoMenu.command(0, {});
+            infoMenu.command(COMMAND_NONE, {});
         } else{
             infoMenu.stackMessage(message);
             this.focus(infoMenu);
@@ -199,9 +199,9 @@ var helpMenu = Object.create(driver, {
         menu.focus(this);
         return true;
     }},
-    command: {value: function (which, options){
+    command: {value: function (command, options){
         // TODO: Document.
-        if(which == CANCEL){
+        if(command == CANCEL){
             menu.status();
         }
         return false;
@@ -232,7 +232,7 @@ var infoMenu = Object.create(driver, {
         this.previousElement.textContent = '[ - Older Message';
         this.previousElement.setAttribute('class', 'control');
         this.previousElement.addEventListener('click', (function(){
-            this.command(null, {key: '['});
+            this.command(COMMAND_PAGEDOWN, {key: '['});
         }).bind(this));
         this.displayElement.appendChild(this.previousElement);
         this.displayElement.appendChild(document.createElement('br'));
@@ -242,11 +242,12 @@ var infoMenu = Object.create(driver, {
         this.displayElement.appendChild(this.messageElement);
         //
         this.displayElement.appendChild(document.createElement('br'));
+        this.displayElement.appendChild(document.createElement('br'));
         this.nextElement = document.createElement('a');
         this.nextElement.setAttribute('class', 'control');
         this.nextElement.textContent = '] - Newer Message';
         this.nextElement.addEventListener('click', (function(){
-            this.command(null, {key: ']'});
+            this.command(COMMAND_PAGEUP, {key: ']'});
         }).bind(this));
         this.displayElement.appendChild(this.nextElement);
     }},
@@ -325,32 +326,30 @@ var infoMenu = Object.create(driver, {
         menu.focus(this);
         return true;
     }},
-    command: {value: function (which, options){
+    command: {value: function (command, options){
         // TODO: Document.
-        if(options){
-            switch(options.key){
-                case '[':
-                    this.advanceMessage(-1);
-                    return true;
-                case ']':
-                    var oldPage = this.messageIndex;
-                    this.advanceMessage(1);
-                    if(this.messageIndex == oldPage){
-                        this.command(null, {key: ' '});
-                    }
-                    return true;
-                default:
-                    if(this.pendingMessages && this.pendingMessages.length){
-                        var nextMessage = this.pendingMessages.shift();
-                        this.stackMessage(nextMessage);
-                    } else{
-                        menu.status();
-                        return false;
-                    }
-            }
-        }
-        if(which >= 0 && which <= 15){
+        if(command >= 0 && command <= 15){
             return false;
+        }
+        switch(command){
+            case COMMAND_PAGEDOWN:
+                this.advanceMessage(-1);
+                return true;
+            case COMMAND_PAGEDOWN:
+                var oldPage = this.messageIndex;
+                this.advanceMessage(1);
+                if(this.messageIndex == oldPage){
+                    this.command(COMMAND_ENTER, {key: ' '});
+                }
+                return true;
+            default:
+                if(this.pendingMessages && this.pendingMessages.length){
+                    var nextMessage = this.pendingMessages.shift();
+                    this.stackMessage(nextMessage);
+                } else{
+                    menu.status();
+                    return true;
+                }
         }
         return true;
     }},
@@ -466,17 +465,21 @@ var statusMenu = Object.create(driver, {
         menu.focus(this);
         return true;
     }},
-    command: {value: function (which, options){
+    command: {value: function (command, options){
         // TODO: Document.
-        if(options && options.key){
-            switch(options.key){
-                case '[':
-                    infoMenu.advanceMessage(0);
-                    return true;
-                case '?':
-                    menu.help();
-                    return true;
+        if(client.drivers.gameplay.dead){
+            if(command == COMMAND_ENTER || command == CANCEL){
+                client.focus(client.drivers.title);
             }
+            return true;
+        }
+        switch(command){
+            case COMMAND_PAGEDOWN:
+                infoMenu.advanceMessage(0);
+                return true;
+            case COMMAND_HELP:
+                menu.help();
+                return true;
         }
         return false;
     }}
@@ -539,14 +542,14 @@ var optionsMenu = Object.create(driver, {
                 pageUpMessage.setAttribute('class', 'control');
                 pageUpMessage.textContent = ' [- Page Up';
                 pageUpMessage.addEventListener('click', (function(){
-                    this.command(null, {key: ']'});
+                    this.command(COMMAND_PAGEUP, {key: ']'});
                 }).bind(this));
                 optionsContainer.appendChild(pageUpMessage);
             }
             // Create the options links.
             var self = this;
             var optionLinkFunction = function (){
-                self.command(null, {key: this._characterIndex});
+                self.command(COMMAND_NONE, {key: this._characterIndex});
             };
             for(var displayIndex = 0; displayIndex < displayMax; displayIndex++){
                 var indexedOption = this.actionOptions[displayIndex+pagedOffset];
@@ -572,7 +575,7 @@ var optionsMenu = Object.create(driver, {
                 pageDownMessage.textContent = ' ]- Page Down';
                 pageDownMessage.setAttribute('class', 'control');
                 pageDownMessage.addEventListener('click', (function(){
-                    this.command(null, {key: '['});
+                    this.command(COMMAND_PAGEDOWN, {key: '['});
                 }).bind(this));
                 optionsContainer.appendChild(document.createElement('br'));
                 optionsContainer.appendChild(pageDownMessage);
@@ -608,38 +611,32 @@ var optionsMenu = Object.create(driver, {
         menu.focus(this);
         return true;
     }},
-    command: {value: function (which, options){
+    command: {value: function (command, options){
         // TODO: Document.
-        if(which == CANCEL){
-            menu.status();
-            return true;
-        }
-        if(options && options.key){
-            switch(options.key){
-                case 'Esc': case 'Escape':
-                    menu.status();
-                    return true;
-                case '[':
-                    this.optionsPage = Math.max(0, this.optionsPage-1);
-                    this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
-                    return true;
-                case ']':
-                    if(!this.actionOptions){ return true;}
-                    var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);
-                    this.optionsPage = Math.min(maxPage, this.optionsPage+1);
-                    this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
-                    return true;
-                default:
-                    var selectionIndex = Math.min(this.optionsDisplayMax, characterIndex(options.key));
-                    selectionIndex += this.optionsPage*this.optionsDisplayMax;
-                    if(selectionIndex != -1 && selectionIndex < this.actionOptions.length){
-                        this.select(selectionIndex);
-                        return true;
-                    }
-            }
-        }
-        if(which >= 0 && which <= 15){
+        if(command >= 0 && command <= 15){
             return false;
+        }
+        switch(command){
+            case CANCEL:
+                menu.status();
+                return true;
+            case COMMAND_PAGEDOWN:
+                this.optionsPage = Math.max(0, this.optionsPage-1);
+                this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
+                return true;
+            case COMMAND_PAGEUP:
+                if(!this.actionOptions){ return true;}
+                var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);
+                this.optionsPage = Math.min(maxPage, this.optionsPage+1);
+                this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
+                return true;
+            default:
+                var selectionIndex = Math.min(this.optionsDisplayMax, characterIndex(options.key));
+                selectionIndex += this.optionsPage*this.optionsDisplayMax;
+                if(selectionIndex != -1 && selectionIndex < this.actionOptions.length){
+                    this.select(selectionIndex);
+                    return true;
+                }
         }
         return true;
     }},
@@ -707,9 +704,9 @@ var directionSelectMenu = Object.create(driver, {
         menu.focus(this);
         return true;
     }},
-    command: {value: function (which, options){
+    command: {value: function (command, options){
         // TODO: Document.
-        switch(which){
+        switch(command){
             case CANCEL:
                 menu.status();
                 break;
@@ -717,7 +714,7 @@ var directionSelectMenu = Object.create(driver, {
             case SOUTH: case SOUTHEAST: case EAST: case NORTHEAST:
                 var callbackStorage = this.directionCallback;
                 this.directionCallback = undefined;
-                callbackStorage(which);
+                callbackStorage(command);
         }
         return true;
     }},

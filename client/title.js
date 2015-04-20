@@ -32,7 +32,7 @@ client.drivers.title = Object.create(driver, {
         var linkNewGame = document.createElement('a');
         var linkAbout = document.createElement('a');
         titleElement.textContent = 'Goblin-like';
-        versionElement.textContent = 'v.Alpha2';
+        versionElement.textContent = 'v.'+VERSION;
         linkNewGame.textContent = 'Space- New Game';
         linkAbout.textContent = 'Esc- About';
         linkNewGame.setAttribute('class', 'control');
@@ -72,12 +72,12 @@ client.drivers.title = Object.create(driver, {
         if(block){
             return block;
         }
-        if(options.key === ' '){
-            this.newGame();
-            return true;
-        } else if(options.key == 'Esc' || command == CANCEL){
-            // TODO: About menu.
-            return true;
+        switch(command){
+            case COMMAND_ENTER:
+                this.newGame();
+                return true;
+            case CANCEL:
+                return true;
         }
         return false;
     }},

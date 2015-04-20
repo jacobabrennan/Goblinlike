@@ -1,5 +1,5 @@
-TO DONE: Alpha2
-    Fixed Keyboard problems in Chrome and Safari.
+TO DONE: Alpha3
+    Included 'Mousetrap' library for cross platform keyboard control.
     Switched map drawing from html to canvas to improve game speed.
     Enemy Breeding.
 

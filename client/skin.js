@@ -21,6 +21,8 @@ client.skin = Object.create(driver, {
         this.panelPrimary.setAttribute('class', 'panel');
         this.panelSecondary.setAttribute('class', 'panel');
         this.container = document.getElementById(configuration.containerId);
+        this.container.tabIndex = 1;
+        this.container.focus();
         this.container.appendChild(this.panelPrimary);
         this.container.appendChild(this.panelSecondary);
     }},

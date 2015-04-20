@@ -44,16 +44,13 @@ client.drivers.gameplay = Object.create(driver, {
     }},
     command: {value: function (command, options){
         // TODO: Document.
-        if(this.dead){
-            if((options && options.key === ' ') || (command == CANCEL)){
-                client.focus(client.drivers.title);
-            }
-        }
         var block = driver.command.call(this, command, options);
         if(block){
             return block;
         }
-        if(this.dead){ return true;}
+        if(this.dead){
+            return true;
+        }
         if(!this.activeTurn){
             console.log('No can do: '+this.activeTurn);
             return true;
@@ -64,6 +61,7 @@ client.drivers.gameplay = Object.create(driver, {
         }
         switch(command){
             case COMMAND_HELP   : this.drivers.menu.help(); break;
+            case COMMAND_WAIT   : this.commandWait(   ); break;
             case COMMAND_GET    : this.commandGet(    ); break;
             case COMMAND_EQUIP  : this.commandEquip(  ); break;
             case COMMAND_UNEQUIP: this.commandUnequip(); break;
@@ -218,6 +216,11 @@ client.drivers.gameplay.commandMove = function (direction){
     } else{
         client.networking.sendMessage(COMMAND_MOVE, {direction: direction});
     }
+};
+client.drivers.gameplay.commandWait = function (direction){
+    this.activeTurn = false;
+    this.drivers.menu.status();
+    client.networking.sendMessage(COMMAND_WAIT, {});
 };
 client.drivers.gameplay.commandClose = function (){
     /*

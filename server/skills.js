@@ -59,7 +59,7 @@ library.registerSkill(Object.create(skill, {
     targetClass: {value: TARGET_SELF, writable: true},
     use: {value: function (user, target){
         var selfType = enemyLibrary.getEnemy(user.name);
-        if(!selfType){ console.log('Cannot breed'); return false;}
+        if(!selfType){ return false;}
         var oldX = user.x;
         var oldY = user.y;
         var oldL = user.levelId;
@@ -72,12 +72,11 @@ library.registerSkill(Object.create(skill, {
             directions.splice(rI, 1);
             success = user.move(randomDirection);
         }
-        if(!success){ console.log('Cannot breed'); return false;}
+        if(!success){ return false;}
         var progeny = Object.instantiate(selfType);
         success = progeny.place(oldX, oldY, oldL);
         if(!success){
             progeny.dispose();
-            console.log('Cannot breed'); 
             return false;
         }
         progeny.activate();

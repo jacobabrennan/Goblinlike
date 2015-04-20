@@ -36,7 +36,6 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         newCanvas.addEventListener('click', this.clickHandler);
         // Create Context.
         this.context = newCanvas.getContext('2d');
-        console.log(this.context);
         this.context.font = '16px press start k';
     }},
     clickHandler: {value: function (clickEvent){
@@ -52,7 +51,7 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         var centerX = Math.floor(mapDisplay.displayWidth/2);
         var centerY = Math.floor(mapDisplay.displayHeight/2);
         var direction = directionTo(centerX, centerY, x, y);
-        client.command(direction);
+        client.command(direction, {key: null});
     }, writable: true},
     display: {value: function (displayOptions){
         /*

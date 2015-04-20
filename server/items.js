@@ -231,7 +231,6 @@ library.registerItem(Object.create(scroll, {
         var targetId = targetData.target.id;
         var testTarget = mapManager.idManager.get(targetId);
         if(!testTarget){
-            console.log(targetData);
             user.inform('That is no longer there.');
         } else if(!user.checkView(testTarget)){
             user.inform('The '+testTarget.name+' is not in view.');
