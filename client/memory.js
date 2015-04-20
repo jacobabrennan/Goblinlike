@@ -187,7 +187,6 @@ var memory = {
             if(updateData.hasOwnProperty(key)){
                 this.character[key] = updateData[key];
                 if(this.statusUpdateList.indexOf(key) != -1){
-                    console.log('updating status');
                     this.statusUpdate = true;
                 }
             }

@@ -126,7 +126,7 @@ client.preferences = {
 client.keyCapture = {
 	setup: function (configuration){
         // TODO: Document.
-        document.body.addEventListener("keypress", function(e){
+        document.body.addEventListener("keydown", function(e){
             return client.keyCapture.keyPress(e);
         });
 	},
