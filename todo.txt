@@ -1,0 +1,320 @@
+TO DONE: Alpha2
+    Fixed Keyboard problems in Chrome and Safari.
+    Switched map drawing from html to canvas to improve game speed.
+    Enemy Breeding.
+
+
+I love seeing another developer dealing with little glitches, but still loving his game.
+The joy of doing doughnuts in a big blue van.
+This guy really loves this car, and you will too! It is the car you've always wanted!
+"This is not fantasy game - this is realism, comrade!
+
+Monica hedadl (High dal)
+Anni Defranco
+Ask Chris about portfolios (who should I talk to?)
+Haunt the House
+
+
+TODO(Beta):
+    Absolute Must:
+        + Status Menu
+        Look / Examine
+        More Enemies
+        + More weapons
+        + More items
+            + wand
+            + scrolls
+            + potions
+        + Help Menu
+        + Fix status / info (so you don't have to move to see status)
+        + Bugfix: Old enemies show in memory
+        + Game Over / Game Recycling
+        + Clicking:
+            + To move (Refactor)
+            + Links in menu (like BYOND topics)
+    
+    Should:
+        + Close Doors
+        Armor
+        Enemies open doors
+        enemies bash through doors
+        * Optimize
+        Spiders make webs, chase players.
+        Camp
+        About
+        Roll Character
+        + Title Display
+    
+    Later:
+        Locked doors, door bashing
+        Leadership Menu
+        Enemies drop items
+        Settle Down / Win.
+        Win / Score Display.
+        * Uncouple client from server
+            Look into tight coupling in targeting system.
+
+
+Description of game:
+
+    + Title Screen
+        Continue
+        + New Game
+        Intro
+        About
+    
+    Intro
+        TODO
+    
+    About
+        TODO
+    
+    Continue
+        Game Interface
+    
+    + New Game
+        Watch Introduction?
+            Yes
+                Roll Character, Enter Name
+            No
+                Roll Character, Enter Name
+    
+    Roll Character, Enter Name
+        + Game Interface
+    
+    Game Interface
+        + Travel through map.
+        + Get items.
+        + Find items.
+        + Kill Enemies.
+        Enemies drop items.
+        + Run away and heal.
+        Camp
+        + Gain Levels.
+        * Find companions.
+        + Travel deeper.
+        Kill hard enemies.
+        Game Over.
+        Kill a boss.
+        Settle Down.
+        Win.
+        Score Display.
+
+
+
+
+
+
+Bugs:
+Weirdness (things that may or may not be considered bugs):
+Unfinished Features:
+    Extentions
+    Containables show in memory, but positions update once seen in new places.
+
+Recently done:
+    Beastiary and Item Library
+    Bugfix: Game fails on stair traverse.
+    Multiple level memory.
+    Movement between levels.
+    Combat integration with equipment system: this.weapon vs this.equipment.weapon
+    Targeting system
+    Implement gaussian random function.
+    message recall.
+    Interrupting Messages
+    Options Menu Callbacks
+    Finish Get
+    The get menu does not update after an item has been gotten and the turn has changed.
+    Actors are not dense!
+TODO:
+    Look / Examine
+    Uncouple client from server
+    Clicking:
+        To move
+        Links in menu (like BYOND topics)
+    Leadership Menu
+
+Simple Rogue
+    Kill stuff dead, get loot, do it again.
+
+Combat:
+    * Attack
+        + Melee
+f       + Shoot
+F       + Throw
+m       -S-k-i-l-l-s-
+u   *   Items
+    + Hurt
+    + Die
+    + Gain Exp
+
+Interactions:
+l   * Examine Shit (Needs recall from memory of important details)
+        Examine Self
+    + Kill Shit
+    Manage Equipment
+    Manage Inventory
+    --
+e/w + Equip Shit
+u/t + Unequip Shit
+u   + Use Shit
+        + Use Shit on Shit
+d/d + Drop Shit
+g   + Get Shit
++   + Move Self
+
+
+
+a - aim wand
+b - browse book
+B - bash
+c - close
+C - status
+d - drop
+D - disarm
+e - view equipment
+E - eat
+f - fire / throw
+F - fill lamp
+G - learn spell
+h - display commands
+i - display inventory
+j - jam door
+l - look
+L - Scroll map
+m - magic
+M - view small map
+o - open door
+p - pray
+q - quaff potion
+r - read scroll
+R - rest
+s - search
+t - unequip / take-off
+T - tunnel
+u - use staff
+v - display version
+V - view high scores
+w - wear / equip
+x - swap weapon
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Goblin Anthropology
+    A Goblin Anthropologist Explores her own past.
+
+
+
+Short Term:
+    Generate Hallways and Vaults. (?)
+
+
+Recently Completed:
+    Take View and Opacity into consideration.
+    Make proper memory structures for contents of tiles (currently hard linked).
+
+
+
+
+
+Sky Dragon
+
+
+Earth Dragon
+
+Death
+Alone
+
+
+
+Edrin looks into past to discover self.
+Goblin escapes past, looks into future that's unknown.
+Goblin has coming of age arc.
+
+Pretext vs Theme
+
+The beast in the darkness
+
+Dwarf Fortress: You could pick up on enough procedurally generated history to assume your own plot
+    and come up with a purpose for your fortress or adventurer, but it isn't necessary for most
+    and doesn't change gameplay itself.
+    
+    
+    
+John Resig extend code:
+
+  /* Simple JavaScript Inheritance
+     * By John Resig http://ejohn.org/
+     * MIT Licensed.
+     */  
+     // Inspired by base2 and Prototype
+    (function(){
+  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+
+  // The base Class implementation (does nothing)
+  this.Class = function(){};
+
+  // Create a new Class that inherits from this class
+  Class.extend = function(prop) {
+    var _super = this.prototype;
+
+    // Instantiate a base class (but only create the instance,
+    // don't run the init constructor)
+    initializing = true;
+    var prototype = new this();
+    initializing = false;
+
+    // Copy the properties over onto the new prototype
+    for (var name in prop) {
+      // Check if we're overwriting an existing function
+      prototype[name] = typeof prop[name] == "function" &&
+        typeof _super[name] == "function" && fnTest.test(prop[name]) ?
+        (function(name, fn){
+          return function() {
+            var tmp = this._super;
+
+            // Add a new ._super() method that is the same method
+            // but on the super-class
+            this._super = _super[name];
+
+            // The method only need to be bound temporarily, so we
+            // remove it when we're done executing
+            var ret = fn.apply(this, arguments);        
+            this._super = tmp;
+
+            return ret;
+          };
+        })(name, prop[name]) :
+        prop[name];
+    }
+
+    // The dummy class constructor
+    function Class() {
+      // All construction is actually done in the init method
+      if ( !initializing && this.init )
+        this.init.apply(this, arguments);
+    }
+
+    // Populate our constructed prototype object
+    Class.prototype = prototype;
+
+    // Enforce the constructor to be what we expect
+    Class.prototype.constructor = Class;
+
+    // And make this class extendable
+    Class.extend = arguments.callee;
+
+    return Class;
+  };
+})();
