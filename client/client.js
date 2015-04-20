@@ -126,7 +126,9 @@ client.preferences = {
 client.keyCapture = {
 	setup: function (configuration){
         // TODO: Document.
-        client.skin.container.addEventListener('keydown', function (e){
+        // TODO: Change focus to container in 'production'.
+        //client.skin.container.addEventListener('keydown', function (e){
+        document.body.addEventListener('keydown', function (e){
             if(e.keyCode == 12){
                 client.command(COMMAND_WAIT, {'key': null});
             }
@@ -136,7 +138,8 @@ client.keyCapture = {
                 client.command(command, {'key': key});
             };
         };
-        this.mousetrap = Mousetrap(client.skin.container);
+        //this.mousetrap = Mousetrap(client.skin.container);
+        this.mousetrap = Mousetrap(document.body);
         for(var key in client.preferences){
             if(client.preferences.hasOwnProperty(key)){
                 var command = client.preferences[key];
