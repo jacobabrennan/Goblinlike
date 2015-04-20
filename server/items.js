@@ -251,7 +251,7 @@ library.registerItem(Object.create(weapon, { // Rock
     character: {value: ':', writable: true},
     color: {value: '#444', writable: true},
     // Stats:
-    weight: {value: 10, writable: true},
+    weight: {value: 8, writable: true},
     baseDamage: {value: 2, writable: true},
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
@@ -326,36 +326,6 @@ library.registerItem(Object.create(projectile, { // arrow
 }));
 
 
-
-/*var weapon = Object.create(item, {
-    // Redefined Properties
-    character: {value: '/', writable: true},
-    placement: {value: EQUIP_MAINHAND, writable: true},
-    // Redefined Methods
-    // New Properties
-    damageType: {value: DAMAGE_PHYSICAL, writable: true},
-    baseDamage: {value: 1, writable: true},
-    damageSigma: {value: 0, writable: true},
-    // New Methods
-    attack: {value: function (attacker, target){
-        / **
-         *  This function handles one attacker attacking an enemy actor via a
-         *      weapon. This is a hook that derived types can use for all sorts
-         *      of effects, such as an HP stealing weapon that heals the
-         *      attacker based on the amount of damage dealt to the enemy, etc.
-         *  It returns the actual amount of damage done to the enemy, positive
-         *      indicating damage.
-         ** /
-        // TODO: Implementation with stats, etc.
-        var damage = gaussRandom(3,1); // TODO: stats here, for example.
-        var damageType = this.damageType;
-        var damageDone = target.hurt(damage, damageType, attacker, this);
-        // Return that actual damage done.
-        return damageDone;
-    }, writable: true}
-});*/
-
-
 //==============================================================================
     return library; // Return library, close namespace.
 })();
@@ -371,7 +341,7 @@ ItemTypes:
     Spell Books
     - Wand
     - Staff
-    ? Scroll
+    $ Scroll
     ! Potion
     Armor:
         ) Offhand: Shield

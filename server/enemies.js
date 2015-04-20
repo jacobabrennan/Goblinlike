@@ -57,6 +57,8 @@ var enemy = Object.create(actor, {
     skills: {value: ["attack"], writable: true},
     vigilance: {value: 3, writable: true},
     forgetful: {value: 2, writable: true},
+    erratic: {value: 0, writable: true},
+    breedRate: {value: 0, writable: true},
     // Redefined methods:
     takeTurn: {value: function (callback){
         /**
@@ -70,7 +72,9 @@ var enemy = Object.create(actor, {
             
             It does not return anything.
          **/
-        if(typeof this.behavior == 'function'){
+        if(this.erratic && Math.random() < this.erratic){
+            behaviorErratic.call(this);
+        } else if(typeof this.behavior == 'function'){
             this.behavior();
         }
         this.nextTurn += this.turnDelay;
@@ -101,6 +105,17 @@ var enemy = Object.create(actor, {
             return parentFunction.apply(this, arguments);
         };
     })(actor.hurt), writable: true},
+    bump: {value: (function (parentFunction){
+        return function (obs){
+            if(obs.type == TYPE_ACTOR && !(obs.faction & this.faction)){
+                var indexedSkill = skillLibrary.getSkill('attack');
+                indexedSkill.use(this, obs);
+                return false;
+            } else{
+                return parentFunction.apply(this, arguments);
+            }
+        };
+    })(actor.bump), writable: true},
     // Newly defined Methods:
     activate: {value: function (){
         /**
@@ -131,8 +146,38 @@ var enemy = Object.create(actor, {
         if(!this.active){ return;}
         gameManager.cancelActor(this);
         this.active = false;
+    }, writable: true},
+    breed: {value: function (){
+        var selfType = enemyLibrary.getEnemy(this.name);
+        if(!selfType){ return false;}
+        var oldX = this.x;
+        var oldY = this.y;
+        var oldL = this.levelId;
+        var directions = [
+            NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST];
+        var success;
+        while(!success && directions.length){
+            var rI = randomInterval(0, directions.length-1);
+            var randomDirection = directions[rI];
+            directions.splice(rI, 1);
+            success = this.move(randomDirection);
+        }
+        if(!success){ return false;}
+        var progeny = Object.instantiate(selfType);
+        success = progeny.place(oldX, oldY, oldL);
+        if(!success){
+            progeny.dispose();
+            return false;
+        }
+        progeny.activate();
+        return true;
     }, writable: true}
 });
+var behaviorErratic = function (){
+    var direction = pick(
+        NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
+    this.move(direction);
+};
 var behaviorNormal = function (){
     /**
         This is an enemy behavior function. It is called every time the enemy is
@@ -157,6 +202,11 @@ var behaviorNormal = function (){
         this.deactivate();
         return;
     }
+    // Breed
+    if(this.breedRate && Math.random() < this.breedRate){
+        this.breed();
+        return;
+    }
     // Determine if target is in view and in range of any skills. Use a skill.
     if(this.getViewContents().indexOf(target) != -1){
         var range = distance(this.x, this.y, target.x, target.y);
@@ -166,7 +216,9 @@ var behaviorNormal = function (){
                 var skillName = this.skills[skillI];
                 var indexedSkill = skillLibrary.getSkill(skillName);
                 if(!indexedSkill){ continue;}
-                if(range > indexedSkill.range){ continue;}
+                if(indexedSkill.targetClass != TARGET_SELF){
+                    if(range > indexedSkill.range){ continue;}
+                }
                 indexedSkill.use(this, target);
                 return;
             }
@@ -286,7 +338,22 @@ var snakePrototype = (function (){
     });
 })();
 
-
+// rat, giant centipede
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'White Rat', writable: true},
+    // Display:
+    character: {value: "r", writable: true},
+    // Stats:
+    rewardExperience: {value: 5, writable: true},
+    vigilance: {value: 0},
+    erratic: {value: 1/2},
+    baseHp: {value: 1},
+    // Behavior:
+    breedRate: {value: 1/8, writable: true},
+    behavior: {value: behaviorNormal, writable: true},
+    skills: {value: ["attack"], writable: true}
+}));
 library.registerEnemy(Object.create(enemy, {
     // Id:
     name: {value: 'Giant Ant', writable: true},
@@ -294,9 +361,8 @@ library.registerEnemy(Object.create(enemy, {
     character: {value: "a", writable: true},
     // Stats:
     rewardExperience: {value: 10, writable: true},
-    vigilance: {value: 0},
+    vigilance: {value: 10},
     baseHp: {value: 3},
-    baseMp: {value: 1},
     // Behavior:
     behavior: {value: behaviorNormal, writable: true}
 }));
@@ -310,7 +376,6 @@ library.registerEnemy(Object.create(enemy, {
     rewardExperience: {value: 10, writable: true},
     turnDelay: {value: 1.7},
     baseHp: {value: 1},
-    baseMp: {value: 0},
     // Behavior:
     skills: {value: ["breath fire", "attack"], writable: true},
     behavior: {value: behaviorNormal, writable: true}
@@ -328,7 +393,6 @@ library.registerEnemy(Object.create(snakePrototype, {
     rewardExperience: {value: 20, writable: true},
     turnDelay: {value: 2.5, writable: true},
     baseHp: {value: 10},
-    baseMp: {value: 0},
     // Behavior:
     bodyLength: {value: 7, writable: true}
 }));
@@ -348,8 +412,7 @@ library.registerEnemy(Object.create(spiderPrototype, {
     // Stats:
     rewardExperience: {value: 30, writable: true},
     turnDelay: {value: 7/8, writable: true},
-    baseHp: {value: 4},
-    baseMp: {value: 0}
+    baseHp: {value: 4}
     // Behavior:
 }));
 

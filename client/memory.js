@@ -135,6 +135,9 @@ var memory = {
         if(!currentLevel){ return [];}
         return currentLevel.getRange(x, y, range);
     },
+    statusUpdate: false,
+    statusUpdateList: ['name', 'hp', 'maxHp', 'level', 'experience',
+        'vitality', 'strength', 'wisdom', 'charisma', 'equipment'],
     updateSelf: function (updateData){
         /**
             This function parses data about updates to the player's hero object
@@ -183,6 +186,10 @@ var memory = {
         for(var key in updateData){
             if(updateData.hasOwnProperty(key)){
                 this.character[key] = updateData[key];
+                if(this.statusUpdateList.indexOf(key) != -1){
+                    console.log('updating status');
+                    this.statusUpdate = true;
+                }
             }
         }
     }

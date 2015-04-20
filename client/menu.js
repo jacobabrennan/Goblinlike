@@ -55,6 +55,7 @@ var menu = Object.create(driver, {
                 was currently being displayed there.
             It does not return anything.
          **/
+        if(newDisplay == this.currentDisplay){ return;}
         if(this.currentDisplay){
             this.displayPane.replaceChild(newDisplay, this.currentDisplay);
         } else{
@@ -414,6 +415,8 @@ var statusMenu = Object.create(driver, {
             });
             return;
         }
+        if(!client.drivers.gameplay.memory.statusUpdate){ return;}
+        client.drivers.gameplay.memory.statusUpdate = false;
         // Get values for display from memory.
         var character = client.drivers.gameplay.memory.character;
         var name = character.name;
@@ -607,6 +610,10 @@ var optionsMenu = Object.create(driver, {
     }},
     command: {value: function (which, options){
         // TODO: Document.
+        if(which == CANCEL){
+            menu.status();
+            return true;
+        }
         if(options && options.key){
             switch(options.key){
                 case 'Esc': case 'Escape':

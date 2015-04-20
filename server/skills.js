@@ -54,6 +54,36 @@ library.registerSkill(Object.create(skill, {
         return damageDone;
     }, writable: true}
 }));
+library.registerSkill(Object.create(skill, {
+    name: {value: 'breed', writable: true},
+    targetClass: {value: TARGET_SELF, writable: true},
+    use: {value: function (user, target){
+        var selfType = enemyLibrary.getEnemy(user.name);
+        if(!selfType){ console.log('Cannot breed'); return false;}
+        var oldX = user.x;
+        var oldY = user.y;
+        var oldL = user.levelId;
+        var directions = [
+            NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST];
+        var success;
+        while(!success && directions.length){
+            var rI = randomInterval(0, directions.length-1);
+            var randomDirection = directions[rI];
+            directions.splice(rI, 1);
+            success = user.move(randomDirection);
+        }
+        if(!success){ console.log('Cannot breed'); return false;}
+        var progeny = Object.instantiate(selfType);
+        success = progeny.place(oldX, oldY, oldL);
+        if(!success){
+            progeny.dispose();
+            console.log('Cannot breed'); 
+            return false;
+        }
+        progeny.activate();
+        return true;
+    }, writable: true}
+}));
 //==============================================================================
     return library; // Return library, close namespace.
 })();

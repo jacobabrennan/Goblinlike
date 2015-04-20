@@ -103,12 +103,15 @@ var characterIndex = function (character){
 
 /*=== Common tasks when dealing with arrays. ================================*/
 
+var pick = function (){
+    return arrayPick(arguments);
+};
 var arrayPick = function (sourceArray){
     // Returns a randomly chosen element from the source array.
     var randomIndex = Math.floor(Math.random()*sourceArray.length);
     var randomElement = sourceArray[randomIndex];
     if(!randomElement){
-        console.log("Problem: "+randomIndex+'/'+sourceArray.length)
+        console.log("Problem: "+randomIndex+'/'+sourceArray.length);
     }
     return randomElement;
 };
@@ -125,7 +128,7 @@ var arrayRemove = function (sourceArray, element){
 var randomInterval = function (min, max){
     // Returns a randomly select integer between min and max, inclusive.
     if(!min){ min = 0;}
-    if(!max){ max = min; min = 0}
+    if(!max){ max = min; min = 0;}
     var range = max-min;
     return min + Math.floor(Math.random()*(range+1));
 };

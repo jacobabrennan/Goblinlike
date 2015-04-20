@@ -32,7 +32,7 @@ client.drivers.title = Object.create(driver, {
         var linkNewGame = document.createElement('a');
         var linkAbout = document.createElement('a');
         titleElement.textContent = 'Goblin-like';
-        versionElement.textContent = '(v.Alpha)';
+        versionElement.textContent = 'v.Alpha2';
         linkNewGame.textContent = 'Space- New Game';
         linkAbout.textContent = 'Esc- About';
         linkNewGame.setAttribute('class', 'control');

@@ -171,10 +171,9 @@ mapManager.levelGenerator = {
         // Fill Level with Enemies:
         var enemyPoints = (this.width * this.height * this.depth) / 128; // TODO: MAGIC NUMBERS! Enemy Density.
         enemyPoints *= 10; // TODO: MAGIC NUMBERS! 100 to go up a level, 10 points per enemy per level.
-        console.log(enemyPoints)
         while(enemyPoints >= 10 && this.rooms.length > 1){
             var mean = this.depth*10;
-            var attemptedWeight = Math.max(10, Math.round(gaussRandom(mean, mean/3)));
+            var attemptedWeight = Math.max(5, Math.round(gaussRandom(mean, mean/3)));
             var enemyPrototype = enemyLibrary.getEnemyByWeight(attemptedWeight);
             var actualWeight = enemyPrototype.rewardExperience;
             if(!enemyPrototype){
@@ -195,14 +194,11 @@ mapManager.levelGenerator = {
         }
         // Fill Level with Items:
         var itemPoints = (this.width * this.height * this.depth) / 64; // TODO: MAGIC NUMBERS! Enemy Density.
-        console.log('Points: '+itemPoints);
         while(itemPoints >= 0 && this.rooms.length > 1){
             var iMean = this.depth;
             var iAttemptedWeight = Math.max(1, Math.round(gaussRandom(iMean, iMean/3)));
-            console.log('Attempting: '+iAttemptedWeight);
             var itemPrototype = itemLibrary.getItemByWeight(iAttemptedWeight);
             var iActualWeight = itemPrototype.baseValue;
-            console.log('Actual: '+iActualWeight+' ('+(itemPrototype? itemPrototype.name: 'x')+')');
             if(!itemPrototype){
                 break;
             }
