@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>g -- goblins</title>
+        <script src="shared/environment.js"></script>
+        <!-- Server -->
+        <script src="server/priority_queue.js"></script>
+            <!-- Only Libraries and snippets before this point. -->
+        <script src="server/game_manager.js"></script>
+        <script src="server/map_manager.js"></script>
+        <script src="server/mappables.js"></script>
+        <script src="server/tiles.js"></script>
+        <script src="server/path_finder.js"></script>
+        <script src="server/map_generator.js"></script>
+        <script src="server/level.js"></script>
+        <script src="server/item.js"></script>
+        <script src="server/actor.js"></script>
+        <script src="server/view.js"></script>
+        <script src="server/sound.js"></script>
+        <script src="server/hero.js"></script>
+        <script src="extentions/equipment/equipment_server.js"></script>
+        <script src="extentions/combat/combat_server.js"></script>
+        <script src="extentions/stats/stats_server.js"></script>
+        <script src="server/enemies.js"></script>
+        <script src="server/skills.js"></script>
+        <script src="server/items.js"></script>
+        <script src="server/swerd.js"></script>
+        <!-- Client -->
+        <script src="client/driver.js"></script>
+        <script src="client/client.js"></script>
+        <script src="client/skin.js"></script>
+        <script src="client/title.js"></script>
+        <script src="client/gameplay.js"></script>
+        <script src="client/map.js"></script>
+        <script src="client/menu.js"></script>
+        <script src="client/memory.js"></script>
+        <style>
+a:link{
+    text-decoration: none;
+    color: inherit;
+}
+a:visited{
+    color: inherit;
+}
+body{
+    background: #001;
+}
+.central{
+    text-align: center;
+}
+#game_area, #game_area *{
+    font-family: "press start k", monospace !important;
+    font-size: 16px !important;
+    line-height: 1em !important;
+}
+#game_area{
+    text-align: left;
+    color: #fff;
+    background: #000;
+    vertical-align: top;
+    display: inline-block;
+    padding: 0em;
+    overflow: hidden;
+    border: double 16px #006;
+}
+.pane, .panel{
+    display: inline-block;
+    margin: 0em;
+    padding: 0em;
+    width: 21em;
+    height: 21em;
+}
+.panel{
+    vertical-align: top;
+    overflow: hidden;
+}
+.panel > *{
+    margin: 0em;
+    padding: 0em;
+}
+#panelPrimary, #panelSecondary{
+    
+}
+#panelPrimary{
+}
+#panelSecondary{
+    float: left;
+}
+pre{
+    padding: 0em;
+    margin: 0em;
+}
+#map_data{
+    display: inline-block;
+    margin: 0em;
+    line-height: 1em;
+    color: #fff;
+    vertical-align: top;
+    overflow: hidden;
+}
+#info, #menu{
+    display: inline-block;
+    margin: 1em;
+    font-size: 16px;
+    line-height: 1em;
+    color: #fff;
+    width: 19em;
+    height: 19em;
+    vertical-align: top;
+}
+#title{
+    text-align: center;
+}
+#game_area a{
+    cursor: pointer;
+}
+.control{
+    color: #00f;
+    border: 1px solid transparent;
+    /* Transparent border increases its clickable size. */
+}
+.mapTile{
+    cursor: pointer;
+}
+        </style>
+    </head>
+    <body>
+        <div class="central">
+            <div id="game_area"></div>
+        </div>
+        <script>
+var configuration = {
+    containerId: 'game_area'
+};
+console.log('Start');
+client.setup(configuration);
+        </script>
+    </body>
+</html>
