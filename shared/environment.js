@@ -37,6 +37,8 @@ var COMMAND_MOVE    = 75;
 var COMMAND_WAIT    = 76;
 var COMMAND_HELP    = 77;
 var COMMAND_CLOSE   = 78;
+var COMMAND_PAGEDOWN= 79;
+var COMMAND_PAGEUP  = 80;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;

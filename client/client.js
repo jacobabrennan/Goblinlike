@@ -58,6 +58,33 @@ client.networking = {
     }
 }
 
+client.preferencesLegacy = {
+    '12': WAIT,
+    '33': NORTHEAST,
+    '34': SOUTHEAST,
+    '35': SOUTHWEST,
+    '36': NORTHWEST,
+    '37': WEST,
+    '38': NORTH,
+    '39': EAST,
+    '40': SOUTH,
+    '27': CANCEL,
+    '63': COMMAND_HELP,
+   '117': COMMAND_USE,
+   '105': COMMAND_USE,
+   '103': COMMAND_GET,
+   '100': COMMAND_DROP,
+   '108': COMMAND_LOOK,
+   '101': COMMAND_EQUIP,
+   '116': COMMAND_UNEQUIP,
+    '60': COMMAND_STAIRS,
+    '62': COMMAND_STAIRS,
+   '102': COMMAND_FIRE,
+    '70': COMMAND_THROW,
+    '99': COMMAND_CLOSE,
+    '91': COMMAND_PAGEDOWN,
+    '93': COMMAND_PAGEUP
+};
 client.preferences = {
 	"Up": NORTH,
 	"Down": SOUTH,
@@ -90,7 +117,9 @@ client.preferences = {
     ">": COMMAND_STAIRS,
     "f": COMMAND_FIRE,
     "F": COMMAND_THROW,
-    "c": COMMAND_CLOSE
+    "c": COMMAND_CLOSE,
+    "[": COMMAND_PAGEDOWN,
+    "]": COMMAND_PAGEUP
 };
 
 // TODO: Document.
@@ -103,10 +132,17 @@ client.keyCapture = {
 	},
 	keyPress: function (e){
         // TODO: Document.
-        var key = e.key;
-		var command = client.preferences[key];
+        var keyCode = ''+(e.keyCode || e.which);
+        var key = String.fromCharCode(keyCode);// = e.key;
+        var command = client.preferencesLegacy[keyCode];
+        /*if(!command){
+            command = client.preferences[key];
+        } else{
+            key = String.fromCharCode(keyCode);
+        }*/
         client.command(command, {
-            key: key
+            key: key,
+            keyCode: keyCode
         });
 	}
 };

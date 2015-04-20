@@ -175,7 +175,7 @@ var helpMenu = Object.create(driver, {
         commandLink("?", COMMAND_HELP, 'Help');
         var escMessage = document.createElement('a');
         escMessage.setAttribute('class', 'control');
-        escMessage.textContent = '\n\nESC - Cancel';
+        escMessage.textContent = '\nESC - Cancel';
         escMessage.addEventListener('click', (function(){
             this.command(CANCEL, {key: 'Esc'});
         }).bind(this));
@@ -200,6 +200,9 @@ var helpMenu = Object.create(driver, {
     }},
     command: {value: function (which, options){
         // TODO: Document.
+        if(which == CANCEL){
+            menu.status();
+        }
         return false;
     }}
 });
