@@ -289,25 +289,23 @@ var snakePrototype = (function (){
 
 library.registerEnemy(Object.create(enemy, {
     // Id:
-    name: {value: 'Test Ghost', writable: true},
+    name: {value: 'Giant Ant', writable: true},
     // Display:
-    color: {value: "blue", writable: true},
+    character: {value: "a", writable: true},
     // Stats:
     rewardExperience: {value: 10, writable: true},
     vigilance: {value: 0},
-    baseHp: {value: 5},
+    baseHp: {value: 3},
     baseMp: {value: 1},
     // Behavior:
-    behavior: {value: function (){
-        this.move(arrayPick([NORTH,SOUTH,EAST,WEST,NORTHWEST,NORTHEAST,SOUTHWEST,SOUTHEAST]));
-    }, writable: true}
+    behavior: {value: behaviorNormal, writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
     name: {value: 'Red Beetle', writable: true},
     // Display:
     color: {value: "#f00", writable: true},
-    character: {value: "B", writable: true},
+    character: {value: "b", writable: true},
     // Stats:
     rewardExperience: {value: 10, writable: true},
     turnDelay: {value: 1.7},
