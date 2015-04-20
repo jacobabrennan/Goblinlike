@@ -83,7 +83,9 @@ client.preferencesLegacy = {
     '70': COMMAND_THROW,
     '99': COMMAND_CLOSE,
     '91': COMMAND_PAGEDOWN,
-    '93': COMMAND_PAGEUP
+    '93': COMMAND_PAGEUP,
+    '81': COMMAND_USE, // Alias for those who 'quaff' potions.
+    '82': COMMAND_USE // Alias for those who 'read' scrolls.
 };
 client.preferences = {
 	"Up": NORTH,
@@ -119,7 +121,9 @@ client.preferences = {
     "F": COMMAND_THROW,
     "c": COMMAND_CLOSE,
     "[": COMMAND_PAGEDOWN,
-    "]": COMMAND_PAGEUP
+    "]": COMMAND_PAGEUP,
+    "q": COMMAND_USE, // For those who 'quaff' potions.
+    "r": COMMAND_USE // For those who 'read' scrolls.
 };
 
 // TODO: Document.
@@ -132,9 +136,19 @@ client.keyCapture = {
 	},
 	keyPress: function (e){
         // TODO: Document.
+        // This is a mess because of Google Chrome. Back in 2009 the devs
+        // Decided that a bug in Internet Explorer had to be matched by a bug in
+        // Chrome, leading to messed up behavior with key presses. Also, they
+        // haven't implemented keyboardEvent.key yet.
         var keyCode = ''+(e.keyCode || e.which);
         var key = String.fromCharCode(keyCode);// = e.key;
-        var command = client.preferencesLegacy[keyCode];
+        if(!e.shiftKey){
+            key = key.toLowerCase(key);
+        }
+        var command = client.preferences[key];
+        if(!command){
+            command = client.preferencesLegacy[keyCode];
+        }
         /*if(!command){
             command = client.preferences[key];
         } else{
