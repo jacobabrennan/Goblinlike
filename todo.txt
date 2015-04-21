@@ -1,13 +1,15 @@
+TO DONE: Alpha4
+    Remove ascending stairs from first level.
 TO DONE: Alpha3
     Included 'Mousetrap' library for cross platform keyboard control.
     Switched map drawing from html to canvas to improve game speed.
     Enemy Breeding.
 
-
-I love seeing another developer dealing with little glitches, but still loving his game.
-The joy of doing doughnuts in a big blue van.
-This guy really loves this car, and you will too! It is the car you've always wanted!
-"This is not fantasy game - this is realism, comrade!
+Car Guy Video:
+    I love seeing another developer dealing with little glitches, but still loving his game.
+    The joy of doing doughnuts in a big blue van.
+    This guy really loves this car, and you will too! It is the car you've always wanted!
+    "This is not fantasy game - this is realism, comrade!
 
 Monica hedadl (High dal)
 Anni Defranco
@@ -17,9 +19,42 @@ Haunt the House
 
 TODO(Beta):
     Absolute Must:
-        + Status Menu
         Look / Examine
         More Enemies
+        Armor
+        Enemies open doors
+        enemies bash through doors
+        Leadership Menu
+    
+    Should:
+        * Optimize
+            Pathfinding
+        Spiders make webs, chase players.
+        Camp
+        Roll Character
+        Settle Down / Win.
+        Win / Score Display.
+        More items
+            wand
+            scrolls
+            potions
+            About
+    
+    Later:
+        '.' to run.
+        Saving / Loading
+        Larger Title Display
+        Switch Menu system to canvas
+        Locked doors, door bashing
+        Enemies drop items
+        * Uncouple client from server
+            Look into tight coupling in targeting system.
+            
+    Done:
+        + Remove ascending stairs from first level.
+        + Close Doors
+        + Title Display
+        + Status Menu
         + More weapons
         + More items
             + wand
@@ -32,27 +67,6 @@ TODO(Beta):
         + Clicking:
             + To move (Refactor)
             + Links in menu (like BYOND topics)
-    
-    Should:
-        + Close Doors
-        Armor
-        Enemies open doors
-        enemies bash through doors
-        * Optimize
-        Spiders make webs, chase players.
-        Camp
-        About
-        Roll Character
-        + Title Display
-    
-    Later:
-        Locked doors, door bashing
-        Leadership Menu
-        Enemies drop items
-        Settle Down / Win.
-        Win / Score Display.
-        * Uncouple client from server
-            Look into tight coupling in targeting system.
 
 
 Description of game:
@@ -110,39 +124,20 @@ Weirdness (things that may or may not be considered bugs):
 Unfinished Features:
     Extentions
     Containables show in memory, but positions update once seen in new places.
-
-Recently done:
-    Beastiary and Item Library
-    Bugfix: Game fails on stair traverse.
-    Multiple level memory.
-    Movement between levels.
-    Combat integration with equipment system: this.weapon vs this.equipment.weapon
-    Targeting system
-    Implement gaussian random function.
-    message recall.
-    Interrupting Messages
-    Options Menu Callbacks
-    Finish Get
-    The get menu does not update after an item has been gotten and the turn has changed.
-    Actors are not dense!
 TODO:
     Look / Examine
-    Uncouple client from server
-    Clicking:
-        To move
-        Links in menu (like BYOND topics)
     Leadership Menu
 
 Simple Rogue
     Kill stuff dead, get loot, do it again.
 
 Combat:
-    * Attack
+    + Attack
         + Melee
 f       + Shoot
 F       + Throw
 m       -S-k-i-l-l-s-
-u   *   Items
+u   +   Items
     + Hurt
     + Die
     + Gain Exp

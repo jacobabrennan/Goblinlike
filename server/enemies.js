@@ -1,4 +1,3 @@
-hero.faction = FACTION_GOBLIN;
 var enemyLibrary = (function (){ // Open new namespace for enemy library.
 //==============================================================================
 var library = {

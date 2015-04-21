@@ -131,9 +131,9 @@
             }, this);
             return updatePackage;
         };
-    })(hero.packageUpdates);
+    })(base.packageUpdates);
     // New Methods
-    hero.adjustExperience = function (amount){
+    base.adjustExperience = function (amount){
         /**
          **/
         // TODO: Magic Numbers!
@@ -151,7 +151,7 @@
         this.experience += amount;
         this.update('experience');
     };
-    hero.setLevel = function (newLevel){
+    base.setLevel = function (newLevel){
         this.level = newLevel;
         this.update('level');
         this.update('experience');

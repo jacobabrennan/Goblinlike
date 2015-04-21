@@ -19,20 +19,14 @@ var DAMAGE_0000000000000000 =  0;
     // Redefined Properties
     // New Properties
     actor.hp = undefined;
-    actor.mp = undefined;
     actor.baseHp = undefined;
-    actor.baseMp = undefined;
     actor.maxHp = function (){
         return this.baseHp;
-    };
-    actor.maxMp = function (){
-        return this.baseMp;
     };
     // Redefined Functions
     actor.constructor = (function (parentFunction){
         return function (){
             this.hp = this.maxHp();
-            this.mp = this.maxMp();
             parentFunction.apply(this, arguments);
             return this;
         };
@@ -60,18 +54,6 @@ var DAMAGE_0000000000000000 =  0;
             this.die();
         }
         return deltaHp;
-    };
-    actor.adjustMp = function (amount){
-        /**
-            Modifies the magic points (MP) of the actor, both positively and
-                negatively. MP should not be set outside of this function.
-            Bounds MP between 0 and actor's Max MP.
-            Returns the actual change in MP, positive indicates a gain.
-         **/
-        var oldMp = this.mp;
-        this.mp = Math.max(0, Math.min(this.maxMp(), this.mp+amount));
-        var deltaMp = this.hp - oldMp;
-        return deltaMp;
     };
     actor.die = function (){
         /**
@@ -140,8 +122,6 @@ var DAMAGE_0000000000000000 =  0;
         return function (){
             parentFunction.apply(this, arguments);
             this.update('hp');
-            this.update('mp');
-            this.update('maxMp');
             this.update('maxHp');
             return this;
         };
@@ -163,9 +143,7 @@ var DAMAGE_0000000000000000 =  0;
                     /*  For the following cases, an attribute is appended to the
                         object at the top level. */
                     case 'hp'   : updatePackage.hp    = this.hp;      return;
-                    case 'mp'   : updatePackage.mp    = this.mp;      return;
                     case 'maxHp': updatePackage.maxHp = this.maxHp(); return;
-                    case 'maxMp': updatePackage.maxMp = this.maxMp(); return;
                 }
             }, this);
             return updatePackage;
@@ -176,15 +154,6 @@ var DAMAGE_0000000000000000 =  0;
             var result = parentFunction.apply(this, arguments);
             if(result){
                 this.update('hp');
-            }
-            return result;
-        };
-    })(hero.adjustHp);
-    hero.adjustMp = (function (parentFunction){
-        return function (){
-            var result = parentFunction.apply(this, arguments);
-            if(result){
-                this.update('mp');
             }
             return result;
         };

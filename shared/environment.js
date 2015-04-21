@@ -22,7 +22,7 @@ var SOUTHWEST = 10;
 var UP        = 16;
 var DOWN      = 32;
     // Misc. shortcuts:
-var CANCEL    = 64;
+var COMMAND_CANCEL    = 64;
     // Action Commands:
 var COMMAND_USE     = 65;
 var COMMAND_NEWGAME = 66;

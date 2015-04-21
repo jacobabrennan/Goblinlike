@@ -12,9 +12,13 @@
  *      
  *===========================================================================*/
 
-var hero = Object.create(actor, {
+var person = Object.create(actor, {
+    character: {value: '@', writable: true}
+});
+var hero = Object.create(person, {
     // Redefined properties
     character: {value: 'g', writable: true},
+    faction: {value: FACTION_GOBLIN, writable: true},
     name: {value: 'Hero', writable: true},
     color: {value: '#0f0', writable: true},
     // New properties
@@ -148,51 +152,58 @@ var hero = Object.create(actor, {
             this.updates.push(which);
         }
     }, writable: true},
-    packageUpdates: {value: function (){
-        /**
-            This function creates a data package containing information about
-                aspects of the hero that have changed since the hero's last
-                turn.
-            It return said package. See following comments for structure.
-         **/
-        var updatePackage = {};
-        if(!this.updates){
-            return updatePackage;
-        }
-        this.updates.forEach(function (changeKey){
-            switch(changeKey){
-                /*  For the following cases, an attribute is appended to the
-                    object at the top level. */
-                /*case 'id'   :  updatePackage.id    = this.id;     return;
-                case 'name' :  updatePackage.name  = this.name;   return;
-                case 'x'    :  updatePackage.x     = this.x;      return;
-                case 'y'    :  updatePackage.y     = this.y;      return;
-                case 'hp'   :  updatePackage.hp    = this.hp;     return;
-                case 'mp'   :  updatePackage.mp    = this.mp;     return;
-                case 'maxHp':  updatePackage.maxHp = this.maxHp();return;
-                case 'maxMp':  updatePackage.maxMp = this.maxMp();return;
-                case 'viewRange': updatePackage.viewRange=this.viewRange;return;
-                case 'levelId':  updatePackage.levelId = this.levelId; return;*/
-                case 'inventory': 
-                    updatePackage.inventory = [];
-                    this.inventory.forEach(function (invItem){
-                        updatePackage.inventory.push(invItem.pack());
-                    }, this);
-                    return;
-                case 'game over':
-                    updatePackage.gameOver = 'game over';
-                    return;
-                default:
-                    if(typeof this[changeKey] == 'function'){
-                        updatePackage[changeKey] = this[changeKey];
-                    } else{
-                        updatePackage[changeKey] = this[changeKey];
-                    }
-                    return;
+    packageUpdates: {value: (function (parentFunction){
+        return function (){
+            /**
+                This function creates a data package containing information about
+                    aspects of the hero that have changed since the hero's last
+                    turn.
+                It return said package. See following comments for structure.
+             **/
+            var updatePackage;
+            if(parentFunction){
+                updatePackage = parentFunction.apply(this, arguments);
             }
-        }, this);
-        return updatePackage;
-    }, writable: true},
+            if(!updatePackage){
+                updatePackage = {};
+            }
+            if(!this.updates){
+                return updatePackage;
+            }
+            this.updates.forEach(function (changeKey){
+                switch(changeKey){
+                    /*  For the following cases, an attribute is appended to the
+                        object at the top level. */
+                    /*case 'id'   :  updatePackage.id    = this.id;     return;
+                    case 'name' :  updatePackage.name  = this.name;   return;
+                    case 'x'    :  updatePackage.x     = this.x;      return;
+                    case 'y'    :  updatePackage.y     = this.y;      return;
+                    case 'hp'   :  updatePackage.hp    = this.hp;     return;
+                    case 'mp'   :  updatePackage.mp    = this.mp;     return;
+                    case 'maxHp':  updatePackage.maxHp = this.maxHp();return;
+                    case 'viewRange': updatePackage.viewRange=this.viewRange;return;
+                    case 'levelId':  updatePackage.levelId = this.levelId; return;*/
+                    case 'inventory': 
+                        updatePackage.inventory = [];
+                        this.inventory.forEach(function (invItem){
+                            updatePackage.inventory.push(invItem.pack());
+                        }, this);
+                        return;
+                    case 'game over':
+                        updatePackage.gameOver = 'game over';
+                        return;
+                    default:
+                        if(typeof this[changeKey] == 'function'){
+                            updatePackage[changeKey] = this[changeKey];
+                        } else{
+                            updatePackage[changeKey] = this[changeKey];
+                        }
+                        return;
+                }
+            }, this);
+            return updatePackage;
+        };
+    })(person.packageUpdates), writable: true},
     hear: {value: function (tamber, amplitude, source, message){
         if(message && source != this){
             this.inform(message);
@@ -519,7 +530,7 @@ var hero = Object.create(actor, {
         /**
             This command from the player directs the hero to drop the specified
                 item from inventory.
-         **/
+        **/
         var stairs = mapManager.getTile(this.x, this.y, this.levelId);
         if(typeof stairs.climb == 'function'){
             stairs.climb(this);
@@ -529,11 +540,10 @@ var hero = Object.create(actor, {
     }, writable: true}
 });
 
-var companion = Object.create(actor, {
+var companion = Object.create(person, {
+    character: {value: 'g', writable: true},
     faction: {value: FACTION_GOBLIN, writable: true},
     color: {value: '#5c3', writable: true},
-    character: {value: 'g', writable: true},
-    turnDelay: {value: 2},
     constructor: {value: function (){
         actor.constructor.apply(this, arguments);
         this.color = 'rgb('+randomInterval(64,204)+','+randomInterval(102,255)+','+randomInterval(0,64)+')';
@@ -551,13 +561,18 @@ var companion = Object.create(actor, {
             call to takeTurn, and the call to callback.
             
             It does not return anything.
-         **/
+        **/
         if(typeof this.behavior == 'function'){
             this.behavior();
         }
         this.nextTurn += this.turnDelay;
         callback(true);
     }, writable: true},
+    hurt: {value: function (damage){
+        var oldHp = this.hp;
+        console.log('Hurt['+damage+']: '+this.hp+'/'+oldHp);
+        return person.hurt.apply(this, arguments);
+    }},
     behavior: {value: function (){
         var target = gameManager.currentGame.hero;
         if(target){

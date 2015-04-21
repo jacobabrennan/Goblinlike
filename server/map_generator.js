@@ -49,8 +49,10 @@ mapManager.levelGenerator = {
         this.width = options.width || this.width;
         this.height = options.height || this.height;
         this.depth = options.depth || this.depth;
-        this.placeStairsUp = options.placeStairsUp || this.placeStairsUp;
-        this.placeStairsDown = options.placeStairsUp || this.placeStairsDown;
+        if(options.placeStairsUp   !== undefined){
+            this.placeStairsUp   = options.placeStairsUp;}
+        if(options.placeStairsDown !== undefined){
+            this.placeStairsDown = options.placeStairsDown;}
         var assignedId = options.id;
         if(assignedId === undefined){
             assignedId = 'Random Level: '+(1000+Math.floor(Math.random()*9000));
@@ -148,6 +150,7 @@ mapManager.levelGenerator = {
         newLevel.id = assignedId;
         mapManager.registerLevel(newLevel);
         newLevel.tileTypes = tileTypes;
+        newLevel.startCoords = {x: startX, y: startY};
         newLevel.stairsUpCoords = {x: stairsUpX, y: stairsUpY};
         newLevel.stairsDownCoords = {x: stairsDownX, y: stairsDownY};
         for(var posY = 0; posY < this.width; posY++){
@@ -218,9 +221,9 @@ mapManager.levelGenerator = {
             var C = cPrototype.constructor.call(Object.create(cPrototype));
             while(!C.place(randomInterval(0,31),randomInterval(0,31),newLevel.id)){}
         };
-        var Cs = 0;
-        for(var I = 0; I < Cs; I++){
-            createC(I);
+        var Cs = 1;
+        for(var cI = 0; cI < Cs; cI++){
+            createC(cI);
         }
         var tPrototype = Object.create(trap, {
             color: {value: 'black', writable:true},

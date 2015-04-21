@@ -24,7 +24,7 @@ var manager = {
          *  Returns an integer, the current time.
          **/
         if(!this.currentGame){
-            return Infinity;
+            return NaN;
         }
         return this.currentGame.currentTime;
     },
@@ -70,10 +70,12 @@ game = {
             hallLengthMax: 20,
             hallLengthMin: 7,
             width: displaySize,
-            height: displaySize
+            height: displaySize,
+            placeStairsUp: false
         });
         this.hero = Object.instantiate(hero);
-        this.hero.place(newLevel.stairsUpCoords.x, newLevel.stairsUpCoords.y, newLevel.id);
+        this.hero.place(
+            newLevel.startCoords.x, newLevel.startCoords.y, newLevel.id);
         this.hero.update('levelId');
         // TODO: Refactor this with actual networking.
         this.hero.intelligence = {

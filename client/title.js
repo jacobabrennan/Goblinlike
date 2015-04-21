@@ -76,7 +76,7 @@ client.drivers.title = Object.create(driver, {
             case COMMAND_ENTER:
                 this.newGame();
                 return true;
-            case CANCEL:
+            case COMMAND_CANCEL:
                 return true;
         }
         return false;

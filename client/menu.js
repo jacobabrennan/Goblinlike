@@ -178,7 +178,7 @@ var helpMenu = Object.create(driver, {
         escMessage.setAttribute('class', 'control');
         escMessage.textContent = '\nESC - Cancel';
         escMessage.addEventListener('click', (function(){
-            this.command(CANCEL, {key: 'Esc'});
+            this.command(COMMAND_CANCEL, {key: 'Esc'});
         }).bind(this));
         this.displayElement.appendChild(escMessage);
     }},
@@ -201,7 +201,7 @@ var helpMenu = Object.create(driver, {
     }},
     command: {value: function (command, options){
         // TODO: Document.
-        if(command == CANCEL){
+        if(command == COMMAND_CANCEL){
             menu.status();
         }
         return false;
@@ -348,7 +348,7 @@ var infoMenu = Object.create(driver, {
                     this.stackMessage(nextMessage);
                 } else{
                     menu.status();
-                    return true;
+                    return false;
                 }
         }
         return true;
@@ -468,7 +468,7 @@ var statusMenu = Object.create(driver, {
     command: {value: function (command, options){
         // TODO: Document.
         if(client.drivers.gameplay.dead){
-            if(command == COMMAND_ENTER || command == CANCEL){
+            if(command == COMMAND_ENTER || command == COMMAND_CANCEL){
                 client.focus(client.drivers.title);
             }
             return true;
@@ -592,7 +592,7 @@ var optionsMenu = Object.create(driver, {
         escMessage.setAttribute('class', 'control');
         escMessage.textContent = 'ESC - Cancel';
         escMessage.addEventListener('click', (function(){
-            this.command(CANCEL, {key: 'Esc'});
+            this.command(COMMAND_CANCEL, {key: 'Esc'});
         }).bind(this));
         newDisplay.appendChild(escMessage);
         /*
@@ -617,7 +617,7 @@ var optionsMenu = Object.create(driver, {
             return false;
         }
         switch(command){
-            case CANCEL:
+            case COMMAND_CANCEL:
                 menu.status();
                 return true;
             case COMMAND_PAGEDOWN:
@@ -681,7 +681,7 @@ var directionSelectMenu = Object.create(driver, {
         this.cancelElement.setAttribute('class', 'control');
         this.cancelElement.textContent = 'ESC - Cancel';
         this.cancelElement.addEventListener('click', (function(){
-            this.command(CANCEL, {key: 'Escape'});
+            this.command(COMMAND_CANCEL, {key: 'Escape'});
         }).bind(this));
         this.displayElement.appendChild(this.cancelElement);
     }},
@@ -707,7 +707,7 @@ var directionSelectMenu = Object.create(driver, {
     command: {value: function (command, options){
         // TODO: Document.
         switch(command){
-            case CANCEL:
+            case COMMAND_CANCEL:
                 menu.status();
                 break;
             case NORTH: case NORTHWEST: case WEST: case SOUTHWEST:
