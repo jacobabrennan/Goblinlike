@@ -206,21 +206,19 @@ var behaviorNormal = function (){
         this.breed();
         return;
     }
-    // Determine if target is in view and in range of any skills. Use a skill.
-    if(this.getViewContents().indexOf(target) != -1){
-        var range = distance(this.x, this.y, target.x, target.y);
-        for(var skillI = 0; skillI < this.skills.length; skillI++){
-            var skillSkipChance = Math.random() < 1/2;
-            if(skillI == this.skills.length-1 || skillSkipChance){
-                var skillName = this.skills[skillI];
-                var indexedSkill = skillLibrary.getSkill(skillName);
-                if(!indexedSkill){ continue;}
-                if(indexedSkill.targetClass != TARGET_SELF){
-                    if(range > indexedSkill.range){ continue;}
-                }
-                indexedSkill.use(this, target);
-                return;
+    // Determine if target is in range of any skills. Use a skill.
+    var range = distance(this.x, this.y, target.x, target.y);
+    for(var skillI = 0; skillI < this.skills.length; skillI++){
+        var skillSkipChance = Math.random() < 1/2;
+        if(skillI == this.skills.length-1 || skillSkipChance){
+            var skillName = this.skills[skillI];
+            var indexedSkill = skillLibrary.getSkill(skillName);
+            if(!indexedSkill){ continue;}
+            if(indexedSkill.targetClass != TARGET_SELF){
+                if(range > indexedSkill.range){ continue;}
             }
+            indexedSkill.use(this, target);
+            return;
         }
     }
     // If a skill was not used, move toward the target.

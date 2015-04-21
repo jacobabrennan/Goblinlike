@@ -2,24 +2,21 @@
 
 /*===========================================================================
  *
- *  This object is a prototype for creating heros directly under the player's
- *      control. These heros will have all the things PCs have which separate
+ *  This object is a prototype for creating persons directly under the player's
+ *      control. These persons will have all the things PCs have which separate
  *      them from enemy mobs or NPCs.
- *  Currently, there should only be one active hero per game instance. This
+ *  Currently, there should only be one active person per game instance. This
  *      is not currently a multiplayer project.
  *  This is a prototype, and should not be used without first creating an
  *      instance.
  *      
  *===========================================================================*/
 
-var person = Object.create(actor, {
-    character: {value: '@', writable: true}
-});
 var hero = Object.create(person, {
     // Redefined properties
     character: {value: 'g', writable: true},
     faction: {value: FACTION_GOBLIN, writable: true},
-    name: {value: 'Hero', writable: true},
+    name: {value: 'person', writable: true},
     color: {value: '#0f0', writable: true},
     // New properties
     updates: {value: undefined, writable: true},
@@ -35,7 +32,7 @@ var hero = Object.create(person, {
                 about them immediately.
             Returns a reference to itself.
          **/
-        actor.constructor.apply(this, arguments);
+        person.constructor.apply(this, arguments);
         this.name = sWerd.name();
         this.update('id');
         this.update('name');
@@ -44,67 +41,13 @@ var hero = Object.create(person, {
         return this;
     }, writable: true},
     die: {value: function (){
+        this.companions = null;
         this.inform('You have died.');
         gameManager.gameOver();
     }},
-    place: {value: function (x, y, levelId){
-        /**
-            This function is used to place the object at specific coordinates
-                on a specific level, referenced by id.
-            Its parent function is defined on containable, and must be called
-                in order to function properly. This child function ensures that
-                the player is updated whenever the hero's coordinates change.
-            It returns true if the placement is successful, and false otherwise.
-         **/
-        var success = actor.place.apply(this, arguments);
-        if(success){
-            this.update('x');
-            this.update('y');
-        }
-        return success;
-    }, writable: true},
-    takeTurn: {value: function (callback){
-        /**
-            This function alerts the player, possibly over a network, that it
-                is their turn. This function supercedes the parent function,
-                actor.takeTurn, and should not call that function.
-            The supplied callback function must be called at the end of the
-                player's turn, otherwise the game will not continue.
-            It does not return anything.
-         **/
-        // Setup turn storage.
-        this.turnActive = true;
-        this.turnCallback = callback;
-        // End turn if there is no connected intelligence.
-        if(!this.intelligence){
-            this.endTurn();
-        }
-        // Compile sensory data about the player's view.
-        var currentLevel = mapManager.getLevel(this.levelId);
-        var viewData;
-        if(currentLevel){
-            viewData = currentLevel.packageView(this.x, this.y, this.viewRange);
-        }
-        // Compile data about recent changes to the hero.
-        var selfData = this.packageUpdates();
-        this.updates = undefined;
-        // Compile package of new messages.
-        var newMessages;
-        if(this.messages && this.messages.length){
-            newMessages = this.messages;
-            this.messages = null;
-        }
-        // Create final package and send it to the player.
-        var turnData = {
-            characterData: selfData,
-            sensoryData: viewData,
-            messageData: newMessages
-        };
-        this.intelligence.takeTurn(turnData);
-    }, writable: true},
     endTurn: {value: function (){
         /**
-            This function must be called whenever the hero ends their turn,
+            This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
          **/
         this.turnActive = false;
@@ -121,8 +64,8 @@ var hero = Object.create(person, {
                     WEST, SOUTHWEST, SOUTH, SOUTHEAST.
             It returns true if the movement is successful, and false otherwise.
          **/
-        var success = actor.move.apply(this, arguments);
-        this.sound('footsteps', 10, this);
+        var success = person.move.apply(this, arguments);
+        //this.sound('footsteps', 5, this);
         this.getViewContents().forEach(function (theContent){
             if(typeof theContent.activate == 'function'){
                 theContent.activate();
@@ -139,7 +82,7 @@ var hero = Object.create(person, {
     // New Methods
     update: {value: function (which){
         /**
-            This function is used to maintain a list of all aspects of the hero
+            This function is used to maintain a list of all aspects of the person
                 which have changed since their last turn. Items in this list
                 will be sent to the player's client, possibly over a network,
                 at the start of their next turn.
@@ -152,58 +95,28 @@ var hero = Object.create(person, {
             this.updates.push(which);
         }
     }, writable: true},
-    packageUpdates: {value: (function (parentFunction){
-        return function (){
-            /**
-                This function creates a data package containing information about
-                    aspects of the hero that have changed since the hero's last
-                    turn.
-                It return said package. See following comments for structure.
-             **/
-            var updatePackage;
-            if(parentFunction){
-                updatePackage = parentFunction.apply(this, arguments);
-            }
-            if(!updatePackage){
-                updatePackage = {};
-            }
-            if(!this.updates){
-                return updatePackage;
-            }
-            this.updates.forEach(function (changeKey){
-                switch(changeKey){
-                    /*  For the following cases, an attribute is appended to the
-                        object at the top level. */
-                    /*case 'id'   :  updatePackage.id    = this.id;     return;
-                    case 'name' :  updatePackage.name  = this.name;   return;
-                    case 'x'    :  updatePackage.x     = this.x;      return;
-                    case 'y'    :  updatePackage.y     = this.y;      return;
-                    case 'hp'   :  updatePackage.hp    = this.hp;     return;
-                    case 'mp'   :  updatePackage.mp    = this.mp;     return;
-                    case 'maxHp':  updatePackage.maxHp = this.maxHp();return;
-                    case 'viewRange': updatePackage.viewRange=this.viewRange;return;
-                    case 'levelId':  updatePackage.levelId = this.levelId; return;*/
-                    case 'inventory': 
-                        updatePackage.inventory = [];
-                        this.inventory.forEach(function (invItem){
-                            updatePackage.inventory.push(invItem.pack());
-                        }, this);
-                        return;
-                    case 'game over':
-                        updatePackage.gameOver = 'game over';
-                        return;
-                    default:
-                        if(typeof this[changeKey] == 'function'){
-                            updatePackage[changeKey] = this[changeKey];
-                        } else{
-                            updatePackage[changeKey] = this[changeKey];
-                        }
-                        return;
-                }
-            }, this);
+    packageUpdates: {value: function (){
+        /**
+            This function creates a data package containing information about
+                aspects of the person that have changed since the person's last
+                turn.
+            It return said package. See following comments for structure.
+         **/
+        var updatePackage = person.packageUpdates.apply(this, arguments);
+        if(!updatePackage){
+            updatePackage = {};
+        }
+        if(!this.updates){
             return updatePackage;
-        };
-    })(person.packageUpdates), writable: true},
+        }
+        this.updates.forEach(function (changeKey){
+            if(changeKey == 'game over'){
+                updatePackage.gameOver = 'game over';
+                return;
+            }
+        }, this);
+        return updatePackage;
+    }, writable: true},
     hear: {value: function (tamber, amplitude, source, message){
         if(message && source != this){
             this.inform(message);
@@ -228,7 +141,7 @@ var hero = Object.create(person, {
     }, writable: true},
     gainItem: {value: function (newItem, single){
         /**
-            This function handles the movement of items into the hero's
+            This function handles the movement of items into the person's
                 inventory. It is a general house keeping function, perhaps
                 a candidate to be refactored into some other function.
             It returns true if the item was added to inventory, false if it
@@ -314,22 +227,22 @@ var hero = Object.create(person, {
     
 /*===========================================================================
  *
- *  The following are functions which couple the hero to it's player,
- *      possibly over a network. These are the behaviors that a hero can take
+ *  The following are functions which couple the person to it's player,
+ *      possibly over a network. These are the behaviors that a person can take
  *      under the direct control of the player.
  *      
  *===========================================================================*/
 
     commandWait: {value: function (options){
         /**
-            This command from the player causes the hero to wait (pass).
+            This command from the player causes the person to wait (pass).
          **/
         this.endTurn();
     }, writable: true},
     commandMove: {value: function (options){
         /**
-            This command from the player causes the hero to move.
-            The hero will attack any hostile actor in the destination tile.
+            This command from the player causes the person to move.
+            The person will attack any hostile actor in the destination tile.
          **/
         var direction = options.direction;
         var offsetX = 0;
@@ -373,7 +286,7 @@ var hero = Object.create(person, {
     }, writable: true},
     commandClose: {value: function (options){
         /**
-            This command from the player causes the hero to close a door.
+            This command from the player causes the person to close a door.
         **/
         var direction = options.direction;
         var offsetX = 0;
@@ -398,7 +311,7 @@ var hero = Object.create(person, {
     }, writable: true},
     commandAttack: {value: function (options){
         /**
-         *  This command from the player directs the hero to attack an enemy,
+         *  This command from the player directs the person to attack an enemy,
          *      as specified by id.
          **/
         var enemy = mapManager.idManager.get(options.id);
@@ -411,10 +324,10 @@ var hero = Object.create(person, {
     }, writable: true},
     commandGet: {value: function (options){
         /**
-            This command from the player directs the hero to place the
+            This command from the player directs the person to place the
                 item into its inventory. The item can be specified in multiple
                 ways, including by location, description, name, and id. The
-                hero attempts to find the specified item.
+                person attempts to find the specified item.
          **/
         var theItem;
         // Attempt to find the item, by ID within range 1.
@@ -444,7 +357,7 @@ var hero = Object.create(person, {
     }, writable: true},
     commandDrop: {value: function (options){
         /**
-            This command from the player directs the hero to drop the specified
+            This command from the player directs the person to drop the specified
                 item from inventory.
          **/
         var theItem;
@@ -471,7 +384,7 @@ var hero = Object.create(person, {
     }, writable: true},
     commandUse: {value: function (options){
         /**
-            This command from the player directs the hero to use the specified
+            This command from the player directs the person to use the specified
                 item from inventory on the specified target.
             Structure of options:
             {
@@ -528,7 +441,7 @@ var hero = Object.create(person, {
     }, writable: true},
     commandStairs: {value: function (options){
         /**
-            This command from the player directs the hero to drop the specified
+            This command from the player directs the person to drop the specified
                 item from inventory.
         **/
         var stairs = mapManager.getTile(this.x, this.y, this.levelId);
@@ -540,62 +453,49 @@ var hero = Object.create(person, {
     }, writable: true}
 });
 
+
+//==============================================================================
+
+(function (base){
+    base.constructor = (function (parentFunction){
+        return function (){
+            this.companions = [];
+            parentFunction.apply(this, arguments);
+            return this;
+        };
+    })(base.constructor);
+    base.setLevel = (function (parentFunction){
+        return function (){
+            var result = parentFunction.apply(this, arguments);
+            this.companions.forEach(function (theCompanion){
+                theCompanion.setLevel(this.level);
+            }, this);
+            return result;
+        };
+    })(base.setLevel);
+})(hero);
 var companion = Object.create(person, {
     character: {value: 'g', writable: true},
     faction: {value: FACTION_GOBLIN, writable: true},
     color: {value: '#5c3', writable: true},
     constructor: {value: function (){
-        actor.constructor.apply(this, arguments);
+        person.constructor.apply(this, arguments);
         this.color = 'rgb('+randomInterval(64,204)+','+randomInterval(102,255)+','+randomInterval(0,64)+')';
-        this.name = sWerd.name()+' (goblin)';
+        this.name = sWerd.name()+' (g)';
+        var theHero = gameManager.currentGame.hero;
+        if(theHero){ this.setLevel(theHero.level);}
+        
+        this.equip(Object.instantiate(itemLibrary.getItem('short bow')));
+        this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
+        
         return this;
     }},
-    takeTurn: {value: function (callback){
+    adjustExperience: {value: function (amount){
         /**
-            This function causes the actor to perform their turn taking
-            behavior, such as moving about the map, attacking, or alerting the
-            player, possibly over the network, to issue a command.
-            
-            The game will halt until callback is called. All behavior associated
-            with this object taking a turn must take place between the initial
-            call to takeTurn, and the call to callback.
-            
-            It does not return anything.
         **/
-        if(typeof this.behavior == 'function'){
-            this.behavior();
-        }
-        this.nextTurn += this.turnDelay;
-        callback(true);
+        gameManager.currentGame.hero.adjustExperience(amount);
+        return;
     }, writable: true},
-    hurt: {value: function (damage){
-        var oldHp = this.hp;
-        console.log('Hurt['+damage+']: '+this.hp+'/'+oldHp);
-        return person.hurt.apply(this, arguments);
-    }},
-    behavior: {value: function (){
-        var target = gameManager.currentGame.hero;
-        if(target){
-            var pathArray = findPath(this, target);
-            if(!pathArray){
-                return;
-            }
-            if(pathArray[0].x == this.x && pathArray[0].y == this.y && pathArray[0].levelId == this.levelId){
-                pathArray.shift();
-            }
-            var nextCoord = pathArray.shift();
-            if(!nextCoord){
-                return;
-            }
-            if(nextCoord.levelId != this.levelId){
-                this.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
-                return;
-            }
-            var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
-            this.move(direction);
-            //this.move(directionTo(this.x, this.y, target.x, target.y));
-        }
-    }},
     activate: {value: function (){
         /**
          *  This function actives the enemy, basically "waking it up". It is
@@ -611,6 +511,105 @@ var companion = Object.create(person, {
          **/
         if(this.active){ return;}
         gameManager.registerActor(this);
+        if(gameManager.currentGame.hero.companions.indexOf(this) == -1){
+            gameManager.currentGame.hero.companions.push(this);
+        }
         this.active = true;
-    }}
+    }},
+    hurt: {value: function (){
+        this.activate();
+        return person.hurt.apply(this, arguments);
+    }, writable: true},
+    dispose: {value: function (){
+        if(gameManager.currentGame){
+            var companionI = gameManager.currentGame.hero.companions.indexOf(this);
+            if(companionI != -1){
+                gameManager.currentGame.hero.companions.splice(companionI, 1);
+            }
+        }
+        return person.dispose.apply(this, arguments);
+    }, writable: true},
+    behavior: {value: function (){
+        var result = this.pursueHero();
+        if(!result){
+            this.pursueEnemy();
+        }
+        return;
+    }, writable: true},
+    pursueHero: {value: function (){
+        var target = gameManager.currentGame.hero;
+        var pursueRange = Math.min(3, target.companions.length);
+        if(!target || (
+            (target.levelId == this.levelId) &&
+            distance(this.x, this.y, target.x, target.y) <= pursueRange
+        )){
+            return false;
+        }
+        var pathArray = findPath(this, target, 1);
+        if(!pathArray){
+            return false;
+        }
+        if(pathArray[0].x == this.x && pathArray[0].y == this.y && pathArray[0].levelId == this.levelId){
+            pathArray.shift();
+        }
+        var nextCoord = pathArray.shift();
+        if(!nextCoord){
+            return false;
+        }
+        if(nextCoord.levelId != this.levelId){
+            this.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
+            return true;
+        }
+        var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
+        // Check for Door.
+        var destination = mapManager.getTile(
+            nextCoord.x, nextCoord.y, this.levelId
+        );
+        if(destination.dense && destination.toggleDoor){
+            destination.toggleDoor(nextCoord.x, nextCoord.y, this);
+            return true;
+        }
+        // Else, move.
+        return this.move(direction);
+    }, writable: true},
+    pursueEnemy: {value: function (){
+        // Find a target, and the path to that target. If no target, deactivate.
+        var target;
+        var path;
+        var targetData = findTarget(this, this.faction);
+        if(targetData && this.checkView(targetData.target)){
+            target = targetData.target;
+            path = targetData.path;
+        } else{
+            return false;
+        }
+        // Determine if target is in range of equipped weapon. Attack.
+        var range = distance(this.x, this.y, target.x, target.y);
+        var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
+        if(weapon && weapon.shoot && weapon.range){
+            if(weapon.range >= range){
+                var success = weapon.shoot(
+                    this,
+                    directionTo(this.x, this.y, target.x, target.y),
+                    target
+                );
+                if(success || success === 0){
+                    return true;
+                }
+            }
+        // Else, attack with your hands.
+        }
+        if(range <= 1){
+            this.attack(target);
+            return true;
+        }
+        // If a skill was not used, move toward the target.
+        var pathArray = path;
+        var nextCoord = pathArray.shift();
+        if(!nextCoord){
+            return false;
+        }
+        var direction = directionTo(this.x, this.y, nextCoord.x, nextCoord.y);
+        return this.move(direction);
+    }, writable: true}
 });

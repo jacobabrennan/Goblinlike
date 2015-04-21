@@ -1,21 +1,11 @@
-/*
 
-    Attack Damage
-    
-    Exp / Level
-    Vitality -> Max HP
-    Strength -> Carrying Capacity
-    Intelligence -> (Ability to use magic items)
-    Leadership -> (Influence other Goblins)
 
-*/
-    
 // === Statistics System ==================================================
 // TODO: Document.
 
 (function (base){
     /**
-     *  Extend hero
+     *  Extend person
      **/
     // Redefined Properties
     base.viewRange = 10;
@@ -108,7 +98,7 @@
         return function (){
             /**
                 This function creates a data package containing information
-                about aspects of the hero that have changed since the hero's
+                about aspects of the person that have changed since the person's
                 last turn.
                 
                 It returns said package.
@@ -164,5 +154,5 @@
         this.update('inventory');
         this.update('equipment');
     };
-    // End extend hero
-})(hero);
+    // End extend person
+})(person);

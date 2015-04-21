@@ -155,7 +155,14 @@ var distance = function (startX, startY, endX, endY){
     var deltaX = Math.abs(endX-startX);
     var deltaY = Math.abs(endY-startY);
     return Math.max(deltaX, deltaY);
-}
+};
+var getStepCoords = function (startX, startY, directon){
+    if(direction & NORTH){ startY++;}
+    if(direction & SOUTH){ startY--;}
+    if(direction & EAST ){ startX++;}
+    if(direction & WEST ){ startX--;}
+    return {x: startX, y: startY};
+};
 var directionTo = function (startX, startY, endX, endY){
     var deltaX = endX-startX;
     var deltaY = endY-startY;

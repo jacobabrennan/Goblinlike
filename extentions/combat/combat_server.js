@@ -115,22 +115,22 @@ var DAMAGE_0000000000000000 =  0;
     // End extend actor
     
     /**
-     *  Extend hero
+     *  Extend person
      **/
-    hero.lastHeal = 0;
-    hero.constructor = (function (parentFunction){
+    person.lastHeal = 0;
+    person.constructor = (function (parentFunction){
         return function (){
             parentFunction.apply(this, arguments);
             this.update('hp');
             this.update('maxHp');
             return this;
         };
-    })(hero.constructor);
-    hero.packageUpdates = (function (parentFunction){
+    })(person.constructor);
+    person.packageUpdates = (function (parentFunction){
         return function (){
             /**
                 This function creates a data package containing information about
-                    aspects of the hero that have changed since the hero's last
+                    aspects of the person that have changed since the person's last
                     turn.
                 It returns said package.
              **/
@@ -148,8 +148,8 @@ var DAMAGE_0000000000000000 =  0;
             }, this);
             return updatePackage;
         };
-    })(hero.packageUpdates);
-    hero.adjustHp = (function (parentFunction){
+    })(person.packageUpdates);
+    person.adjustHp = (function (parentFunction){
         return function (){
             var result = parentFunction.apply(this, arguments);
             if(result){
@@ -157,8 +157,8 @@ var DAMAGE_0000000000000000 =  0;
             }
             return result;
         };
-    })(hero.adjustHp);
-    hero.takeTurn = (function (parentFunction){
+    })(person.adjustHp);
+    person.takeTurn = (function (parentFunction){
         return function (){
             /**
                 This function causes the actor to perform their turn taking
@@ -182,8 +182,8 @@ var DAMAGE_0000000000000000 =  0;
             }
             return parentFunction.apply(this, arguments);
         };
-    })(hero.takeTurn);
-    hero.throwItem = function (theItem, direction){
+    })(person.takeTurn);
+    person.throwItem = function (theItem, direction){
         var throwOptions = {
             thrower: this,
             range: this.strength
@@ -199,9 +199,9 @@ var DAMAGE_0000000000000000 =  0;
         var damageDone = theItem.project(direction, throwOptions);
         return damageDone;
     };
-    hero.commandFire = function (options){
+    person.commandFire = function (options){
         /**
-            This command from the player directs the hero to fire their equipped
+            This command from the player directs the person to fire their equipped
             weapon in the specified direction.
             
             Structure of options:
@@ -226,9 +226,9 @@ var DAMAGE_0000000000000000 =  0;
         // End turn.
         this.endTurn();
     };
-    hero.commandThrow = function (options){
+    person.commandThrow = function (options){
         /**
-            This command from the player directs the hero to throw the specified
+            This command from the player directs the person to throw the specified
             item from inventory in the specified direction.
             
             Structure of options:
@@ -259,7 +259,7 @@ var DAMAGE_0000000000000000 =  0;
         // End turn.
         this.endTurn();
     };
-    // End extend hero
+    // End extend person
 })();
 
 var weapon = Object.create(item, {
@@ -306,7 +306,7 @@ var bow = Object.create(item, {
         // TODO: Better ammo types, perhaps with bit flags. That way, you could
             // fire 'blizzard arrows' or silly stuff like that.
     // New Methods
-    shoot: {value: function (attacker, direction){
+    shoot: {value: function (attacker, direction, forceTarget){
         /**
          *  This function handles one attacker attacking an enemy actor via a
          *      weapon. This is a hook that derived types can use for all sorts
@@ -316,24 +316,25 @@ var bow = Object.create(item, {
          *      indicating damage.
          **/
         if(!attacker.equipment){
-            console.log('Problem: Non-hero using bow.');
+            console.log('Problem: Non-person using bow.');
                 // TODO: Companions or enemies attacking?
-            return 0;
+            return null;
         }
         var ammo = attacker.equipment[EQUIP_OFFHAND];
         var damageDone;
         if(!ammo){
             attacker.inform('You have no ammo equipped.');
-            return 0;
+            return null;
         } else if(ammo.name != this.ammoType){ // TODO: Ammo types, see above.
             attacker.inform('You need to equip an '+this.ammoType+'.');
-            return 0;
+            return null;
         } else{
             attacker.inform('You fire the '+this.description()+'.');
             var projectileOptions = {
                 thrower: attacker,
                 range: this.range,
-                damageScale: this.damageScale
+                damageScale: this.damageScale,
+                forceTarget: forceTarget
             };
             var singleAmmo = ammo.unstack();
             if(!singleAmmo){
@@ -345,10 +346,10 @@ var bow = Object.create(item, {
             damageDone = singleAmmo.project(direction, projectileOptions);
         }
         // TODO: Return actual damage done.
-        if(damageDone){
+        if(damageDone || damageDone === 0){
             return damageDone;
         } else{
-            return 0;
+            return null;
         }
     }, writable: true}
 });
@@ -416,7 +417,17 @@ var projectile = Object.create(weapon, {
         // Returns damage done, if any.
         delete this.projectDamageDone;
         var thrower = options.thrower;
-        this.thrower = thrower;
+        if(options.forceTarget){
+            var target = options.forceTarget;
+            this.place(target.x, target.y, target.levelId);
+            this.thrower = thrower;
+            this.bump(target);
+            this.thrower = null;
+            if(this.ephemeral){
+                this.dispose();
+            }
+            return this.projectDamageDone;
+        }
         if(thrower){
             this.place(thrower.x, thrower.y, thrower.levelId);
         }
@@ -438,10 +449,12 @@ var projectile = Object.create(weapon, {
         below. Making the max range equal to the display size means the projectile
         can travel twice as far as the player's view range. This seems like a good
         limit. */
+        this.thrower = thrower;
         while(movement && rangeTraversed < maxRange){
             movement = this.move(direction);
             rangeTraversed++;
         }
+        this.thrower = null;
         this.dense = originalDensity;
         if(this.ephemeral){
             this.dispose();

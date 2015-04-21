@@ -85,7 +85,29 @@ game = {
             sense: function (sensoryData){
                 this.sendMessage(COMMAND_SENSE, sensoryData);
             },
-            takeTurn: function (turnData){
+            takeTurn: function (theMover){
+                // Compile sensory data about the player's view.
+                var currentLevel = mapManager.getLevel(theMover.levelId);
+                var viewData;
+                if(currentLevel){
+                    viewData = currentLevel.packageView(
+                        theMover.x, theMover.y, theMover.viewRange);
+                }
+                // Compile data about recent changes to the person.
+                var selfData = theMover.packageUpdates();
+                theMover.updates = undefined;
+                // Compile package of new messages.
+                var newMessages;
+                if(theMover.messages && theMover.messages.length){
+                    newMessages = theMover.messages;
+                    theMover.messages = null;
+                }
+                // Create final package and send it to the player.
+                var turnData = {
+                    characterData: selfData,
+                    sensoryData: viewData,
+                    messageData: newMessages
+                };
                 this.sendMessage(COMMAND_TURN, turnData);
             },
             gameOver: function (deathData){

@@ -47,7 +47,7 @@ var EQUIP_FINGER = 'finger';
 
 (function (base){
     /**
-     *  Extend hero
+     *  Extend person
      **/
     // Redefined Properties
     // New Properties
@@ -65,7 +65,7 @@ var EQUIP_FINGER = 'finger';
         return function (){
             /**
                 This function creates a data package containing information
-                about aspects of the hero that have changed since the hero's
+                about aspects of the person that have changed since the person's
                 last turn.
                 
                 It returns said package.
@@ -89,7 +89,7 @@ var EQUIP_FINGER = 'finger';
             }, this);
             return updatePackage;
         };
-    })(hero.packageUpdates);
+    })(person.packageUpdates);
     // New Methods
     base.equip = function (equipItem){
         /**
@@ -176,7 +176,7 @@ var EQUIP_FINGER = 'finger';
     };
     base.commandEquip = function (options){
         /**
-            This command from the player directs the hero to equip the specified
+            This command from the player directs the person to equip the specified
             item from inventory.
             
             Structure of options:
@@ -205,7 +205,7 @@ var EQUIP_FINGER = 'finger';
     };
     base.commandUnequip = function (options){
         /**
-            This command from the player directs the hero to unequip the
+            This command from the player directs the person to unequip the
             specified item.
             
             Structure of options:
@@ -258,5 +258,5 @@ var EQUIP_FINGER = 'finger';
             return totalWeight;
         };
     })(base.getWeight);
-    // End extend hero
-})(hero);
+    // End extend person
+})(person);

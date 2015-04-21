@@ -371,7 +371,7 @@ var findTarget = function (start, faction){
     return null;
 };
 
-var findPath = function (start, end){
+var findPath = function (start, end, limit){
     end = {
         x: end.x,
         y: end.y,
@@ -386,10 +386,11 @@ var findPath = function (start, end){
         distinction: (''+start.x+','+start.y+','+start.levelId),
         tile: mapManager.getTile(start.x, start.y, start.levelId)
     };
+    if(!limit){ limit = 1;}
     var minDist = function (coords1){
         return pathDist.call(this, coords1, false);
     };
-    var pathArray = aStar(start, end, pathDist, 20, 10, 3, minDist);
+    var pathArray = aStar(start, end, pathDist, 20, 10, limit, minDist);
     return pathArray;
 };
 

@@ -19,10 +19,11 @@
         <script src="server/actor.js"></script>
         <script src="server/view.js"></script>
         <script src="server/sound.js"></script>
-        <script src="server/hero.js"></script>
+        <script src="server/person.js"></script>
         <script src="extentions/equipment/equipment_server.js"></script>
         <script src="extentions/combat/combat_server.js"></script>
         <script src="extentions/stats/stats_server.js"></script>
+        <script src="server/hero.js"></script>
         <script src="server/enemies.js"></script>
         <script src="server/skills.js"></script>
         <script src="server/items.js"></script>
@@ -149,6 +150,13 @@ pre{
                 <br>
                 <a href="https://www.patreon.com/jacobabrennan"> -- Support this Game</a>
             </div>
+            <script>
+                // TODO: Remove
+                var d = {
+                    h: function(){ return gameManager.currentGame.hero;},
+                    l: function(){ return mapManager.getLevel(this.h().levelId);}
+                };
+            </script>
         </div>
         <script>
 var configuration = {

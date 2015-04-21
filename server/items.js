@@ -82,7 +82,7 @@ var wand = Object.create(item, {
         }
         this.shoot(user, targetData.direction);
     }},
-    shoot: {value: function (attacker, direction){
+    shoot: {value: function (attacker, direction, forceTarget){
         if(this.charges <= 0){
             attacker.inform('There wand is out of charges!');
             return 0;
@@ -107,7 +107,8 @@ var wand = Object.create(item, {
         var projectileOptions = {
             thrower: attacker,
             range: this.range,
-            damageScale: 1
+            damageScale: 1,
+            forceTarget: forceTarget
         };
         var theProj = Object.instantiate(this.projectileType);
         damageDone = theProj.project(direction, projectileOptions);
