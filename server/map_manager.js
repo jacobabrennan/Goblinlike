@@ -122,8 +122,18 @@ var mapManager = {
         var newLevel = generator.generate(options);
         return newLevel;
     },
-    getPath: function (pointA, pointB){
-        // TODO: Refactor the whole pathfinding system... or lack of one.
+    swapPlaces: function (content1, content2){
+        var oldX = content1.x;
+        var oldY = content1.y;
+        var oldId = content1.levelId;
+        var obsX = content2.x;
+        var obsY = content2.y;
+        var obsId = content2.levelId;
+        content1.unplace();
+        var success = content2.place(oldX, oldY, oldId);
+        if(success){  content1.place(obsX, obsY, obsId);}
+        else{         content1.place(oldX, oldY, oldId);}
+        return success;
     },
 /*==== Id Manager ===========================================================*/
     idManager: {

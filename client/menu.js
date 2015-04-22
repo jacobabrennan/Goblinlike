@@ -169,18 +169,21 @@ var helpMenu = Object.create(driver, {
         commandLink("F", COMMAND_THROW, 'Throw Item');
         commandLink("g", COMMAND_GET, 'Get Item');
         commandLink("l", COMMAND_LOOK, 'Look');
+        commandLink("L", COMMAND_LEADERSHIP, 'Leadership');
         commandLink("t", COMMAND_UNEQUIP, 'Take Off Item');
         commandLink("u", COMMAND_USE, 'Use Item');
         commandLink("<", COMMAND_STAIRS, 'Descend Stairs');
         commandLink(">", COMMAND_STAIRS, 'Ascend Stairs');
         commandLink("?", COMMAND_HELP, 'Help');
-        var escMessage = document.createElement('a');
+        commandLink("Esc", COMMAND_CANCEL, 'Cancel');
+        
+        /*var escMessage = document.createElement('a');
         escMessage.setAttribute('class', 'control');
         escMessage.textContent = '\nESC - Cancel';
         escMessage.addEventListener('click', (function(){
             this.command(COMMAND_CANCEL, {key: 'Esc'});
         }).bind(this));
-        this.displayElement.appendChild(escMessage);
+        this.displayElement.appendChild(escMessage);*/
     }},
     draw: {value: function (){
         /**
@@ -335,7 +338,7 @@ var infoMenu = Object.create(driver, {
             case COMMAND_PAGEDOWN:
                 this.advanceMessage(-1);
                 return true;
-            case COMMAND_PAGEDOWN:
+            case COMMAND_PAGEUP:
                 var oldPage = this.messageIndex;
                 this.advanceMessage(1);
                 if(this.messageIndex == oldPage){
@@ -631,11 +634,18 @@ var optionsMenu = Object.create(driver, {
                 this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
                 return true;
             default:
-                var selectionIndex = Math.min(this.optionsDisplayMax, characterIndex(options.key));
-                selectionIndex += this.optionsPage*this.optionsDisplayMax;
-                if(selectionIndex != -1 && selectionIndex < this.actionOptions.length){
-                    this.select(selectionIndex);
-                    return true;
+                if(options.key){
+                    var selectionIndex = Math.min(
+                        this.optionsDisplayMax, characterIndex(options.key)
+                    );
+                    selectionIndex += this.optionsPage*this.optionsDisplayMax;
+                    if(
+                        selectionIndex != -1 &&
+                        selectionIndex < this.actionOptions.length
+                    ){
+                        this.select(selectionIndex);
+                        return true;
+                    }
                 }
         }
         return true;

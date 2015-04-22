@@ -6,7 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = 'Alpha3';
+var VERSION = 'Alpha4';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
     // Directions:
@@ -21,27 +21,29 @@ var SOUTHEAST = 6;
 var SOUTHWEST = 10;
 var UP        = 16;
 var DOWN      = 32;
-    // Misc. shortcuts:
-var COMMAND_CANCEL    = 64;
     // Action Commands:
-var COMMAND_USE     = 65;
-var COMMAND_NEWGAME = 66;
-var COMMAND_GET     = 67;
-var COMMAND_DROP    = 68;
-var COMMAND_LOOK    = 69;
-var COMMAND_EQUIP   = 70;
-var COMMAND_UNEQUIP = 71;
-var COMMAND_STAIRS  = 72;
-var COMMAND_FIRE    = 73;
-var COMMAND_THROW   = 74;
-var COMMAND_MOVE    = 75;
-var COMMAND_WAIT    = 76;
-var COMMAND_HELP    = 77;
-var COMMAND_CLOSE   = 78;
-var COMMAND_PAGEDOWN= 79;
-var COMMAND_PAGEUP  = 80;
-var COMMAND_ENTER   = 81;
-var COMMAND_NONE    = 82;
+var COMMAND_CANCEL      = 64;
+var COMMAND_USE         = 65;
+var COMMAND_NEWGAME     = 66;
+var COMMAND_GET         = 67;
+var COMMAND_DROP        = 68;
+var COMMAND_LOOK        = 69;
+var COMMAND_EQUIP       = 70;
+var COMMAND_UNEQUIP     = 71;
+var COMMAND_STAIRS      = 72;
+var COMMAND_FIRE        = 73;
+var COMMAND_THROW       = 74;
+var COMMAND_MOVE        = 75;
+var COMMAND_WAIT        = 76;
+var COMMAND_HELP        = 77;
+var COMMAND_CLOSE       = 78;
+var COMMAND_PAGEDOWN    = 79;
+var COMMAND_PAGEUP      = 80;
+var COMMAND_ENTER       = 81;
+var COMMAND_NONE        = 82;
+var COMMAND_LEADERSHIP  = 83;
+var COMMAND_LEAD_ATTACK = 84;
+var COMMAND_LEAD_RUN    = 85;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;

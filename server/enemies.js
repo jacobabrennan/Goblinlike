@@ -58,6 +58,7 @@ var enemy = Object.create(actor, {
     forgetful: {value: 2, writable: true},
     erratic: {value: 0, writable: true},
     breedRate: {value: 0, writable: true},
+    sedentary: {value: false, writable: true},
     // Redefined methods:
     takeTurn: {value: function (callback){
         /**
@@ -206,29 +207,33 @@ var behaviorNormal = function (){
         this.breed();
         return;
     }
-    // Determine if target is in range of any skills. Use a skill.
-    var range = distance(this.x, this.y, target.x, target.y);
-    for(var skillI = 0; skillI < this.skills.length; skillI++){
-        var skillSkipChance = Math.random() < 1/2;
-        if(skillI == this.skills.length-1 || skillSkipChance){
-            var skillName = this.skills[skillI];
-            var indexedSkill = skillLibrary.getSkill(skillName);
-            if(!indexedSkill){ continue;}
-            if(indexedSkill.targetClass != TARGET_SELF){
-                if(range > indexedSkill.range){ continue;}
+    // Determine if target is in view and in range of any skills. Use a skill.
+    if(this.checkView(target)){
+        var range = distance(this.x, this.y, target.x, target.y);
+        for(var skillI = 0; skillI < this.skills.length; skillI++){
+            var skillSkipChance = Math.random() < 1/2;
+            if(skillI == this.skills.length-1 || skillSkipChance){
+                var skillName = this.skills[skillI];
+                var indexedSkill = skillLibrary.getSkill(skillName);
+                if(!indexedSkill){ continue;}
+                if(indexedSkill.targetClass != TARGET_SELF){
+                    if(range > indexedSkill.range){ continue;}
+                }
+                indexedSkill.use(this, target);
+                return;
             }
-            indexedSkill.use(this, target);
-            return;
         }
     }
     // If a skill was not used, move toward the target.
-    var pathArray = path;
-    var nextCoord = pathArray.shift();
-    if(!nextCoord){
-        return;
+    if(!this.sedentary){
+        var pathArray = path;
+        var nextCoord = pathArray.shift();
+        if(!nextCoord){
+            return;
+        }
+        var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
+        this.move(direction);
     }
-    var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
-    this.move(direction);
 };
 
 var snakePrototype = (function (){
@@ -411,6 +416,21 @@ library.registerEnemy(Object.create(spiderPrototype, {
     turnDelay: {value: 7/8, writable: true},
     baseHp: {value: 4}
     // Behavior:
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Floating Eye', writable: true},
+    // Display:
+    character: {value: "e", writable: true},
+    // Stats:
+    rewardExperience: {value: 18, writable: true},
+    vigilance: {value: 0},
+    erratic: {value: 0},
+    baseHp: {value: 3},
+    // Behavior:
+    sedentary: {value: true, writable: true},
+    behavior: {value: behaviorNormal, writable: true},
+    skills: {value: ["glare","attack"], writable: true}
 }));
 
 //==============================================================================

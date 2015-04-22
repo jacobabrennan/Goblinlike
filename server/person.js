@@ -176,38 +176,8 @@ var person = Object.create(actor, {
         oldMessage += ' \n '+message;
         this.messages[0] = oldMessage;
     }, writable: true},
-    gainItem: {value: function (newItem, single){
-        /**
-            This function handles the movement of items into the person's
-                inventory. It is a general house keeping function, perhaps
-                a candidate to be refactored into some other function.
-            It returns true if the item was added to inventory, false if it
-                could not be added. Currently always true, but could be false
-                in the future if inventory limits are implemented.
-         **/
-        // TODO: Implement inventory limits, perhaps in a plugin.
-        // Check current inventory + equipment weight.
-        if(newItem.stackCount > 1 && single){
-            newItem = newItem.unstack();
-        }
-        var carryWeight = this.getWeight(newItem);
-        var newWeight = newItem.weight;
-        var itemCount = single? 1 : newItem.stackCount;
-        newWeight *= itemCount;
-        carryWeight += newWeight;
-        if(carryWeight > this.carryCapacity()){
-            if(itemCount > 1){
-                var success = this.gainItem(newItem, true);
-                if(success){
-                    this.inform('You could not carry all of them.');
-                }
-                return success;
-            } else{
-                this.inform('You cannot carry that much weight.');
-                return false;
-            }
-        }
-        //
+    inventoryAdd: {value: function (newItem){
+        // Remove from current Location.
         newItem.unplace();
         // Handle stackable items.
         if(newItem.stackable){
@@ -230,11 +200,48 @@ var person = Object.create(actor, {
                 }
             }
         }
+        // Add to inventory.
         this.inventory.push(newItem);
         this.update('inventory');
         return true;
     }, writable: true},
-    looseItem: {value: function (oldItem){
+    getItem: {value: function (newItem, single){
+        /**
+            This function handles the movement of items into the person's
+                inventory. It is a general house keeping function, perhaps
+                a candidate to be refactored into some other function.
+            It returns true if the item was added to inventory, false if it
+                could not be added. Currently always true, but could be false
+                in the future if inventory limits are implemented.
+         **/
+        // TODO: Implement inventory limits, perhaps in a plugin.
+        // Check current inventory + equipment weight.
+        var oldStack;
+        if(newItem.stackCount > 1 && single){
+            oldStack = newItem;
+            newItem = newItem.unstack();
+        }
+        var carryWeight = this.getWeight();
+        var newWeight = newItem.getWeight();
+        carryWeight += newWeight;
+        if(carryWeight > this.carryCapacity()){
+            if(newItem.stackCount > 1){
+                var success = this.getItem(newItem, true);
+                if(success){
+                    this.inform('You could not carry all of them.');
+                }
+                return success;
+            } else{
+                this.inform('You cannot carry that much weight.');
+                if(oldStack){ oldStack.stack(newItem);}
+                return false;
+            }
+        }
+        //
+        this.inventoryAdd(newItem);
+        return true;
+    }, writable: true},
+    inventoryRemove: {value: function (oldItem){
         /**
             This function handles removal of an item from inventory, but not
                 the moving of that item to any other location. Dropping an item
@@ -252,12 +259,9 @@ var person = Object.create(actor, {
         var totalWeight = 0;
         for(var invIndex = 0; invIndex < this.inventory.length; invIndex++){
             var indexedItem = this.inventory[invIndex];
-            var itemWeight = indexedItem.weight;
-            if(indexedItem.stackCount > 0){
-                itemWeight *= indexedItem.stackCount;
-            }
+            var itemWeight = indexedItem.getWeight();
             totalWeight += itemWeight;
         }
         return totalWeight;
-    }}
+    }, writable: true}
 });

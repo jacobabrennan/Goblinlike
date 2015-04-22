@@ -73,6 +73,7 @@ client.preferences = {
     "y": COMMAND_NONE,
     "z": COMMAND_NONE,
     "F": COMMAND_THROW,
+    "L": COMMAND_LEADERSHIP,
     "?": COMMAND_HELP,
     "<": COMMAND_STAIRS,
     ">": COMMAND_STAIRS,

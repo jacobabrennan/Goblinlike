@@ -315,7 +315,7 @@ library.registerItem(Object.create(projectile, { // arrow
     // Display:
     character: {value: '\\', writable: true},
     // Stats:
-    weight: {value: 1/3, writable: true},
+    weight: {value: 1/4, writable: true},
     baseDamage: {value: 2, writable: true},
     damageSigma: {value: 0, writable: true},
     stackCount: {value: 5, writable: true},

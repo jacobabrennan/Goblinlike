@@ -138,7 +138,7 @@ var EQUIP_FINGER = 'finger';
             }
         }
         // Remove item from inventory.
-        success = this.looseItem(equipItem);
+        success = this.inventoryRemove(equipItem);
         if(!success){
             this.inform('the '+equipItem.description()+' could not be removed from inventory.');
             return false;
@@ -163,7 +163,7 @@ var EQUIP_FINGER = 'finger';
             return false;
         }
         // Move item from equipment into inventory.
-        var success = this.gainItem(equipItem);
+        var success = this.inventoryAdd(equipItem);
         if(!success){
             this.inform('The '+equipItem.description()+' could not be moved to inventory.');
             return false;
@@ -174,6 +174,25 @@ var EQUIP_FINGER = 'finger';
         this.update('equipment');
         return true;
     };
+    base.getWeight = (function (parentFunction){
+        return  function (){
+            var totalWeight = parentFunction.apply(this, arguments);
+            for(var key in this.equipment){
+                if(this.equipment.hasOwnProperty(key)){
+                    var equipItem = this.equipment[key];
+                    if(equipItem){
+                        var itemWeight = equipItem.getWeight();
+                        totalWeight += itemWeight;
+                    }
+                }
+            }
+            return totalWeight;
+        };
+    })(base.getWeight);
+    // End extend person
+})(person);
+
+(function (base){
     base.commandEquip = function (options){
         /**
             This command from the player directs the person to equip the specified
@@ -235,28 +254,4 @@ var EQUIP_FINGER = 'finger';
         // End turn.
         this.endTurn();
     };
-    base.getWeight = (function (parentFunction){
-        return function (newItem){
-            var totalWeight = parentFunction.apply(this, arguments);
-            for(var key in this.equipment){
-                if(this.equipment.hasOwnProperty(key)){
-                    var equipItem = this.equipment[key];
-                    if(equipItem){
-                        var itemWeight = equipItem.weight;
-                        if(equipItem.stackCount > 0){
-                            itemWeight *= equipItem.stackCount;
-                        }
-                        // TODO: Refactor this kludge someday.
-                        // It ensures that an item doesn't count twice when
-                        // moving from equipment to inventory.
-                        if(equipItem != newItem){
-                            totalWeight += itemWeight;
-                        }
-                    }
-                }
-            }
-            return totalWeight;
-        };
-    })(base.getWeight);
-    // End extend person
-})(person);
+})(hero);

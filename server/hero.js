@@ -41,7 +41,6 @@ var hero = Object.create(person, {
         return this;
     }, writable: true},
     die: {value: function (){
-        this.companions = null;
         this.inform('You have died.');
         gameManager.gameOver();
     }},
@@ -139,90 +138,6 @@ var hero = Object.create(person, {
         oldMessage += ' \n '+message;
         this.messages[0] = oldMessage;
     }, writable: true},
-    gainItem: {value: function (newItem, single){
-        /**
-            This function handles the movement of items into the person's
-                inventory. It is a general house keeping function, perhaps
-                a candidate to be refactored into some other function.
-            It returns true if the item was added to inventory, false if it
-                could not be added. Currently always true, but could be false
-                in the future if inventory limits are implemented.
-         **/
-        // TODO: Implement inventory limits, perhaps in a plugin.
-        // Check current inventory + equipment weight.
-        if(newItem.stackCount > 1 && single){
-            newItem = newItem.unstack();
-        }
-        var carryWeight = this.getWeight(newItem);
-        var newWeight = newItem.weight;
-        var itemCount = single? 1 : newItem.stackCount;
-        newWeight *= itemCount;
-        carryWeight += newWeight;
-        if(carryWeight > this.carryCapacity()){
-            if(itemCount > 1){
-                var success = this.gainItem(newItem, true);
-                if(success){
-                    this.inform('You could not carry all of them.');
-                }
-                return success;
-            } else{
-                this.inform('You cannot carry that much weight.');
-                return false;
-            }
-        }
-        //
-        newItem.unplace();
-        // Handle stackable items.
-        if(newItem.stackable){
-            // Check ammo.
-            var ammo = this.equipment[EQUIP_OFFHAND];
-            if(ammo && (ammo != newItem) && (ammo.name == newItem.name)){
-                ammo.stackCount += newItem.stackCount;
-                newItem.dispose();
-                this.update('equipment');
-                return true;
-            }
-            // Check inventory.
-            for(var index = 0; index < this.inventory.length; index++){
-                var indexedItem = this.inventory[index];
-                if(indexedItem.name == newItem.name){
-                    indexedItem.stackCount += newItem.stackCount;
-                    newItem.dispose();
-                    this.update('inventory');
-                    return true;
-                }
-            }
-        }
-        this.inventory.push(newItem);
-        this.update('inventory');
-        return true;
-    }, writable: true},
-    looseItem: {value: function (oldItem){
-        /**
-            This function handles removal of an item from inventory, but not
-                the moving of that item to any other location. Dropping an item
-                requires additional placement.
-            It returns true if the item was removed to inventory, false if it
-                could not be removed. Currently always true, but could be false
-                in the future.
-         **/
-        // TODO: Implement inventory limits, perhaps in a plugin.
-        arrayRemove(this.inventory, oldItem);
-        this.update('inventory');
-        return true;
-    }, writable: true},
-    getWeight: {value: function (){
-        var totalWeight = 0;
-        for(var invIndex = 0; invIndex < this.inventory.length; invIndex++){
-            var indexedItem = this.inventory[invIndex];
-            var itemWeight = indexedItem.weight;
-            if(indexedItem.stackCount > 0){
-                itemWeight *= indexedItem.stackCount;
-            }
-            totalWeight += itemWeight;
-        }
-        return totalWeight;
-    }},
     
     
 /*===========================================================================
@@ -265,15 +180,7 @@ var hero = Object.create(person, {
         // If enemy found, attack and end turn.
         if(obstruction && obstruction.type == TYPE_ACTOR){
             if(obstruction.faction & this.faction){
-                var oldX = this.x;
-                var oldY = this.y;
-                var oldId = this.levelId;
-                var obsX = obstruction.x;
-                var obsY = obstruction.y;
-                var obsId = obstruction.levelId;
-                this.unplace();
-                obstruction.place(oldX, oldY, oldId);
-                this.place(obsX, obsY, obsId);
+                mapManager.swapPlaces(this, obstruction);
                 this.endTurn();
             } else{
                 this.commandAttack({id: obstruction.id});
@@ -346,7 +253,7 @@ var hero = Object.create(person, {
         }
         // TODO: Other kinds of checks.
         if(theItem){
-            if(this.gainItem(theItem)){
+            if(this.getItem(theItem)){
                 this.inform('You obtain the '+theItem.description());
             } else{
                 this.inform("You couldn't obtain the "+theItem.description());
@@ -374,7 +281,7 @@ var hero = Object.create(person, {
         }
         // TODO: Other kinds of checks, such as by inventory index.
         if(theItem){
-            this.looseItem(theItem);
+            this.inventoryRemove(theItem);
             theItem.place(this.x, this.y, this.levelId);
             this.update('inventory');
             this.inform('You have dropped the '+theItem.description());
@@ -450,166 +357,25 @@ var hero = Object.create(person, {
         }
         // End turn.
         this.endTurn();
-    }, writable: true}
-});
-
-
-//==============================================================================
-
-(function (base){
-    base.constructor = (function (parentFunction){
-        return function (){
-            this.companions = [];
-            parentFunction.apply(this, arguments);
-            return this;
-        };
-    })(base.constructor);
-    base.setLevel = (function (parentFunction){
-        return function (){
-            var result = parentFunction.apply(this, arguments);
-            this.companions.forEach(function (theCompanion){
-                theCompanion.setLevel(this.level);
-            }, this);
-            return result;
-        };
-    })(base.setLevel);
-})(hero);
-var companion = Object.create(person, {
-    character: {value: 'g', writable: true},
-    faction: {value: FACTION_GOBLIN, writable: true},
-    color: {value: '#5c3', writable: true},
-    constructor: {value: function (){
-        person.constructor.apply(this, arguments);
-        this.color = 'rgb('+randomInterval(64,204)+','+randomInterval(102,255)+','+randomInterval(0,64)+')';
-        this.name = sWerd.name()+' (g)';
-        var theHero = gameManager.currentGame.hero;
-        if(theHero){ this.setLevel(theHero.level);}
-        
-        this.equip(Object.instantiate(itemLibrary.getItem('short bow')));
-        this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
-        
-        return this;
-    }},
-    adjustExperience: {value: function (amount){
+    }, writable: true},
+    commandLead: {value: function (options){
         /**
+            TODO: Document.
         **/
-        gameManager.currentGame.hero.adjustExperience(amount);
-        return;
-    }, writable: true},
-    activate: {value: function (){
-        /**
-         *  This function actives the enemy, basically "waking it up". It is
-         *  usually called when the player comes into view, makes loud noises
-         *  nearby, or otherwise alerts the enemy to their presense. It can
-         *  also be triggered by other non-player driven events, or even as
-         *  soon as the level is generated for some particularly vigilant
-         *  enemies.
-         *
-         *  It registers the enemy with the time manager.
-         *
-         *  It does not return a value.
-         **/
-        if(this.active){ return;}
-        gameManager.registerActor(this);
-        if(gameManager.currentGame.hero.companions.indexOf(this) == -1){
-            gameManager.currentGame.hero.companions.push(this);
+        var order = options.order;
+        switch(order){
+            case COMMAND_LEAD_RUN: this.companions.forEach(function(aGob){
+                    this.inform('You yell "Run away!"');
+                    aGob.adjustMoral(-this.influence());
+                }, this);
+                break;
+            case COMMAND_LEAD_ATTACK: this.companions.forEach(function(aGob){
+                    this.inform('You yell "Attack now!"');
+                    aGob.adjustMoral(this.influence());
+                }, this);
+                break;
         }
-        this.active = true;
-    }},
-    hurt: {value: function (){
-        this.activate();
-        return person.hurt.apply(this, arguments);
-    }, writable: true},
-    dispose: {value: function (){
-        if(gameManager.currentGame){
-            var companionI = gameManager.currentGame.hero.companions.indexOf(this);
-            if(companionI != -1){
-                gameManager.currentGame.hero.companions.splice(companionI, 1);
-            }
-        }
-        return person.dispose.apply(this, arguments);
-    }, writable: true},
-    behavior: {value: function (){
-        var result = this.pursueHero();
-        if(!result){
-            this.pursueEnemy();
-        }
-        return;
-    }, writable: true},
-    pursueHero: {value: function (){
-        var target = gameManager.currentGame.hero;
-        var pursueRange = Math.min(3, target.companions.length);
-        if(!target || (
-            (target.levelId == this.levelId) &&
-            distance(this.x, this.y, target.x, target.y) <= pursueRange
-        )){
-            return false;
-        }
-        var pathArray = findPath(this, target, 1);
-        if(!pathArray){
-            return false;
-        }
-        if(pathArray[0].x == this.x && pathArray[0].y == this.y && pathArray[0].levelId == this.levelId){
-            pathArray.shift();
-        }
-        var nextCoord = pathArray.shift();
-        if(!nextCoord){
-            return false;
-        }
-        if(nextCoord.levelId != this.levelId){
-            this.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
-            return true;
-        }
-        var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
-        // Check for Door.
-        var destination = mapManager.getTile(
-            nextCoord.x, nextCoord.y, this.levelId
-        );
-        if(destination.dense && destination.toggleDoor){
-            destination.toggleDoor(nextCoord.x, nextCoord.y, this);
-            return true;
-        }
-        // Else, move.
-        return this.move(direction);
-    }, writable: true},
-    pursueEnemy: {value: function (){
-        // Find a target, and the path to that target. If no target, deactivate.
-        var target;
-        var path;
-        var targetData = findTarget(this, this.faction);
-        if(targetData && this.checkView(targetData.target)){
-            target = targetData.target;
-            path = targetData.path;
-        } else{
-            return false;
-        }
-        // Determine if target is in range of equipped weapon. Attack.
-        var range = distance(this.x, this.y, target.x, target.y);
-        var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
-        if(weapon && weapon.shoot && weapon.range){
-            if(weapon.range >= range){
-                var success = weapon.shoot(
-                    this,
-                    directionTo(this.x, this.y, target.x, target.y),
-                    target
-                );
-                if(success || success === 0){
-                    return true;
-                }
-            }
-        // Else, attack with your hands.
-        }
-        if(range <= 1){
-            this.attack(target);
-            return true;
-        }
-        // If a skill was not used, move toward the target.
-        var pathArray = path;
-        var nextCoord = pathArray.shift();
-        if(!nextCoord){
-            return false;
-        }
-        var direction = directionTo(this.x, this.y, nextCoord.x, nextCoord.y);
-        return this.move(direction);
+        // End turn.
+        this.endTurn();
     }, writable: true}
 });

@@ -1,5 +1,8 @@
 TO DONE: Alpha4
     Remove ascending stairs from first level.
+    Enabled Companions.
+    Added Moral System.
+    Basic Leadership menu.
 TO DONE: Alpha3
     Included 'Mousetrap' library for cross platform keyboard control.
     Switched map drawing from html to canvas to improve game speed.
@@ -18,15 +21,34 @@ Haunt the House
 
 
 TODO(Beta):
+    Bugs:
+        Goblin's unhelpful dance.
+        Arrows don't stack when fire.
     Absolute Must:
         Look / Examine
         More Enemies
         Armor
         Enemies open doors
         enemies bash through doors
-        Leadership Menu
+        Companions:
+            + Basic Existence
+            + Follow the Leader
+            * Sometimes attack (based on moral)
+            + Moral
+                +Run away from bad things
+                +Zerg rush when confident
+            Get items if needed
+            Heal the leader if possible
+            Roles
+            * Leadership Menu
+                Follow Me!
+                * Run!
+                * Attack!
+                Collect Items
+            
     
     Should:
+        Dispose of old levels as no longer needed.
         * Optimize
             Pathfinding
         Spiders make webs, chase players.
@@ -67,6 +89,11 @@ TODO(Beta):
         + Clicking:
             + To move (Refactor)
             + Links in menu (like BYOND topics)
+    
+    Now Possible:
+        Enemies that attack moral.
+        Items that boost or drain moral.
+        Enemies that summon.
 
 
 Description of game:

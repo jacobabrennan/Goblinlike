@@ -92,13 +92,16 @@ var item = Object.create(movable, {
         this.stackCount += newItem.stackCount;
         newItem.dispose();
     }, writable: true},
+    getWeight: {value: function (){
+        return this.stackCount * this.weight;
+    }, writable: true},
     consume: {value: function (user){
         if(this.stackCount > 1){
             this.stackCount--;
         } else{
             if(user.inventory && user.inventory.indexOf(this) != -1){
                 user.update('inventory');
-                user.looseItem(this);
+                user.inventoryRemove(this);
             }
             this.dispose();
         }

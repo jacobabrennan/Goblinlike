@@ -61,6 +61,7 @@ client.drivers.gameplay = Object.create(driver, {
         }
         switch(command){
             case COMMAND_HELP   : this.drivers.menu.help(); break;
+            case COMMAND_LEADERSHIP: this.commandLeadership(); break;
             case COMMAND_WAIT   : this.commandWait(   ); break;
             case COMMAND_GET    : this.commandGet(    ); break;
             case COMMAND_EQUIP  : this.commandEquip(  ); break;
@@ -72,6 +73,8 @@ client.drivers.gameplay = Object.create(driver, {
             case COMMAND_USE    : this.commandUse(    ); break;
             case COMMAND_LOOK   : this.commandLook(   ); break;
             case COMMAND_CLOSE  : this.commandClose(  ); break;
+            case COMMAND_LEAD_RUN: this.commandLead({order: COMMAND_LEAD_RUN}); break;
+            case COMMAND_LEAD_ATTACK: this.commandLead({order: COMMAND_LEAD_ATTACK}); break;
         }
         return false;
     }},
@@ -404,6 +407,29 @@ client.drivers.gameplay.commandLook = function (){
     };
     // Display options to player.
     this.drivers.menu.options('Look at what?', viewNames, optionsCallback);
+};
+client.drivers.gameplay.commandLead = function (options){
+    this.activeTurn = false;
+    client.networking.sendMessage(COMMAND_LEADERSHIP, options);
+};
+client.drivers.gameplay.commandLeadership = function (options){
+    // Compile a list of names to be passed to the options menu.
+    var leadershipNames    = ['Attack!'          , 'Run!'          ];
+    var leadershipCommands = [COMMAND_LEAD_ATTACK, COMMAND_LEAD_RUN];
+    // Create a function to be called when player has selected an option.
+    var self = this;
+    var leadershipCallback = function (selectedName, selectedIndex){
+        // Once the player has selected:
+        self.activeTurn = false;
+        var theCommand = leadershipCommands[selectedIndex];
+        client.networking.sendMessage(COMMAND_LEADERSHIP, {order: theCommand});
+    };
+    // Send the item options to the player.
+    this.drivers.menu.options(
+        'Lead the Tribe',
+        leadershipNames,
+        leadershipCallback
+    );
 };
 client.drivers.gameplay.commandStairs = function (){
     /*

@@ -166,6 +166,7 @@ game = {
                 case COMMAND_FIRE:    this.hero.commandFire(options);    break;
                 case COMMAND_THROW:   this.hero.commandThrow(options);   break;
                 case COMMAND_CLOSE:   this.hero.commandClose(options);   break;
+                case COMMAND_LEADERSHIP: this.hero.commandLead(options); break;
             }
         }
     }

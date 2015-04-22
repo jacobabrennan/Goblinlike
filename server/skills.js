@@ -55,6 +55,19 @@ library.registerSkill(Object.create(skill, {
     }, writable: true}
 }));
 library.registerSkill(Object.create(skill, {
+    name: {value: 'glare', writable: true},
+    range: {value: 10, writable: true},
+    targetClass: {value: TARGET_ENEMY, writable: true},
+    use: {value: function (user, target){
+        target.hear('glare', 10, user, 'The '+user.name+' glares at you.');
+        if(target.adjustMoral){
+            var damageDone = target.adjustMoral(-10); // TODO: Stats
+            return damageDone;
+        }
+        return 0;
+    }, writable: true}
+}));
+library.registerSkill(Object.create(skill, {
     name: {value: 'breed', writable: true},
     targetClass: {value: TARGET_SELF, writable: true},
     use: {value: function (user, target){

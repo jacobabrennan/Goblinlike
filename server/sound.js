@@ -1,4 +1,8 @@
 actor.sound = function (tamber, amplitude, source, message){
+    if(!this.x || !this.y|| !this.levelId){
+        console.log('Problem: '+tamber+' / '+message)
+        return
+    }
     var hearers = getDijkstraContents(this, amplitude);
     for(var hIndex = 0; hIndex < hearers.length; hIndex++){
         var indexedHearer = hearers[hIndex];

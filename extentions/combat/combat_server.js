@@ -51,6 +51,7 @@ var DAMAGE_0000000000000000 =  0;
         }
         // --
         if(this.hp <= 0){
+            this.sound('death', 10, this, 'The '+this.name+' dies!');
             this.die();
         }
         return deltaHp;
@@ -66,7 +67,6 @@ var DAMAGE_0000000000000000 =  0;
             Etc.
          **/
         // TODO: Find a way to inform the attacker, even if they can't hear.
-        this.sound('death', 10, this, 'The '+this.name+' dies!');
         this.dispose();
     };
     actor.hurt = function (damage, damageType, attacker, proxy){
@@ -195,7 +195,7 @@ var DAMAGE_0000000000000000 =  0;
             }
             this.update('equipment');
         }
-        this.looseItem(theItem);
+        this.inventoryRemove(theItem);
         var damageDone = theItem.project(direction, throwOptions);
         return damageDone;
     };
@@ -357,6 +357,8 @@ var bow = Object.create(item, {
 item.project = function (direction, options){
     // Returns damage done, if any.
     delete this.projectDamageDone;
+    var originalStackable = this.stackable;
+    this.stackable = false;
     var thrower = options.thrower;
     if(thrower){
         this.place(thrower.x, thrower.y, thrower.levelId);
@@ -379,6 +381,8 @@ item.project = function (direction, options){
         rangeTraversed++;
     }
     this.dense = originalDensity;
+    this.stackable = originalStackable;
+    this.stackable = false;
     return this.projectDamageDone;
 };
 item.bump = (function (parentFunction){
@@ -416,6 +420,8 @@ var projectile = Object.create(weapon, {
     project: {value: function (direction, options){
         // Returns damage done, if any.
         delete this.projectDamageDone;
+        var originalStackable = this.stackable;
+        this.stackable = false;
         var thrower = options.thrower;
         if(options.forceTarget){
             var target = options.forceTarget;
@@ -456,6 +462,7 @@ var projectile = Object.create(weapon, {
         }
         this.thrower = null;
         this.dense = originalDensity;
+        this.stackable = originalStackable;
         if(this.ephemeral){
             this.dispose();
         }
