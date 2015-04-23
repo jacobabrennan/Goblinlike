@@ -65,18 +65,19 @@ var hero = Object.create(person, {
             It returns true if the movement is successful, and false otherwise.
          **/
         var success = person.move.apply(this, arguments);
-        //this.sound('footsteps', 5, this);
+        /*if(Math.random() < 1/15){
+            this.sound('footsteps', 15, this);
+        }*/
         this.getViewContents().forEach(function (theContent){
             if(typeof theContent.activate == 'function'){
                 theContent.activate();
             }
         }, this);
-        //var currentLevel = mapManager.getLevel(this.levelId);
-        //var contents = currentLevel.getRangeActors(this.x, this.y, 8);
-        /*contents.forEach(function (content, index){
-            if(typeof content.activate != 'function'){ return;}
-            content.activate();
-        }, this);*/
+        var currentLevel = mapManager.getLevel(this.levelId);
+        var contents = currentLevel.getRangeActors(this.x, this.y, 8);
+        contents.forEach(function (content, index){
+            content.hear('footsteps', 15, this);
+        }, this);
         return success;
     }, writable: true},
     // New Methods

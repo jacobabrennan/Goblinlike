@@ -25,13 +25,13 @@ var priorityQueue = {
 	},
 	isEmpty: function (){
         // Returns true if there are no enqueued values. False otherwise.
-		return !(this.leaves.length)
+		return !(this.leaves.length);
 	},
 	enqueue: function (aThing){
         // Adds aThing to the queue in it's proper place, as ordered by to the
         //     compare function.
         // Does not return anything.
-		var index2;
+		var index1;
 		var index2;
 		this.leaves.push(aThing);
 		index1 = this.leaves.length-1;
@@ -48,7 +48,7 @@ var priorityQueue = {
 	dequeue: function (){
         // Returns the 1st item in the queue as sorted by the compare function.
 		if(!this.leaves.length){ return undefined;}
-		var result = this.leaves[0]
+		var result = this.leaves[0];
 		this.remove(0);
 		return result;
 	},
@@ -56,7 +56,7 @@ var priorityQueue = {
         // Removes the value indexed by index while maintaining queue sorting
         //     as ordered by the compare function.
         // Does not return anything.
-		if(index >= this.leaves.length){ return}
+		if(index >= this.leaves.length){ return;}
 		var indexedByI = this.leaves[index];
 		var lastItem = this.leaves[this.leaves.length-1];
 		this.leaves[index] = lastItem;

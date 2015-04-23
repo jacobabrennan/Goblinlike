@@ -174,11 +174,11 @@ mapManager.levelGenerator = {
         // Fill Level with Enemies:
         var enemyPoints = (this.width * this.height * this.depth) / 128; // TODO: MAGIC NUMBERS! Enemy Density.
         enemyPoints *= 10; // TODO: MAGIC NUMBERS! 100 to go up a level, 10 points per enemy per level.
-        while(enemyPoints >= 10 && this.rooms.length > 1){
+        while(enemyPoints >= 10/* && this.rooms.length > 1*/){
             var mean = this.depth*10;
             var attemptedWeight = Math.max(5, Math.round(gaussRandom(mean, mean/3)));
             var enemyPrototype = enemyLibrary.getEnemyByWeight(attemptedWeight);
-            var actualWeight = enemyPrototype.rewardExperience;
+            var actualWeight = enemyPrototype.placementWeight;
             if(!enemyPrototype){
                 break;
             }
@@ -186,12 +186,15 @@ mapManager.levelGenerator = {
             var randomEnemy = Object.instantiate(enemyPrototype);
             var placed = false;
             while(!placed){
-                var randomRoom = arrayPick(this.rooms);
+                /*var randomRoom = arrayPick(this.rooms);
                 if(randomRoom == upRoom){
                     continue;
                 }
                 var xPos = randomRoom.x + randomInterval(0,randomRoom.width-1);
                 var yPos = randomRoom.y + randomInterval(0,randomRoom.height-1);
+                */
+                var xPos = randomInterval(0, this.width);
+                var yPos = randomInterval(0, this.width);
                 placed = randomEnemy.place(xPos, yPos, newLevel.id);
             }
         }

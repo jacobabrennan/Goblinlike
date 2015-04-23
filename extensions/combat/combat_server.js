@@ -23,6 +23,7 @@ var DAMAGE_0000000000000000 =  0;
     actor.maxHp = function (){
         return this.baseHp;
     };
+    actor.baseAttack = 1;
     // Redefined Functions
     actor.constructor = (function (parentFunction){
         return function (){
@@ -111,7 +112,6 @@ var DAMAGE_0000000000000000 =  0;
          *  It returns the amount of damage actually done, positive indicates
          *      a loss of HP.
          **/
-        // TODO: Implementation with stats.
         var damageDone;
         // If a weapon is equipped, attack with that.
         var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
@@ -119,7 +119,7 @@ var DAMAGE_0000000000000000 =  0;
             damageDone = weapon.attack(this, target);
         // Else, attack with your hands.
         } else{
-            var damage = 1; // TODO: stats here, for example.
+            var damage = this.baseAttack;
             var damageType = DAMAGE_PHYSICAL;
             damageDone = target.hurt(damage, damageType, this);
         }
@@ -341,7 +341,7 @@ var bow = Object.create(item, {
         if(!ammo){
             attacker.inform('You have no ammo equipped.');
             return null;
-        } else if(ammo.name != this.ammoType){ // TODO: Ammo types, see above.
+        } else if(ammo.ammoType != this.ammoType){ // TODO: Ammo types, see above.
             attacker.inform('You need to equip an '+this.ammoType+'.');
             return null;
         } else{
@@ -380,6 +380,7 @@ item.project = function (direction, options){
         this.place(thrower.x, thrower.y, thrower.levelId);
     }
     if(!this.x || !this.y || !this.levelId){
+        this.stackable = originalStackable;
         return 0;
     }
     var originalDensity = this.dense;
@@ -448,12 +449,14 @@ var projectile = Object.create(weapon, {
             if(this.ephemeral){
                 this.dispose();
             }
+            this.stackable = originalStackable;
             return this.projectDamageDone;
         }
         if(thrower){
             this.place(thrower.x, thrower.y, thrower.levelId);
         }
         if(!this.x || !this.y || !this.levelId){
+            this.stackable = originalStackable;
             return 0;
         }
         if(options.damageScale){

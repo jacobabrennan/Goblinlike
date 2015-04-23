@@ -8,7 +8,8 @@ var library = {
         if(!prototypeName || this.enemies[prototypeName]){
             console.log('Problem: Non-unique name for enemy prototype '+prototypeName);
         }
-        var enemyWeight = newPrototype.rewardExperience;
+        var enemyWeight = newPrototype.placementWeight || newPrototype.rewardExperience;
+        newPrototype.placementWeight = enemyWeight;
         if(enemyWeight){
             var weightClass = this.enemyWeights[enemyWeight];
             if(!weightClass){
@@ -44,21 +45,29 @@ var library = {
 };
 
 var enemy = Object.create(actor, {
+    placementWeight: {value: undefined, writable: true},
     // Redefined properties:
     character: {value: 'š', writable: true},
     viewRange: {value: 7, writable: true},
     turnDelay: {value: 1, writable: true},
     // Newly defined Properties:
     rewardExperience: {value: undefined, writable: true},
+    baseAttack: {value: 1, writable: true},
     faction: {value: FACTION_ENEMY, writable: true},
     behavior: {value: undefined, writable: true},
     active: {value: false, writable: true},
     skills: {value: ["attack"], writable: true},
+    undead: {value: false, writable: true},
     vigilance: {value: 3, writable: true},
+        // The minimum distance from which the enemy can be activated by sound.
     forgetful: {value: 2, writable: true},
+        // How many turns, on average, before the enemy deactivates.
     erratic: {value: 0, writable: true},
+        // The percentage of movements that will be random.
     breedRate: {value: 0, writable: true},
+        // The percentage chance that the enemy will clone itself on a turn.
     sedentary: {value: false, writable: true},
+        // True if the enemy does not move.
     // Redefined methods:
     takeTurn: {value: function (callback){
         /**
@@ -100,7 +109,8 @@ var enemy = Object.create(actor, {
         }
     }, writable: true},
     hurt: {value: (function (parentFunction){
-        return function (){
+        return function (amount){
+            console.log('('+this.character+')'+this.name+': '+amount)
             this.activate();
             return parentFunction.apply(this, arguments);
         };
@@ -178,7 +188,7 @@ var behaviorErratic = function (){
         NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
     this.move(direction);
 };
-var behaviorNormal = function (){
+var behaviorNormal = enemy.behavior = function (){
     /**
         This is an enemy behavior function. It is called every time the enemy is
         given a turn, and determines what the enemy will do with that turn. The
@@ -208,20 +218,21 @@ var behaviorNormal = function (){
         return;
     }
     // Determine if target is in view and in range of any skills. Use a skill.
-    if(this.checkView(target)){
-        var range = distance(this.x, this.y, target.x, target.y);
-        for(var skillI = 0; skillI < this.skills.length; skillI++){
-            var skillSkipChance = Math.random() < 1/2;
-            if(skillI == this.skills.length-1 || skillSkipChance){
-                var skillName = this.skills[skillI];
-                var indexedSkill = skillLibrary.getSkill(skillName);
-                if(!indexedSkill){ continue;}
-                if(indexedSkill.targetClass != TARGET_SELF){
-                    if(range > indexedSkill.range){ continue;}
-                }
-                indexedSkill.use(this, target);
-                return;
+    var range = distance(this.x, this.y, target.x, target.y);
+    for(var skillI = 0; skillI < this.skills.length; skillI++){
+        var skillSkipChance = Math.random() < 1/2;
+        if(skillI == this.skills.length-1 || skillSkipChance){
+            var skillName = this.skills[skillI];
+            var indexedSkill = skillLibrary.getSkill(skillName);
+            if(!indexedSkill){ continue;}
+            if(indexedSkill.targetClass != TARGET_SELF){
+                if(range > indexedSkill.range){ continue;}
             }
+            if(!indexedSkill.targetClass & TARGET_RANGE){
+                if(this.checkView(target)){ continue;}
+            }
+            indexedSkill.use(this, target);
+            return;
         }
     }
     // If a skill was not used, move toward the target.
@@ -366,7 +377,6 @@ var snakePrototype = (function (){
     });
 })();
 
-// rat, giant centipede
 library.registerEnemy(Object.create(enemy, {
     // Id:
     name: {value: 'White Rat', writable: true},
@@ -379,7 +389,6 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 1},
     // Behavior:
     breedRate: {value: 1/8, writable: true},
-    behavior: {value: behaviorNormal, writable: true},
     skills: {value: ["attack"], writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
@@ -390,46 +399,46 @@ library.registerEnemy(Object.create(enemy, {
     // Stats:
     rewardExperience: {value: 10, writable: true},
     vigilance: {value: 10},
-    baseHp: {value: 3},
+    erratic: {value: 1/8},
+    baseHp: {value: 3}
     // Behavior:
-    behavior: {value: behaviorNormal, writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
-    name: {value: 'Red Beetle', writable: true},
+    name: {value: 'Cave Beetle', writable: true},
     // Display:
-    color: {value: "#f00", writable: true},
+    color: {value: "#666", writable: true},
     character: {value: "b", writable: true},
     // Stats:
     rewardExperience: {value: 10, writable: true},
-    turnDelay: {value: 1.7},
-    baseHp: {value: 1},
+    turnDelay: {value: 2},
+    baseAttack: {value: 2, writable: true},
+    baseHp: {value: 8}
     // Behavior:
-    skills: {value: ["breath fire", "attack"], writable: true},
-    behavior: {value: behaviorNormal, writable: true}
+    //skills: {value: ["breath fire", "attack"], writable: true},
 }));
 library.registerEnemy(Object.create(snakePrototype, {
     // Id:
-    name: {value: 'Worm', writable: true},
+    name: {value: 'Centipede', writable: true},
     // Display:
-    character: {value: 'w', writable: true},
-    color: {value: '#a53', writable: true},
+    character: {value: 'c', writable: true},
+    //color: {value: '', writable: true},
     bodyCharacter: {value: 'o', writable: true},
-    bodyColor: {value: '#a53', writable: true},
+    //bodyColor: {value: '#a53', writable: true},
     bodyBackground: {value: undefined, writable: true},
     // Stats:
     rewardExperience: {value: 20, writable: true},
-    turnDelay: {value: 2.5, writable: true},
-    baseHp: {value: 10},
+    turnDelay: {value: 1/2, writable: true},
+    baseHp: {value: 15, writable: true},
+    erratic: {value: 1/4, writable: true},
     // Behavior:
-    bodyLength: {value: 7, writable: true}
+    bodyLength: {value: 3, writable: true}
 }));
 var spiderPrototype = (function (){
     return Object.create(enemy, {
         name: {value: 'Tarantula', writable: true},
         character: {value: 'T', writable: true},
-        color: {value: '#963', writable: true},
-        behavior: {value: behaviorNormal, writable: true}
+        color: {value: '#963', writable: true}
     });
 })();
 library.registerEnemy(Object.create(spiderPrototype, {
@@ -452,10 +461,9 @@ library.registerEnemy(Object.create(enemy, {
     rewardExperience: {value: 18, writable: true},
     vigilance: {value: 0},
     erratic: {value: 0},
-    baseHp: {value: 3},
+    baseHp: {value: 10},
     // Behavior:
     sedentary: {value: true, writable: true},
-    behavior: {value: behaviorNormal, writable: true},
     skills: {value: ["glare","attack"], writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
@@ -474,6 +482,65 @@ library.registerEnemy(Object.create(enemy, {
         behaviorErratic.call(this);
         skillLibrary.getSkill('acid trap').use(this);
     }, writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Yellow Mold', writable: true},
+    placementWeight: {value: 30, writable: true},
+    // Display:
+    character: {value: "m", writable: true},
+    color: {value: "#990", writable: true},
+    background: {value: "#440", writable: true},
+    // Stats:
+    rewardExperience: {value: 10, writable: true},
+    vigilance: {value: 1/2},
+    sedentary: {value: 1/2},
+    baseHp: {value: 3},
+    // Behavior:
+    breedRate: {value: 1/10, writable: true},
+    skills: {value: ["attack"], writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Minor Imp', writable: true},
+    // Display:
+    character: {value: "i", writable: true},
+    color: {value: "#f00", writable: true},
+    // Stats:
+    rewardExperience: {value: 30, writable: true},
+    baseAttack: {value: 3, writable: true},
+    vigilance: {value: 10},
+    erratic: {value: 1/8},
+    baseHp: {value: 20},
+    // Behavior:
+    skills: {value: ["teleport","attack"], writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Skeletal Dwarf', writable: true},
+    // Display:
+    character: {value: "s", writable: true},
+    color: {value: "#fd9", writable: true},
+    // Stats:
+    baseAttack: {value: 4, writable: true},
+    rewardExperience: {value: 40, writable: true},
+    forgetful: {value: 15, writable: true},
+    baseHp: {value: 30}
+    // Behavior:
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Zombie Dwarf', writable: true},
+    // Display:
+    character: {value: "z", writable: true},
+    color: {value: "#fd9", writable: true},
+    // Stats:
+    rewardExperience: {value: 45, writable: true},
+    baseAttack: {value: 7, writable: true},
+    forgetful: {value: 15, writable: true},
+    turnDelay: {value: 2, writable: true},
+    baseHp: {value: 60}
+    // Behavior:
 }));
 
 //==============================================================================

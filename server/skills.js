@@ -55,6 +55,33 @@ library.registerSkill(Object.create(skill, {
     }, writable: true}
 }));
 library.registerSkill(Object.create(skill, {
+    name: {value: 'teleport', writable: true},
+    range: {value: 10, writable: true},
+    targetClass: {value: TARGET_ENEMY|TARGET_RANGE, writable: true},
+    use: {value: function (user, target){
+        var range = 3;
+        if(distance(user.x,user.y, target.x,target.y) <= range){ return false;}
+        var possibles = [];
+        for(var posY = target.y-range; posY <= target.y+range; posY++){
+            for(var posX = target.x-range; posX <= target.x+range; posX++){
+                if(distance(posX, posY, target.x, target.y) >= 2){
+                    possibles.push({x: posX, y: posY});
+                }
+            }
+        }
+        while(possibles.length){
+            var rI = randomInterval(0, possibles.length-1);
+            var testDest = possibles[rI];
+            possibles.splice(rI, 1);
+            if(user.place(testDest.x, testDest.y, target.levelId)){
+                return true;
+            }
+            console.log(possibles.length);
+        }
+        return false;
+    }, writable: true}
+}));
+library.registerSkill(Object.create(skill, {
     name: {value: 'glare', writable: true},
     range: {value: 10, writable: true},
     targetClass: {value: TARGET_ENEMY, writable: true},
@@ -112,9 +139,9 @@ library.registerSkill((function (){
         trigger: {value: function (content){
             if(content.type != TYPE_ACTOR){ return;}
             if(content.faction & this.faction){ return;}
+            content.hear('acid', 10, null, "You're splashed with acid!");
             content.hurt(5, DAMAGE_ACID);
             this.dispose();
-            
         }, writable: true}
     });
     return Object.create(skill, {

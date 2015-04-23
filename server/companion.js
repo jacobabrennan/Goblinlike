@@ -80,7 +80,8 @@ var companion = Object.create(person, {
     character: {value: 'g', writable: true},
     faction: {value: FACTION_GOBLIN, writable: true},
     color: {value: '#5c3', writable: true},
-    companion: {value: true, witable: true},
+    companion: {value: true, writable: true},
+    mode: {value: MODE_FOLLOW, writable: true},
     constructor: {value: function (){
         person.constructor.apply(this, arguments);
         var colorR = randomInterval(64,204);
@@ -157,6 +158,17 @@ var companion = Object.create(person, {
             person.bumped.apply(this, arguments);
         }
     }},
+    unequip: {value: function (oldItem){
+        var success = person.unequip.apply(this, arguments);
+        if(success){
+            success = this.inventoryRemove(oldItem);
+            if(success){
+                success = oldItem.place(this.x, this.y, this.levelId);
+                return success;
+            }
+        }
+        return false;
+    }},
     behavior: {value: function (){
         var result = false;
         if(this.terrified){
@@ -164,6 +176,7 @@ var companion = Object.create(person, {
         }
         if(!result){ result = this.pursueHero( );}
         if(!result){ result = this.pursueEnemy();}
+        if(!result){ result = this.pursueLoot( );}
         return;
     }, writable: true},
     pursueHero: {value: function (){
@@ -262,8 +275,8 @@ var companion = Object.create(person, {
         var theHero = gameManager.currentGame.hero;
         var deltaYH = theHero.y - this.y;
         var deltaXH = theHero.x - this.x;
-        vector.x += deltaXH? ((theHero.level*10) / (deltaXH)) : 0;
-        vector.y += deltaYH? ((theHero.level*10) / (deltaYH)) : 0;
+        vector.x += deltaXH? (1 / (deltaXH)) : 0;
+        vector.y += deltaYH? (1 / (deltaYH)) : 0;
         var dirVert = 0;
         var dirHor  = 0;
         if(vector.x > 0){ dirHor  |=  EAST;}
@@ -282,5 +295,96 @@ var companion = Object.create(person, {
             success = this.move(primaryDir) || this.move(secondaryDir);
         }
         return true;
+    }, writable: true},
+    pursueLoot: {value: function (){
+        var viewContents = this.getViewContents();
+        var targetLoot;
+        var highDesire = 0;
+        var targetDistance;
+        for(var lootI = 0; lootI < viewContents.length; lootI++){
+            var theLoot = viewContents[lootI];
+            if(theLoot.type != TYPE_ITEM){ continue;}
+            var lootDesire = this.itemDesire(theLoot);
+            if(lootDesire <= 0){ continue;}
+            var lootDist = distance(theLoot.x, theLoot.y, this.x, this.y);
+            var lootWeight = lootDesire / lootDist;
+            if(lootWeight > highDesire){
+                targetLoot = theLoot;
+                highDesire = lootWeight;
+                targetDistance = lootDist;
+                continue;
+            }
+        }
+        if(!targetLoot){ return false;}
+        if(targetDistance <= 1){
+            this.getItem(targetLoot);
+            if(this.inventory.indexOf(targetLoot) != -1){
+                this.equip(targetLoot);
+            }
+            return true;
+        }
+        var direction = directionTo(this.x, this.y, targetLoot.x, targetLoot.y);
+        // Else, move.
+        return this.move(direction);
+    }, writable: true},
+    itemDesire: {value: function (theItem){
+        var desire = 0;
+        var desireMultiplier = 1;
+        // Check wand, and charges.
+        if(theItem.hasOwnProperty('charges')){
+            desireMultiplier = theItem.charges;
+            if(desireMultiplier === 0){ return desire;}
+        }
+        // Check Equipment.
+        var thePlace = theItem.placement;
+        if(thePlace == EQUIP_MAINHAND){
+            // Check Main Equip; mostly weapons, but also bows.
+            if(theItem.weight > this.strength){ return desire;}
+            var ownWeapon = this.equipment[EQUIP_MAINHAND];
+            if(ownWeapon){
+                if(ownWeapon.damageScale && theItem.damageScale){
+                    // Check Weapon.
+                    desire += (theItem.damageScale - ownWeapon.damageScale)*5;
+                } else if(ownWeapon.baseDamabe && theItem.baseDamage){
+                    // Check Bow.
+                    desire += theItem.baseDamage - ownWeapon.baseDamage;
+                }
+            }
+        } else if(thePlace){
+            // Check armor and ammo.
+            var skipCheck = false;
+            var ownEquip = this.equipment[thePlace];
+            if(thePlace == EQUIP_OFFHAND){
+                // Check ammo.
+                var ownBow = this.equipment[EQUIP_MAINHAND];
+                if(ownBow && ownBow.damageScale && ownBow.ammoType){
+                    if(ownBow.ammoType == theItem.ammoType){
+                        if(ownEquip && ownEquip.ammoType == ownBow.ammoType &&
+                            (ownEquip.name != theItem.name)
+                        ){
+                            desire += theItem.baseDamage - ownEquip.baseDamage;
+                        } else{
+                            desire += theItem.stackCount || 1;
+                        }
+                        
+                    } else{
+                        desire = 0;
+                    }
+                    skipCheck = true;
+                }
+            }
+            if(!skipCheck){
+                // Check armor.
+                var ownValue = 0;
+                if(ownEquip){
+                    ownValue = (ownEquip.defense || 0) + (10*ownEquip.evade || 0);
+                }
+                var itemValue = (theItem.defense || 0) + (10*theItem.evade || 0);
+                desire += itemValue - ownValue;
+            }
+        }
+        // Return desire.
+        console.log('Desire '+theItem.name+': '+desire*desireMultiplier);
+        return desire * desireMultiplier;
     }, writable: true}
 });

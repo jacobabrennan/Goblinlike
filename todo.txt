@@ -1,3 +1,4 @@
+
 Enemy Types:
 
 * Standard:
@@ -15,11 +16,11 @@ Bosses          : d dragon, B Balrog, D Ancient Dragon
 Unknown         : a Ant, q quasit, A Ant Lion
 
 1 (Training Enemies):
-    *rat, *Ant1, *ruttle, bat, snake, giant centipede
+    *rat, *Ant1, *ruttle, bat, snake, *giant centipede
 2 (Can kill you if you are not careful):
-    Ant2, skull, *eyeball, scorpion, skeleton, skuzzy
+    Ant2, skull, *eyeball, scorpion, skeleton, *ksuzzy
 3 (Approach with Caution):
-    centipede2, worm, mold, spider1, imp, mummy, ghost, bombshell, antLion
+    centipede2, worm, *mold, spider1, imp, mummy, ghost, bombshell, antLion
 4 (Avoid. Requires a plan):
     spider2, wight, firewall, wraith, blob
 5 (Run. Just run):
@@ -27,36 +28,44 @@ Unknown         : a Ant, q quasit, A Ant Lion
 
     frog, golem, jackal, Cube, Fly, Jelly, Reptile,
 
-aA - giant ant
-bB - bat, beetle, Blob
-cC - centipede
+aA + giant ant
+bB - bat, +beetle, Blob
+cC + centipede
 dD - skeletal dwarf, Demon
-eE - floating eye
+eE + floating eye
 fF - frog, Fire
-gG - goblin
+gG + goblin
 hH - 
-iI - Imp
+iI + Imp
 jJ - 
-kK - ksuzzy
+kK + ksuzzy
 lL - Lich
-mM - mold, Mummy
+mM - +mold, Mummy
 nN - 
 oO - 
 pP - 
 qQ - 
-rR - rat
+rR + rat
 sS - snake, skull, scorpion, skeleton
 tT - turtle, Tarantula
 uU - 
 vV - Vampire
-wW - worm, Wight, Wraith
+wW - +worm, Wight, Wraith
 xX - 
 yY - 
 zZ - zombie dwarf
 
+skeleton, zombie dwarf, Mummy,
+Wight, Wraith,
+Vampire, Lich
 
+TO DONE: Alpha6
+    Companion AI. Goblins get and equip equipment items.
+    Undead Enemies.
+    Balance.
 TO DONE: Alpha5
     Armor, Shields
+    kSuzzy
 TO DONE: Alpha4
     Remove ascending stairs from first level.
     Enabled Companions.
@@ -82,22 +91,20 @@ Haunt the House
 TODO(Beta):
     Bugs:
         Goblin's unhelpful dance.
-        Arrows don't stack when fire.
+        Arrows don't stack when fired.
     Absolute Must:
+        Camp
+        Status Bar
+        Advanced Goblin Moral (Seek out when moral is high)
+        Simple Enemy persistence (Go toward hero)
+        Enemies open doors
+        enemies bash through doors
         Look / Examine
         More Enemies
         More Armor
-        Enemies open doors
-        enemies bash through doors
         Companions:
-            + Basic Existence
-            + Follow the Leader
-            * Sometimes attack (based on moral)
-            + Moral
-                +Run away from bad things
-                +Zerg rush when confident
-            Get items if needed
             Heal the leader if possible
+            Persist in actions (no hard distance boundry preventing planning)
             Roles
             * Leadership Menu
                 Follow Me!
@@ -107,6 +114,7 @@ TODO(Beta):
             
     
     Should:
+        Goblins equip items the player throws at them.
         * Optimize
             Pathfinding
         Spiders make webs, chase players.
@@ -121,6 +129,7 @@ TODO(Beta):
             About
     
     Later:
+        Goblins get, keep, and use consumable items.
         charms, amulets
         '.' to run.
         Saving / Loading
@@ -132,6 +141,7 @@ TODO(Beta):
             Look into tight coupling in targeting system.
             
     Done:
+        + Goblins get items (Equipment)
         + Worm Bodies attack
         + Armor, Shields
         + Dispose of old levels as no longer needed.

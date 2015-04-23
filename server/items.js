@@ -179,13 +179,6 @@ library.registerItem(Object.create(potion, {
         }
         potion.effect.apply(this, arguments);
     }}
-}));library.registerItem(Object.create(item, {
-    baseValue: {value: 1, writable: true},
-    character: {value: '('},
-    name: {value: 'Epic Shield'},
-    placement: {value: EQUIP_OFFHAND},
-    defense: {value: 2},
-    evade: {value: 1/2}
 }));
 library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
     potency: {value: 30, writable: true},
@@ -285,7 +278,7 @@ library.registerItem(Object.create(weapon, { // Cleaver
     character: {value: '|', writable: true},
     // Stats:
     weight: {value: 2, writable: true},
-    baseDamage: {value: 400, writable: true},
+    baseDamage: {value: 4, writable: true},
     damageSigma: {value: 1, writable: true}
     // Behavior:
 }));
@@ -327,11 +320,43 @@ library.registerItem(Object.create(projectile, { // arrow
     damageSigma: {value: 0, writable: true},
     stackCount: {value: 5, writable: true},
     // Behavior:
+    ammoType : {value: 'arrow', writable:true},
     placement: {value: EQUIP_OFFHAND, writable:true},
     stackable: {value: true, writable: true},
     ephemeral: {value: false, writable: true}
 }));
 
+
+//== Armor =====================================================================
+
+library.registerItem(Object.create(item, {
+    baseValue: {value: 2, writable: true},
+    character: {value: '('},
+    name: {value: 'LeatherShield'},
+    placement: {value: EQUIP_OFFHAND},
+    evade: {value: 1/10}
+}));
+library.registerItem(Object.create(item, {
+    baseValue: {value: 3, writable: true},
+    character: {value: '('},
+    name: {value: 'WoodShield'},
+    placement: {value: EQUIP_OFFHAND},
+    evade: {value: 1/8}
+}));
+library.registerItem(Object.create(item, {
+    baseValue: {value: 3, writable: true},
+    character: {value: ']'},
+    name: {value: 'LeatherArmor'},
+    placement: {value: EQUIP_BODY},
+    defense: {value: 1}
+}));
+library.registerItem(Object.create(item, {
+    baseValue: {value: 2, writable: true},
+    character: {value: '^'},
+    name: {value: 'LeatherCap'},
+    placement: {value: EQUIP_HEAD},
+    defense: {value: 1/2}
+}));
 
 //==============================================================================
     return library; // Return library, close namespace.
