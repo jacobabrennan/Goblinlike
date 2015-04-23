@@ -243,6 +243,8 @@ var snakePrototype = (function (){
             enemy.constructor.apply(this, arguments);
             var head = options.head;
             this.headId = head.id;
+            this.name = head.name;
+            this.faction = head.faction;
             if(head.bodyCharacter){
                 this.character = head.bodyCharacter;
             }
@@ -255,6 +257,24 @@ var snakePrototype = (function (){
             return this;
         }, writable: true},
         activate: {value: function (){}},
+        attackNearby: {value: function (){
+            if(!(this.levelId && this.x && this.y)){ return;}
+            var currentLevel = mapManager.getLevel(this.levelId);
+            var rangeContent = currentLevel.getRangeContents(this.x, this.y, 1);
+            var target;
+            while(!target && rangeContent.length){
+                var rI = randomInterval(0, rangeContent.length-1);
+                var rTarget = rangeContent[rI];
+                rangeContent.splice(rI,1);
+                if(rTarget.faction&this.faction){ continue;}
+                if(rTarget.type != TYPE_ACTOR){ continue;}
+                target = rTarget;
+                break;
+            }
+            if(target){
+                this.attack(target);
+            }
+        }, writable: true},
         hurt: {value: function (){
             var head = mapManager.idManager.get(this.headId);
             return head.hurt.apply(head, arguments);
@@ -336,7 +356,13 @@ var snakePrototype = (function (){
             }
             enemy.dispose.apply(this, arguments);
         }, writable: true},
-        behavior: {value: behaviorNormal, writable: true}
+        behavior: {value: function (){
+            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+                var bodySegment = this.body[bodyI];
+                bodySegment.attackNearby();
+            }
+            behaviorNormal.apply(this, arguments);
+        }, writable: true}
     });
 })();
 
@@ -432,6 +458,23 @@ library.registerEnemy(Object.create(enemy, {
     behavior: {value: behaviorNormal, writable: true},
     skills: {value: ["glare","attack"], writable: true}
 }));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Ksuzzy', writable: true},
+    // Display:
+    character: {value: "k", writable: true},
+    color: {value: '#4fc', writable: true},
+    // Stats:
+    rewardExperience: {value: 18, writable: true},
+    vigilance: {value: 0},
+    baseHp: {value: 3},
+    // Behavior:
+    sedentary: {value: true, writable: true},
+    behavior: {value: function (){
+        behaviorErratic.call(this);
+        skillLibrary.getSkill('acid trap').use(this);
+    }, writable: true}
+}));
 
 //==============================================================================
     return library; // Return library, close namespace.
@@ -483,7 +526,7 @@ Hobgoblin, Jelly, Beetle, Lich, Mummy, Ooze, Person, Quasusdkfthug, Reptile,
 Scorpion, Troll, Umber Hulk, Vampire, Wight, Wraith, Xorn, Yeti
 
 a - Ant
-b - Bat, Bear
+b - Bat
 C - Centipede
 d - dragon
 e - eye
@@ -533,12 +576,26 @@ X - Xorn
 Y - Yeti
 Z -
 
+Enemy Types:
 
+* Standard:
+    C Centipede, f frog, j jackal, k kobold, o orc / ogre, s skeleton, y yeek,
+    z zombie, H Hobgoblin, M Mummy, R Reptile, S Scorpion, T Troll, Y Yeti
+* Heavy           : g golem, K Beetle
+* Breeders        : r rodent, l giant louse, r rodent, w worm, F Fly, O Ooze
+* Trappers        : e eye, m mold, J Jelly, Q Quylthulg
+Sappers         : t tick, G ghost, U Umber Hulk, W Wraith, i icky thing
+Skills          : p person, E Elemental, V Vampire, P Giant person
+Hunters         : C Cube, L Lich, X Xorn
+Fragile Blasters: b Bat, F Fly
+* Fragile Brawlers: h harpy
+Bosses          : d dragon, B Balrog, D Ancient Dragon
+Unknown         : a Ant, q quasit, A Ant Lion
 
 1 (Training Enemies):
-    rat, Ant1, ruttle, bat, snake, giant centipede
+    *rat, *Ant1, *ruttle, bat, snake, giant centipede
 2 (Can kill you if you are not careful):
-    Ant2, skull, eyeball, scorpion, skeleton, skuzzy
+    Ant2, skull, *eyeball, scorpion, skeleton, skuzzy
 3 (Approach with Caution):
     centipede2, worm, mold, spider1, imp, mummy, ghost, bombshell, antLion
 4 (Avoid. Requires a plan):

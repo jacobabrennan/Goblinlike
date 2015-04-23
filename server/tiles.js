@@ -135,7 +135,13 @@ var genericTileTypes = {
         opaque: {value: false},
         climb: {value: function (content){
             var currentLevel = mapManager.getLevel(content.levelId);
-            var newLevel = mapManager.getDepth(currentLevel.depth-1, true);
+            var newLevel = mapManager.getDepth(currentLevel.depth-1);
+            if(!newLevel){
+                if(content.inform){
+                    content.inform('The way is blocked.');
+                }
+                return;
+            }
             content.place(newLevel.stairsDownCoords.x,newLevel.stairsDownCoords.y,newLevel.id);
         // TODO: Refactor this part. There must be a better way to inform the
         //  player they have moved to a new level.

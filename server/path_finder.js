@@ -351,7 +351,10 @@ var findTarget = function (start, faction){
         var target = mapManager.getTileContents(
             current.x, current.y, current.levelId, true
         );
-        if(target && target.faction && !(target.faction & start.faction)){
+        if(target && target.faction &&
+            !(target.faction & start.faction) &&
+            target.hurt
+        ){
             return P_DIJKSTRA_FINISHED;
         }
         return P_DIJKSTRA_NOT_FOUND;

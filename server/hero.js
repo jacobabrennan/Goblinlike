@@ -18,6 +18,7 @@ var hero = Object.create(person, {
     faction: {value: FACTION_GOBLIN, writable: true},
     name: {value: 'person', writable: true},
     color: {value: '#0f0', writable: true},
+    colorNatural: {value: '#0f0', writable: true},
     // New properties
     updates: {value: undefined, writable: true},
     messages: {value: undefined, writable: true},

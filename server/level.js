@@ -36,6 +36,7 @@ var level = {
         this.tileTypes = undefined;
         this.tileGrid = undefined;
         this.tileContentsGrid = undefined;
+        mapManager.cancelLevel(this);
         this.id = null;
     },
     getTile: function (x, y){

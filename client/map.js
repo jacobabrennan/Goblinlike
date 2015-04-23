@@ -90,13 +90,35 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
                     if(indexedTile.timeStamp < currentTime){
                         charColor = '#00F';
                         charBackground = '#000';
-                    } else{   
+                    } else{
+                        var cL = indexedTile.contents? indexedTile.contents.length : 0;
+                        var contentChar = undefined;
+                        var contentColor = undefined;
+                        var contentBack = undefined;
+                        for(var tI = 0; tI < cL; tI++){
+                            indexedC = indexedTile.contents[tI];
+                            if(!contentChar){ contentChar = indexedC.character;}
+                            if(!contentColor){
+                                contentColor = indexedC.color;
+                                if(!contentColor && contentChar){
+                                    contentColor = '#fff';
+                                }
+                            }
+                            if(!contentBack){ contentBack = indexedC.background;}
+                            if(contentChar && contentColor && contentBack){
+                                break;
+                            }
+                        }
+                        if(contentChar){ character = contentChar;}
+                        if(contentColor){ charColor = contentColor;}
+                        if(contentBack){ charBackground = contentBack;}
+                        /*
                         var firstContent = (indexedTile.contents && indexedTile.contents.length)? indexedTile.contents[0] : undefined;
                         if(firstContent){
                             character = firstContent.character || character;
                             charColor = firstContent.color || (firstContent.character? '#fff' : charColor);
                             charBackground = firstContent.background || charBackground;
-                        }
+                        }*/
                     }
                 }
                 this.drawText(posX, posY, character, charColor, charBackground);

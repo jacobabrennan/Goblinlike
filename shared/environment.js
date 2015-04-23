@@ -6,7 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = 'Alpha4';
+var VERSION = 'Alpha5';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
     // Directions:

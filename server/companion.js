@@ -22,16 +22,67 @@
         };
     })(base.setLevel);
 })(hero);
+(function (base){
+    base.moral = 0;
+    base.terrified = false;
+    base.constructor = (function (parentFunction){
+        return function (){
+            parentFunction.apply(this, arguments);
+            this.moral = this.charisma;
+            return this;
+        };
+    })(base.constructor);
+    base.adjustMoral = function (amount){
+        this.moral += amount;
+        var terrify = false;
+        if(this.hp <= 1){
+            terrify = true;
+            this.moral = Math.min(this.moral, -1);
+        }
+        if(this.moral < 0){ terrify = true;}
+        if(terrify && !this.terrified){
+            this.terrified = true;
+            this.color = 'red';
+            this.update('color');
+            this.sound('terror', 10, this, this.name+' is terrified!');
+        } else if(!terrify && this.terrified){
+            this.terrified = false;
+            this.color = this.colorNatural;
+            this.update('color');
+            this.sound('courage', 10, this, this.name+' regains their courage!');
+        }
+    };
+    base.takeTurn = (function (parentFunction){
+        return function (){
+            var mean = this.charisma;
+            var moralTweak = -(this.moral-mean)/20;
+            var tweakRound = false;
+            if(Math.abs(moralTweak) < 0.1){
+                tweakRound = true;
+            }
+            this.adjustMoral(moralTweak);
+            if(tweakRound){
+                this.moral = mean;
+                this.adjustMoral(0);
+            }
+            return parentFunction.apply(this, arguments);
+        };
+    })(base.takeTurn);
+    base.adjustHp = (function (parentFunction){
+        return function (){
+            var adjustment = parentFunction.apply(this,arguments);
+            this.adjustMoral(adjustment);
+            return adjustment;
+        };
+    })(base.adjustHp);
+})(person);
 var companion = Object.create(person, {
     character: {value: 'g', writable: true},
     faction: {value: FACTION_GOBLIN, writable: true},
     color: {value: '#5c3', writable: true},
-    moral: {value: 0, writable: true},
-    terrified: {value: false, writable: true},
     companion: {value: true, witable: true},
     constructor: {value: function (){
         person.constructor.apply(this, arguments);
-        this.moral = this.charisma;
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
         var colorB = randomInterval(0,64);
@@ -45,7 +96,7 @@ var companion = Object.create(person, {
         this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
         
         return this;
-    }},
+    }, writable: true},
     adjustExperience: {value: function (amount){
         /**
         **/
@@ -68,6 +119,7 @@ var companion = Object.create(person, {
         if(this.active){ return;}
         gameManager.registerActor(this);
         if(gameManager.currentGame.hero.companions.indexOf(this) == -1){
+            this.setLevel(gameManager.currentGame.hero.level);
             gameManager.currentGame.hero.companions.push(this);
             this.sound('greeting', 10, this, this.name+' greets you!');
         }
@@ -76,45 +128,6 @@ var companion = Object.create(person, {
     hurt: {value: function (){
         this.activate();
         return person.hurt.apply(this, arguments);
-    }, writable: true},
-    adjustHp: {value: function (){
-        var adjustment = person.adjustHp.apply(this,arguments);
-        this.adjustMoral(adjustment);
-        return adjustment;
-    }, writable: true},
-    adjustMoral: {value: function (amount){
-        this.moral += amount;
-        var terrify = false;
-        if(this.hp <= 1){
-            terrify = true;
-            this.moral = Math.min(this.moral, -1);
-        }
-        if(this.moral < 0){ terrify = true;}
-        if(terrify && !this.terrified){
-            this.terrified = true;
-            this.color = 'red';
-            this.update('color');
-            this.sound('terror', 10, this, this.name+' is terrified!');
-        } else if(!terrify && this.terrified){
-            this.terrified = false;
-            this.color = this.colorNatural;
-            this.update('color');
-            this.sound('courage', 10, this, this.name+' regains their courage!');
-        }
-    }, writable: true},
-    takeTurn: {value: function (){
-        var mean = this.charisma;
-        var moralTweak = -(this.moral-mean)/20;
-        var tweakRound = false;
-        if(Math.abs(moralTweak) < 0.1){
-            tweakRound = true;
-        }
-        this.adjustMoral(moralTweak);
-        if(tweakRound){
-            this.moral = mean;
-            this.adjustMoral(0);
-        }
-        return person.takeTurn.apply(this, arguments);
     }, writable: true},
     hear: {value: function (tamber, amplitude, source, message){
         if(source && (source != this) && (source.faction & this.faction)){

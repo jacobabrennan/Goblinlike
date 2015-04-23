@@ -39,13 +39,16 @@ var mapManager = {
             this.depths[newLevel.depth] = newLevel;
         }
     },
-    cancelLevel: function (level){
+    cancelLevel: function (oldLevel){
         /**
             This function must be called whenever a level is no longer in use.
                 Otherwise, levels would not be garbage collected.
             It does not return anything.
          **/
-        delete this.levels[level.id];
+        delete this.levels[oldLevel.id];
+        if(oldLevel.depth){
+            this.depths[oldLevel.depth] = undefined;
+        }
     },
     getLevel: function (levelId){
         /**
@@ -62,6 +65,7 @@ var mapManager = {
          **/
         var depthLevel = this.depths[depth];
         var higherDepth = this.depths[depth-1];
+        var disposeDepth = this.depths[depth-2];
         if(!depthLevel && buildNew){
             var generatorOptions = { // TODO: MAGIC NUMBERS!
                 'depth': depth,
@@ -71,6 +75,9 @@ var mapManager = {
             if(higherDepth){
                 generatorOptions.startX = higherDepth.stairsDownCoords.x;
                 generatorOptions.startY = higherDepth.stairsDownCoords.y;
+            }
+            if(disposeDepth){
+                disposeDepth.dispose();
             }
             depthLevel = this.generateLevel(generatorOptions);
             this.depths[depth] = depthLevel;

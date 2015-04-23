@@ -96,6 +96,52 @@ library.registerSkill(Object.create(skill, {
         return true;
     }, writable: true}
 }));
+library.registerSkill((function (){
+    var acidTrap = Object.create(trap, {
+        name: {value: 'acid trap'},
+        background: {value: '#690'},
+        character: {value: null},
+        faction: {value: FACTION_ENEMY},
+        constructor: {value: function (){
+            var self = this;
+            gameManager.registerEvent(function (){
+                self.dispose();
+            }, gaussRandom(20,2));
+            return trap.constructor.apply(this, arguments);
+        }},
+        trigger: {value: function (content){
+            if(content.type != TYPE_ACTOR){ return;}
+            if(content.faction & this.faction){ return;}
+            content.hurt(5, DAMAGE_ACID);
+            this.dispose();
+            
+        }, writable: true}
+    });
+    return Object.create(skill, {
+        name: {value: 'acid trap', writable: true},
+        targetClass: {value: TARGET_SELF, writable: true},
+        use: {value: function (user, target){
+            for(var posX = -1; posX < 2; posX++){
+                for(var posY = -1; posY < 2; posY++){
+                    var acidFound = false;
+                    var placeContents = mapManager.getTileContents(
+                        user.x+posX,user.y+posY,user.levelId);
+                    for(var aI = 0; aI < placeContents.length; aI++){
+                        var testContent = placeContents[aI];
+                        if(testContent.name == 'acid trap'){
+                            acidFound = true;
+                        }
+                    }
+                    if(!acidFound){
+                        Object.instantiate(acidTrap).place(
+                            user.x+posX,user.y+posY,user.levelId);
+                    }
+                }
+            }
+            return true;
+        }, writable: true}
+    });
+})());
 //==============================================================================
     return library; // Return library, close namespace.
 })();

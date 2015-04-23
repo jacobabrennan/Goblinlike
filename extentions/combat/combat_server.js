@@ -82,9 +82,23 @@ var DAMAGE_0000000000000000 =  0;
             It returns the amount of damage actually done, positive indicates
                 a loss of HP.
          **/
-        // TODO: Actual Implementation.
         if(!damageType){ damageType = DAMAGE_PHYSICAL;}
-        var damageDone = -this.adjustHp(-damage);
+        var damageDone = damage;
+        if(this.equipment){
+            for(var placement in this.equipment){
+                if(this.equipment.hasOwnProperty(placement)){
+                    var equipped = this.equipment[placement];
+                    if(!equipped || !equipped.defend){ continue;}
+                    damageDone -= equipped.defend(
+                        damageDone, damageType, attacker, proxy
+                    );
+                }
+            }
+        }
+        damageDone = Math.max(0, damageDone);
+        if(damageDone > 0){
+            damageDone = -this.adjustHp(-damage);
+        }
         return damageDone;
     };
     actor.attack = function (target){
@@ -262,6 +276,8 @@ var DAMAGE_0000000000000000 =  0;
     // End extend person
 })();
 
+
+//== Define Weapons ============================================================
 var weapon = Object.create(item, {
     // Redefined Properties
     character: {value: '/', writable: true},
@@ -505,6 +521,28 @@ var projectile = Object.create(weapon, {
     }}
 });
 
+
+//== Define Armor ==============================================================
+
+(function (base){
+    base.defense = 0;
+    base.evade = 0;
+    base.defend = function (damage, damageType, attacker, proxy){
+        var defended = 0;
+        if(damageType & DAMAGE_PHYSICAL){
+            if(this.evade && Math.random() < this.evade){
+                defended = damage;
+            } else if(this.defense){
+                defended += Math.max(0, gaussRandom(this.defense, 1));
+            }
+        }
+        return defended;
+    };
+})(item);
+
+
+
+//== Storage ===================================================================
 
 /* Simple JavaScript Inheritance
      * By John Resig http://ejohn.org/

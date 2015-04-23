@@ -1,3 +1,62 @@
+Enemy Types:
+
+* Standard:
+    C Centipede, f frog, j jackal, k kobold, o orc / ogre, s skeleton, y yeek,
+    z zombie, H Hobgoblin, M Mummy, R Reptile, S Scorpion, T Troll, Y Yeti
+* Heavy           : g golem, K Beetle
+* Breeders        : r rodent, l giant louse, r rodent, w worm, F Fly, O Ooze
+* Trappers        : e eye, m mold, J Jelly, Q Quylthulg
+Sappers         : t tick, G ghost, U Umber Hulk, W Wraith, i icky thing
+Skills          : p person, E Elemental, V Vampire, P Giant person
+Hunters         : C Cube, L Lich, X Xorn
+Fragile Blasters: b Bat, F Fly
+* Fragile Brawlers: h harpy
+Bosses          : d dragon, B Balrog, D Ancient Dragon
+Unknown         : a Ant, q quasit, A Ant Lion
+
+1 (Training Enemies):
+    *rat, *Ant1, *ruttle, bat, snake, giant centipede
+2 (Can kill you if you are not careful):
+    Ant2, skull, *eyeball, scorpion, skeleton, skuzzy
+3 (Approach with Caution):
+    centipede2, worm, mold, spider1, imp, mummy, ghost, bombshell, antLion
+4 (Avoid. Requires a plan):
+    spider2, wight, firewall, wraith, blob
+5 (Run. Just run):
+    Vampire, Lich, spider3, demon
+
+    frog, golem, jackal, Cube, Fly, Jelly, Reptile,
+
+aA - giant ant
+bB - bat, beetle, Blob
+cC - centipede
+dD - skeletal dwarf, Demon
+eE - floating eye
+fF - frog, Fire
+gG - goblin
+hH - 
+iI - Imp
+jJ - 
+kK - ksuzzy
+lL - Lich
+mM - mold, Mummy
+nN - 
+oO - 
+pP - 
+qQ - 
+rR - rat
+sS - snake, skull, scorpion, skeleton
+tT - turtle, Tarantula
+uU - 
+vV - Vampire
+wW - worm, Wight, Wraith
+xX - 
+yY - 
+zZ - zombie dwarf
+
+
+TO DONE: Alpha5
+    Armor, Shields
 TO DONE: Alpha4
     Remove ascending stairs from first level.
     Enabled Companions.
@@ -27,7 +86,7 @@ TODO(Beta):
     Absolute Must:
         Look / Examine
         More Enemies
-        Armor
+        More Armor
         Enemies open doors
         enemies bash through doors
         Companions:
@@ -48,7 +107,6 @@ TODO(Beta):
             
     
     Should:
-        Dispose of old levels as no longer needed.
         * Optimize
             Pathfinding
         Spiders make webs, chase players.
@@ -63,6 +121,7 @@ TODO(Beta):
             About
     
     Later:
+        charms, amulets
         '.' to run.
         Saving / Loading
         Larger Title Display
@@ -73,6 +132,9 @@ TODO(Beta):
             Look into tight coupling in targeting system.
             
     Done:
+        + Worm Bodies attack
+        + Armor, Shields
+        + Dispose of old levels as no longer needed.
         + Remove ascending stairs from first level.
         + Close Doors
         + Title Display
@@ -91,6 +153,7 @@ TODO(Beta):
             + Links in menu (like BYOND topics)
     
     Now Possible:
+        Armor, Shields
         Enemies that attack moral.
         Items that boost or drain moral.
         Enemies that summon.

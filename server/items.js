@@ -179,6 +179,13 @@ library.registerItem(Object.create(potion, {
         }
         potion.effect.apply(this, arguments);
     }}
+}));library.registerItem(Object.create(item, {
+    baseValue: {value: 1, writable: true},
+    character: {value: '('},
+    name: {value: 'Epic Shield'},
+    placement: {value: EQUIP_OFFHAND},
+    defense: {value: 2},
+    evade: {value: 1/2}
 }));
 library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
     potency: {value: 30, writable: true},
