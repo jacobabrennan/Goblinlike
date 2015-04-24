@@ -44,7 +44,7 @@ var tile = Object.create(mappable, {
 var genericTileTypes = {
     '!': Object.create(tile, { // Testing Marker
         id: {value: 'test'},
-        character: {value: '×'},
+        character: {value: 'x'},
         dense: {value: false},
         opaque: {value: false},
         color: {value: '#400'},
@@ -141,9 +141,33 @@ var genericTileTypes = {
         climb: {value: function (content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth+1, true);
-            content.place(
-                newLevel.stairsUpCoords.x,newLevel.stairsUpCoords.y,newLevel.id
-            );
+            var placeX = newLevel.stairsUpCoords.x;
+            var placeY = newLevel.stairsUpCoords.y;
+            var placeId= newLevel.id;
+            var success = content.place(placeX, placeY, placeId);
+            var contents = mapManager.getTileContents(
+                placeX, placeY, placeId);
+            while(!success && contents && contents.length){
+                var obstruction = contents.shift();
+                var moved = false;
+                for(var radius = 1; radius <= 10; radius++){
+                for(var posX = placeX-radius; posX <= placeX+radius; posX++){
+                for(var posY = placeY-radius; posY <= placeY+radius; posY++){
+                    if(
+                       posY != placeY-radius && posY != placeY+radius &&
+                       posX != placeX-radius && posX != placeX+radius
+                    ){ continue;}
+                    moved = obstruction.place(posX, posY, placeId);
+                    if(moved){ break;}}
+                    if(moved){ break;}}
+                    if(moved){ break;}
+                }
+                success = content.place(placeX, placeY, placeId);
+            }
+            if(!success){
+                content.inform('Someone is in the way.');
+                return;
+            }
         // TODO: Refactor this part. There must be a better way to inform the
         //  player they have moved to a new level.
             if(content.intelligence && content.intelligence.sense){
@@ -171,23 +195,41 @@ var genericTileTypes = {
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth-1);
             if(!newLevel){
-                if(content.inform){
-                    content.inform('The way is blocked.');
-                }
+                if(content.inform){ content.inform('The way is blocked.');}
                 return;
             }
-            content.place(
-                newLevel.stairsDownCoords.x,
-                newLevel.stairsDownCoords.y,
-                newLevel.id
-            );
+            var placeX = newLevel.stairsDownCoords.x;
+            var placeY = newLevel.stairsDownCoords.y;
+            var placeId= newLevel.id;
+            var success = content.place(placeX, placeY, placeId);
+            var contents = mapManager.getTileContents(
+                placeX, placeY, placeId);
+            while(!success && contents && contents.length){
+                var obstruction = contents.shift();
+                var moved = false;
+                for(var radius = 1; radius <= 10; radius++){
+                for(var posX = placeX-radius; posX <= placeX+radius; posX++){
+                for(var posY = placeY-radius; posY <= placeY+radius; posY++){
+                    if(
+                       posY != placeY-radius && posY != placeY+radius &&
+                       posX != placeX-radius && posX != placeX+radius
+                    ){ continue;}
+                    moved = obstruction.place(posX, posY, placeId);
+                    if(moved){ break;}}
+                    if(moved){ break;}}
+                    if(moved){ break;}
+                }
+                success = content.place(placeX, placeY, placeId);
+            }
+            if(!success){
+                content.inform('Someone is in the way.');
+                return;
+            }
         // TODO: Refactor this part. There must be a better way to inform the
         //  player they have moved to a new level.
             if(content.intelligence && content.intelligence.sense){
                 content.update('levelId');
-                var viewData = {
-                    level: newLevel.packageSetup()
-                };
+                var viewData = {level: newLevel.packageSetup()};
                 content.intelligence.sense(viewData);
             }
         // --

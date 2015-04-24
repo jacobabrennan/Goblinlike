@@ -143,6 +143,8 @@ var trap = Object.create(containable, {
         in a traditional sense. For instance, it could be a spider web, or a
         healing spring.
      **/
+    type: {value: TYPE_TRAP, writable: true},
+    hidden: {value: true, writable: false},
     triggered: {value: false, writable: true},
     trigger: {value: function (actor){
         /**

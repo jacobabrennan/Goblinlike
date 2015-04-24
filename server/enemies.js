@@ -529,7 +529,7 @@ library.registerEnemy(Object.create(snakePrototype, {
     // Behavior:
     bodyLength: {value: 3, writable: true}
 }));
-var spiderPrototype = (function (){
+/*var spiderPrototype = (function (){
     return Object.create(enemy, {
         name: {value: 'Tarantula', writable: true},
         character: {value: 'T', writable: true},
@@ -546,7 +546,7 @@ library.registerEnemy(Object.create(spiderPrototype, {
     turnDelay: {value: 7/8, writable: true},
     baseHp: {value: 4}
     // Behavior:
-}));
+}));*/
 library.registerEnemy(Object.create(enemy, {
     // Id:
     name: {value: 'Floating Eye', writable: true},
@@ -639,6 +639,41 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 60},
     // Behavior:
     opensDoors: {value: 1, writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Black Rat', writable: true},
+    placementWeight: {value: 50, writable: true},
+    // Display:
+    character: {value: "r", writable: true},
+    // Stats:
+    rewardExperience: {value: 20, writable: true},
+    vigilance: {value: 0},
+    erratic: {value: 1/2},
+    baseAttack: {value: 2, writable: true},
+    baseHp: {value: 8},
+    // Behavior:
+    breedRate: {value: 1/8, writable: true},
+    skills: {value: ["attack"], writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Red Beetle', writable: true},
+    // Display:
+    color: {value: "#f00", writable: true},
+    character: {value: "b", writable: true},
+    // Stats:
+    rewardExperience: {value: 50, writable: true},
+    turnDelay: {value: 2},
+    baseAttack: {value: 4, writable: true},
+    baseIntelligence: {value: 4, writable: true},
+    baseHp: {value: 50},
+    vigilance: {value: 10, writable: true},
+        // The minimum distance from which the enemy can be activated by sound.
+    forgetful: {value: 0, writable: true},
+    // Behavior:
+    opensDoors: {value: 1/4, writable: true},
+    skills: {value: ["breath fire", "attack"], writable: true}
 }));
 
 //==============================================================================

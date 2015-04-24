@@ -64,6 +64,7 @@ TO DONE: Alpha6
     Companion AI. Goblins get and equip equipment items.
     Undead Enemies.
     Balance.
+    Optimization.
 TO DONE: Alpha5
     Armor, Shields
     kSuzzy
@@ -91,10 +92,9 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
-        Enemies Occupy Stairs.
         ? Goblin's unhelpful dance.
         $ Enemies move twice on first move.
-        ? Phantom Arrows (That item is no longer there);
+        ? Phantom Arrows ("That item is no longer there");
         $ Things are placed in unhelpful positions.
             $ Goblin and enemies spawn in the same room.
             $ Items, goblin, and enemies are spawned on stairs, up and down.
@@ -141,8 +141,10 @@ TODO(Beta):
             $ Look into tight coupling in targeting system.
             
     Done:
+        + Goblins don't path through visible traps.
+        + Bugfix: Enemies Occupy Stairs.
         + enemies bash through doors
-        + Arrows don't stack when fired.
+        + Bugfix: Arrows don't stack when fired.
         + Bugfix: Doors can be closed while occupied.
         + Camp
         + Simple Enemy persistence (Go toward hero)

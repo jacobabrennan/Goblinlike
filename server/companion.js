@@ -218,6 +218,18 @@ var companion = Object.create(person, {
         if(!result){ result = this.pursueLoot( );}
         return;
     }, writable: true},
+    move: {value: function (direction){
+        var dest = getStepCoords(this.x, this.y, direction);
+        var contents = mapManager.getTileContents(dest.x, dest.y, this.levelId);
+        var trapFound;
+        contents.forEach(function (content){
+            if((content.type == TYPE_TRAP) && (!content.hidden)){
+                trapFound = true;
+            }
+        });
+        if(trapFound){ return false;}
+        return person.move.apply(this, arguments);
+    }, writable: true},
     pursueHero: {value: function (){
         var target = gameManager.currentGame.hero;
         var pursueRange = Math.min(3, target.companions.length);

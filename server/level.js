@@ -186,9 +186,9 @@ var level = {
             }
         }
         // If containable is an actor, trigger any traps at this location.
-        if(content.type == TYPE_ACTOR){
+        if((content.type==TYPE_ACTOR) && (content.faction&FACTION_PLAYER)){
             contents.forEach(function (testContent, index){
-                if(typeof testContent.trigger == 'function'){
+                if(testContent.type == TYPE_TRAP){
                     testContent.trigger(content);
                 }
             });

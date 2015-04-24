@@ -45,11 +45,11 @@ library.registerSkill(Object.create(skill, {
 }));
 library.registerSkill(Object.create(skill, {
     name: {value: 'breath fire', writable: true},
-    range: {value: 3, writable: true},
+    range: {value: 4, writable: true},
     targetClass: {value: TARGET_ENEMY, writable: true},
     use: {value: function (user, target){
         target.hear('fire', 10, user, 'The '+user.name+' breathes fire!');
-        var attemptedDamage = gaussRandom(3,1); // TODO: stats here, for example.
+        var attemptedDamage = gaussRandom(user.baseIntelligence,1);
         var damageDone = target.hurt(attemptedDamage, DAMAGE_FIRE, user);
         return damageDone;
     }, writable: true}
@@ -128,6 +128,7 @@ library.registerSkill((function (){
         name: {value: 'acid trap'},
         background: {value: '#690'},
         character: {value: null},
+        hidden: {value: false, writable: true},
         faction: {value: FACTION_ENEMY},
         constructor: {value: function (){
             var self = this;
