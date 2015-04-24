@@ -45,6 +45,9 @@ var memory = {
         
             It does not return anything.
         **/
+        if(sensoryData.characterData){
+            this.updateSelf(sensoryData.characterData);
+        }
         if(sensoryData.time){
             this.currentTime = sensoryData.time;
         }

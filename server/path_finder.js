@@ -325,7 +325,6 @@ var pathDist = function (coords1, skipDense){
     }
     return hDist;
 };
-
 var findTarget = function (start, faction){
     start = {
         x: start.x,
@@ -375,6 +374,7 @@ var findTarget = function (start, faction){
 };
 
 var findPath = function (start, end, limit){
+    var isActor = (start.type == TYPE_ACTOR);
     end = {
         x: end.x,
         y: end.y,
@@ -394,6 +394,10 @@ var findPath = function (start, end, limit){
         return pathDist.call(this, coords1, false);
     };
     var pathArray = aStar(start, end, pathDist, 20, 10, limit, minDist);
+    if(isActor && pathArray && pathArray.length){
+        var firstStep = pathArray[0];
+        if(!distance(start, firstStep)){ pathArray.shift();}
+    }
     return pathArray;
 };
 

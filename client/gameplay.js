@@ -73,6 +73,7 @@ client.drivers.gameplay = Object.create(driver, {
             case COMMAND_USE    : this.commandUse(    ); break;
             case COMMAND_LOOK   : this.commandLook(   ); break;
             case COMMAND_CLOSE  : this.commandClose(  ); break;
+            case COMMAND_CAMP   : this.commandCamp(   ); break;
             case COMMAND_LEAD_RUN: this.commandLead({order: COMMAND_LEAD_RUN}); break;
             case COMMAND_LEAD_ATTACK: this.commandLead({order: COMMAND_LEAD_ATTACK}); break;
         }
@@ -431,9 +432,17 @@ client.drivers.gameplay.commandLeadership = function (options){
         leadershipCallback
     );
 };
+client.drivers.gameplay.commandCamp = function (){
+    /*
+        Innitiate a CAMP stairs action. Directs the hero to rest and heal.
+        This does not return anything.
+    */
+    self.activeTurn = false;
+    client.networking.sendMessage(COMMAND_CAMP, {});
+};
 client.drivers.gameplay.commandStairs = function (){
     /*
-        Innitiate an climb stairs action. Directs the hero to climb stairs.
+        Innitiate a climb stairs action. Directs the hero to climb stairs.
         This does not return anything.
     */
     self.activeTurn = false;

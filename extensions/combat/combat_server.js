@@ -278,6 +278,7 @@ var DAMAGE_0000000000000000 =  0;
 
 
 //== Define Weapons ============================================================
+// TODO: Refactor projectiles. It's a real mess, really.
 var weapon = Object.create(item, {
     // Redefined Properties
     character: {value: '/', writable: true},
@@ -399,6 +400,20 @@ item.project = function (direction, options){
     }
     this.dense = originalDensity;
     this.stackable = originalStackable;
+    if(this.stackable){
+        var contents = mapManager.getTileContents(
+            this.x, this.y, this.levelId);
+        if(contents){
+            for(var cI = 0; cI < contents.length; cI++){
+                var testContent = contents[cI];
+                if(testContent == this){ continue;}
+                if(testContent.name == this.name){
+                    this.unplace();
+                    testContent.stack(this);
+                }
+            }
+        }
+    }
     this.stackable = false;
     return this.projectDamageDone;
 };
@@ -450,6 +465,20 @@ var projectile = Object.create(weapon, {
                 this.dispose();
             }
             this.stackable = originalStackable;
+            if(this.stackable){
+                var contents = mapManager.getTileContents(
+                    this.x, this.y, this.levelId);
+                if(contents){
+                    for(var cI = 0; cI < contents.length; cI++){
+                        var testContent = contents[cI];
+                        if(testContent == this){ continue;}
+                        if(testContent.name == this.name){
+                            this.unplace();
+                            testContent.stack(this);
+                        }
+                    }
+                }
+            }
             return this.projectDamageDone;
         }
         if(thrower){
@@ -482,6 +511,20 @@ var projectile = Object.create(weapon, {
         this.thrower = null;
         this.dense = originalDensity;
         this.stackable = originalStackable;
+        if(this.stackable){
+            var contents2 = mapManager.getTileContents(
+                this.x, this.y, this.levelId);
+            if(contents2){
+                for(var cI2 = 0; cI2 < contents2.length; cI2++){
+                    var testContent2 = contents2[cI2];
+                    if(testContent2 == this){ continue;}
+                    if(testContent2.name == this.name){
+                        this.unplace();
+                        testContent2.stack(this);
+                    }
+                }
+            }
+        }
         if(this.ephemeral){
             this.dispose();
         }

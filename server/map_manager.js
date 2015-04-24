@@ -110,6 +110,19 @@ var mapManager = {
         if(!referencedLevel){ return undefined;}
         return referencedLevel.getTileContents(x, y, onlyFirst);
     },
+    getRangeContents: function (x, y, levelId, range){
+        /**
+            This function compiles an array of all containables within range of
+            the given coordinates. The grid includes all coordinates within the
+            supplied range, including the center, giving dimensions of
+            (range+1+range)^2.
+            
+            It returns said array.
+         **/
+        var referencedLevel = this.getLevel(levelId);
+        if(!referencedLevel){ return undefined;}
+        return referencedLevel.getRangeContents(x, y, range);
+    },
     generateLevel: function (options){
         /**
          *  This function proceedurally generates a new level with the supplied

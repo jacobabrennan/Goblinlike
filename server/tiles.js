@@ -86,11 +86,18 @@ var genericTileTypes = {
         dense: {value: true},
         color: {value: '#fc0'},
         background: {value: '#111'},
-        toggleDoor: {value: function (x, y, actor){
-            var currentLevel = mapManager.getLevel(actor.levelId);
+        toggleDoor: {value: function (x, y, theActor, force){
+            var currentLevel = mapManager.getLevel(theActor.levelId);
             if(currentLevel){
-                currentLevel.placeTile(x, y, genericTileTypes["'"]);
+                if(!force){
+                    currentLevel.placeTile(x, y, genericTileTypes["'"]);
+                } else{
+                    theActor.sound(
+                        'crash', 10, theActor, 'A door bursts open!');
+                    currentLevel.placeTile(x, y, genericTileTypes['"']);
+                }
             }
+            return true;
         }, writable: true}
     }),
     "'": Object.create(tile, { // Door (Open)
@@ -100,11 +107,30 @@ var genericTileTypes = {
         opaque: {value: false},
         color: {value: '#fc0'},
         background: {value: '#111'},
-        toggleDoor: {value: function (x, y, actor){
-            var currentLevel = mapManager.getLevel(actor.levelId);
+        toggleDoor: {value: function (x, y, theActor){
+            var testActor = mapManager.getTileContents(
+                x, y, theActor.levelId, true);
+            if(testActor){   
+                if(testActor.dense){
+                    return false;
+                }
+            }
+            var currentLevel = mapManager.getLevel(theActor.levelId);
             if(currentLevel){
                 currentLevel.placeTile(x, y, genericTileTypes["+"]);
             }
+            return true;
+        }, writable: true}
+    }),
+    '"': Object.create(tile, { // Door (Open)
+        id: {value: 'doorBroken'},
+        character: {value: "'"},
+        dense: {value: false},
+        opaque: {value: false},
+        color: {value: '#000'},
+        background: {value: '#111'},
+        toggleDoor: {value: function (x, y, theActor){
+            return false;
         }, writable: true}
     }),
     '>': Object.create(tile, { // Stairs Down
@@ -115,7 +141,9 @@ var genericTileTypes = {
         climb: {value: function (content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth+1, true);
-            content.place(newLevel.stairsUpCoords.x,newLevel.stairsUpCoords.y,newLevel.id);
+            content.place(
+                newLevel.stairsUpCoords.x,newLevel.stairsUpCoords.y,newLevel.id
+            );
         // TODO: Refactor this part. There must be a better way to inform the
         //  player they have moved to a new level.
             if(content.intelligence && content.intelligence.sense){
@@ -126,7 +154,13 @@ var genericTileTypes = {
                 content.intelligence.sense(viewData);
             }
         // --
-        }, writable: true}
+        }, writable: true}/*,
+        enter: {value: function (entrant){
+            if(entrant.type != TYPE_ACTOR){
+                return false;
+            }
+            return tile.enter.apply(this, arguments);
+        }, writable: true}*/
     }),
     '<': Object.create(tile, { // Stairs Up
         id: {value: 'stairs_up'},
@@ -142,7 +176,11 @@ var genericTileTypes = {
                 }
                 return;
             }
-            content.place(newLevel.stairsDownCoords.x,newLevel.stairsDownCoords.y,newLevel.id);
+            content.place(
+                newLevel.stairsDownCoords.x,
+                newLevel.stairsDownCoords.y,
+                newLevel.id
+            );
         // TODO: Refactor this part. There must be a better way to inform the
         //  player they have moved to a new level.
             if(content.intelligence && content.intelligence.sense){
@@ -153,6 +191,12 @@ var genericTileTypes = {
                 content.intelligence.sense(viewData);
             }
         // --
-        }, writable: true}
+        }, writable: true}/*,
+        enter: {value: function (entrant){
+            if(entrant.type != TYPE_ACTOR){
+                return false;
+            }
+            return tile.enter.apply(this, arguments);
+        }, writable: true}*/
     })
 };

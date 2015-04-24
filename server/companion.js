@@ -21,7 +21,42 @@
             return result;
         };
     })(base.setLevel);
+    base.camp = (function (parentFunction){
+        return function (setCamping){
+            if(setCamping !== undefined){
+                this.camping = setCamping;
+            }
+            if(!this.camping){ return false;}
+            var notFull = false;
+            for(var cI = 0; cI < this.companions.length; cI++){
+                var theCompanion = this.companions[cI];
+                if(theCompanion.hp < theCompanion.maxHp()){
+                    notFull = true;
+                    break;
+                }
+            }
+            if(notFull){
+                return true;
+            }
+            return parentFunction.apply(this, arguments);
+        };
+    })(base.camp);
+    base.hear = (function (parentFunction){
+        return function (tamber, amplitude, source, message){
+            if(this.camping){
+                if(tamber != 'courage'){
+                    this.camp(false);
+                }
+            }
+            return parentFunction.apply(this, arguments);
+        };
+    })(base.hear);
 })(hero);
+hero.endTurn = (function (p){
+    return function (){
+        window.setTimeout(function (){p.call(this)}.bind(this), 10);
+    };
+})(hero.endTurn);
 (function (base){
     base.moral = 0;
     base.terrified = false;
@@ -169,6 +204,10 @@ var companion = Object.create(person, {
         }
         return false;
     }},
+    camp: {value: function (){
+        this.camping = gameManager.currentGame.hero.camping;
+        return this.camping;
+    }, writable: true},
     behavior: {value: function (){
         var result = false;
         if(this.terrified){
@@ -189,7 +228,7 @@ var companion = Object.create(person, {
             return false;
         }
         var pathArray = findPath(this, target, 1);
-        if(!pathArray){
+        if(!(pathArray && pathArray.length)){
             return false;
         }
         if(pathArray[0].x == this.x && pathArray[0].y == this.y && pathArray[0].levelId == this.levelId){
@@ -209,8 +248,7 @@ var companion = Object.create(person, {
             nextCoord.x, nextCoord.y, this.levelId
         );
         if(destination.dense && destination.toggleDoor){
-            destination.toggleDoor(nextCoord.x, nextCoord.y, this);
-            return true;
+            return destination.toggleDoor(nextCoord.x, nextCoord.y, this);
         }
         // Else, move.
         return this.move(direction);
@@ -384,7 +422,6 @@ var companion = Object.create(person, {
             }
         }
         // Return desire.
-        console.log('Desire '+theItem.name+': '+desire*desireMultiplier);
         return desire * desireMultiplier;
     }, writable: true}
 });

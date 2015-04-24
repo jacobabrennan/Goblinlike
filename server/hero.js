@@ -44,7 +44,7 @@ var hero = Object.create(person, {
     die: {value: function (){
         this.inform('You have died.');
         gameManager.gameOver();
-    }},
+    }, writable: true},
     endTurn: {value: function (){
         /**
             This function must be called whenever the person ends their turn,
@@ -122,7 +122,7 @@ var hero = Object.create(person, {
         if(message && source != this){
             this.inform(message);
         }
-    }},
+    }, writable: true},
     inform: {value: function (message){
         /**
             This function sends a message to the player. These messages are
@@ -210,8 +210,11 @@ var hero = Object.create(person, {
             if(destination.dense){
                 this.inform('The door is already closed.');
             } else{
-                destination.toggleDoor(this.x+offsetX, this.y+offsetY, this);
-                this.inform('You close the door.');
+                if(destination.toggleDoor(this.x+offsetX,this.y+offsetY,this)){
+                    this.inform('You close the door.');
+                } else{
+                    this.inform('The door cannot be closed.');
+                }
             }
         } else{
             this.inform('There is no door there.');
@@ -291,6 +294,40 @@ var hero = Object.create(person, {
         // End turn.
         this.endTurn();
     }, writable: true},
+    commandLead: {value: function (options){
+        /**
+            TODO: Document.
+        **/
+        var order = options.order;
+        if(this.terrified){
+            this.inform("You're to terrified!");
+            this.endTurn();
+            return;
+        }
+        switch(order){
+            case COMMAND_LEAD_RUN: this.companions.forEach(function(aGob){
+                    this.inform('You yell "Run away!"');
+                    aGob.adjustMoral(-this.influence());
+                }, this);
+                break;
+            case COMMAND_LEAD_ATTACK: this.companions.forEach(function(aGob){
+                    this.inform('You yell "Attack now!"');
+                    aGob.adjustMoral(this.influence());
+                }, this);
+                break;
+        }
+        // End turn.
+        this.endTurn();
+    }, writable: true},
+    commandCamp: {value: function (options){
+        /**
+            This command from the player directs the hero to rest here until all
+            goblins are healed and in good moral.
+        **/
+        this.camp(true);
+        // End turn.
+        this.endTurn();
+    }, writable: true},
     commandUse: {value: function (options){
         /**
             This command from the player directs the person to use the specified
@@ -356,26 +393,6 @@ var hero = Object.create(person, {
         var stairs = mapManager.getTile(this.x, this.y, this.levelId);
         if(typeof stairs.climb == 'function'){
             stairs.climb(this);
-        }
-        // End turn.
-        this.endTurn();
-    }, writable: true},
-    commandLead: {value: function (options){
-        /**
-            TODO: Document.
-        **/
-        var order = options.order;
-        switch(order){
-            case COMMAND_LEAD_RUN: this.companions.forEach(function(aGob){
-                    this.inform('You yell "Run away!"');
-                    aGob.adjustMoral(-this.influence());
-                }, this);
-                break;
-            case COMMAND_LEAD_ATTACK: this.companions.forEach(function(aGob){
-                    this.inform('You yell "Attack now!"');
-                    aGob.adjustMoral(this.influence());
-                }, this);
-                break;
         }
         // End turn.
         this.endTurn();

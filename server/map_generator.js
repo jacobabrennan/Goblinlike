@@ -231,7 +231,7 @@ mapManager.levelGenerator = {
         var tPrototype = Object.create(trap, {
             color: {value: 'black', writable:true},
             background: {value: 'white', writable:true},
-            character: {value: '×', writable: true},
+            character: {value: 'x', writable: true},
             trigger: {value: function (trogger){
                 if(this.triggered){
                     return;

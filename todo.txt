@@ -60,6 +60,7 @@ Wight, Wraith,
 Vampire, Lich
 
 TO DONE: Alpha6
+    Make Camp.
     Companion AI. Goblins get and equip equipment items.
     Undead Enemies.
     Balance.
@@ -90,35 +91,34 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
-        Goblin's unhelpful dance.
-        Arrows don't stack when fired.
+        Enemies Occupy Stairs.
+        ? Goblin's unhelpful dance.
+        $ Enemies move twice on first move.
+        ? Phantom Arrows (That item is no longer there);
+        $ Things are placed in unhelpful positions.
+            $ Goblin and enemies spawn in the same room.
+            $ Items, goblin, and enemies are spawned on stairs, up and down.
+        Enemies get stuck toggling doors.
+            
     Absolute Must:
-        Camp
         Status Bar
-        Advanced Goblin Moral (Seek out when moral is high)
-        Simple Enemy persistence (Go toward hero)
-        Enemies open doors
-        enemies bash through doors
-        Look / Examine
-        More Enemies
-        More Armor
+        ? Advanced Goblin Moral (Seek out when moral is high)
+        ? Look / Examine
+        $ More Enemies
+        $ More Armor
         Companions:
-            Heal the leader if possible
-            Persist in actions (no hard distance boundry preventing planning)
-            Roles
+            ? Heal the leader if possible
+            ? Persist in actions (no hard distance boundry preventing planning)
+            ? Roles
             * Leadership Menu
                 Follow Me!
                 * Run!
                 * Attack!
                 Collect Items
-            
     
     Should:
-        Goblins equip items the player throws at them.
-        * Optimize
-            Pathfinding
+        $ Goblins equip items the player throws at them.
         Spiders make webs, chase players.
-        Camp
         Roll Character
         Settle Down / Win.
         Win / Score Display.
@@ -130,17 +130,24 @@ TODO(Beta):
     
     Later:
         Goblins get, keep, and use consumable items.
-        charms, amulets
+        $ charms, amulets
         '.' to run.
         Saving / Loading
-        Larger Title Display
-        Switch Menu system to canvas
+        $ Larger Title Display
+        ? Switch Menu system to canvas
         Locked doors, door bashing
-        Enemies drop items
+        $ Enemies drop items
         * Uncouple client from server
-            Look into tight coupling in targeting system.
+            $ Look into tight coupling in targeting system.
             
     Done:
+        + enemies bash through doors
+        + Arrows don't stack when fired.
+        + Bugfix: Doors can be closed while occupied.
+        + Camp
+        + Simple Enemy persistence (Go toward hero)
+        + Enemies open doors
+        + Optimize: Pathfinding
         + Goblins get items (Equipment)
         + Worm Bodies attack
         + Armor, Shields

@@ -24,6 +24,9 @@ client.networking = {
                 break;
             case COMMAND_SENSE:
                 client.drivers.gameplay.memory.sense(options);
+                //if(client.drivers.gameplay.memory.statusUpdate){
+                client.drivers.gameplay.display();
+                //}
                 break;
             case COMMAND_TURN:
                 client.drivers.gameplay.takeTurn(options);
@@ -63,7 +66,7 @@ client.preferences = {
     "o": COMMAND_NONE,
     "p": COMMAND_NONE,
     "q": COMMAND_USE, // Alias for those who 'quaff' potions.
-    "r": COMMAND_USE, // Alias for those who 'read' scrolls.
+    "r": COMMAND_CAMP,
     "s": COMMAND_NONE,
     "t": COMMAND_UNEQUIP,
     "u": COMMAND_USE,

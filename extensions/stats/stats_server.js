@@ -52,6 +52,7 @@
         return this.charisma * (1+this.level);
     };
     base.healDelay = function (){
+        if(this.camping){ return 5;}
         return 30 - this.vitality;
     };
     // Redefined Methods

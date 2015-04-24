@@ -56,8 +56,11 @@ var enemy = Object.create(actor, {
     faction: {value: FACTION_ENEMY, writable: true},
     behavior: {value: undefined, writable: true},
     active: {value: false, writable: true},
+    pathInfo: {value: undefined, writable: true},
     skills: {value: ["attack"], writable: true},
     undead: {value: false, writable: true},
+    opensDoors: {value: 0, writable: true},
+        // Percentage chance to successfully open door.
     vigilance: {value: 3, writable: true},
         // The minimum distance from which the enemy can be activated by sound.
     forgetful: {value: 2, writable: true},
@@ -105,12 +108,23 @@ var enemy = Object.create(actor, {
             distance(this.x, this.y, source.x, source.y) > this.vigilance
         ){ return;}
         if(source && source.faction && !(source.faction & this.faction)){
-            this.activate();
+            this.activate(source);
         }
+    }, writable: true},
+    move: {value: function (direction){
+        var success = actor.move.apply(this, arguments);
+        if(!success){
+            var dest = getStepCoords(this.x, this.y, direction);
+            var testDoor = mapManager.getTile(dest.x, dest.y, this.levelId);
+            if(testDoor.toggleDoor && Math.random() < this.opensDoors){
+                testDoor.toggleDoor(dest.x, dest.y, this, true);
+                return true;
+            }
+        }
+        return success;
     }, writable: true},
     hurt: {value: (function (parentFunction){
         return function (amount){
-            console.log('('+this.character+')'+this.name+': '+amount)
             this.activate();
             return parentFunction.apply(this, arguments);
         };
@@ -127,7 +141,7 @@ var enemy = Object.create(actor, {
         };
     })(actor.bump), writable: true},
     // Newly defined Methods:
-    activate: {value: function (){
+    activate: {value: function (activator){
         /**
          *  This function actives the enemy, basically "waking it up". It is
          *  usually called when the player comes into view, makes loud noises
@@ -141,6 +155,9 @@ var enemy = Object.create(actor, {
          *  It does not return a value.
          **/
         if(this.active){ return;}
+        if(activator && !(activator.faction & this.faction)){
+            this.targetId = activator.id;
+        }
         gameManager.registerActor(this);
         this.active = true;
     }, writable: true},
@@ -188,34 +205,11 @@ var behaviorErratic = function (){
         NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
     this.move(direction);
 };
-var behaviorNormal = enemy.behavior = function (){
-    /**
-        This is an enemy behavior function. It is called every time the enemy is
-        given a turn, and determines what the enemy will do with that turn. The
-        "Normal" behavior is to find the closest target in view, move toward it,
-        and use a skill or attack it if in range. If the target is in range of
-        multiple skills, then each is given a one half chance to be used, in
-        order, which means that the first specified skill has double the chance
-        of being used as the second skill specified.
-        
-        It does not return anything.
-     **/
-    // Find a target, and the path to that target. If no target, deactivate.
-    var target;
-    var path;
-    var targetData = findTarget(this, this.faction);
-    var forgotten = (Math.random() < 1/this.forgetful);
-    if(targetData && (!forgotten || this.checkView(targetData.target))){
-        target = targetData.target;
-        path = targetData.path;
-    } else{
-        this.deactivate();
-        return;
-    }
+enemy.trySkill = function (target){
     // Breed
     if(this.breedRate && Math.random() < this.breedRate){
         this.breed();
-        return;
+        return true;
     }
     // Determine if target is in view and in range of any skills. Use a skill.
     var range = distance(this.x, this.y, target.x, target.y);
@@ -232,19 +226,116 @@ var behaviorNormal = enemy.behavior = function (){
                 if(this.checkView(target)){ continue;}
             }
             indexedSkill.use(this, target);
+            return true;
+        }
+    }
+    return false;
+};
+enemy.getViewTarget = function (){
+    // Find closest enemy in view.
+    var testContent = this.getViewContents();
+    var closeTarget;
+    var closeDistance = 11;
+    testContent.forEach(function (content){
+        if(content.faction & this.faction){ return;}
+        if(content.type != TYPE_ACTOR){ return;}
+        var testDistance = distance(this.x, this.y, content.x, content.y);
+        if(testDistance < closeDistance){
+            closeTarget = content;
+            closeDistance = testDistance;
+        }
+    }, this);
+    // If no enemies, return null.
+    return closeTarget;
+};
+enemy.simplePursue = function (target, simpleThreshold, derp){
+    if(this.sedentary){ return false;}
+    var targetDist = distance(this.x, this.y, target.x, target.y);
+    if(!simpleThreshold){ simpleThreshold = 3;}
+    var stepDir;
+    // If enemy is far away, just move foward. Save aStar to get close in.
+    if(targetDist > simpleThreshold){
+        stepDir = directionTo(this.x, this.y, target.x, target.y);
+        return this.move(stepDir);
+    }
+    // Otherwise, use aStar to make sure you can get close in and attack.
+    var path = findPath(this, target);
+    if(!(path && path.length)){ return false;}
+    var nextStep = path.shift();
+    stepDir = directionTo(this.x, this.y, nextStep.x, nextStep.y);
+    if(nextStep.x == this.x && nextStep.y == this.y){
+        console.log('Problem');
+    }
+    return this.move(stepDir);
+}
+var behaviorNormal = enemy.behavior = function (){
+    /**
+        This is an enemy behavior function. It is called every time the enemy is
+        given a turn, and determines what the enemy will do with that turn. The
+        "Normal" behavior is to find the closest target in view, move toward it,
+        and use a skill or attack it if in range. If the target is in range of
+        multiple skills, then each is given a one half chance to be used, in
+        order, which means that the first specified skill has double the chance
+        of being used as the second skill specified.
+        
+        It does not return anything.
+     **/
+    // Check view before going on to more complex path finding.
+    var success;
+    var target = this.getViewTarget();
+    if(target){
+        if(this.trySkill(target)){ success = true;}
+        if(!success && this.simplePursue(target)){ success = true;}
+        if(success){
+            this.targetId = null;
+            this.targetPath = null;
             return;
         }
     }
-    // If a skill was not used, move toward the target.
-    if(!this.sedentary){
-        var pathArray = path;
-        var nextCoord = pathArray.shift();
-        if(!nextCoord){
+    if(this.sedentary){ return;}
+    // If target in storage, move toward it. Pathfind on failure.
+    target = this.targetId? mapManager.idManager.get(this.targetId) : null;
+    path = this.targetPath? this.targetPath : null;
+    if(target && (!path || !path.length)){
+        this.targetPath = null;
+        success = this.move(
+            directionTo(this.x, this.y, target.x, target.y));
+        if(!success){
+            path = findPath(this, target);
+            (path || []).derp = 1;
+            this.targetPath = path;
+        }
+        return;
+    }
+    // If there's no target or no path, do complex pathfinding. :(
+    if(!target || !path){
+        var targetData = findTarget(this, this.faction);
+        var forgotten = this.forgetful? (Math.random() < 1/this.forgetful) : 0;
+        if(targetData && (!forgotten || this.checkView(targetData.target))){
+            target = targetData.target;
+            path = targetData.path;
+            path.derp = 2;
+            this.targetId = target;
+            this.targetPath = path;
+        } else{
+            this.deactivate();
             return;
         }
-        var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
-        this.move(direction);
     }
+    var nextStep = path.shift();
+    if(!nextStep){ return;}
+    while(nextStep.x == this.x && nextStep.y == this.y){
+        nextStep = path.shift();
+        if(!nextStep){
+            this.targetPath = null;
+            return;
+        }
+    }
+    if(nextStep.x == this.x && nextStep.y == this.y){
+        console.log('Problem: '+path.derp);
+    }
+    var direction = directionTo(this.x,this.y,nextStep.x,nextStep.y);
+    this.move(direction);
 };
 
 var snakePrototype = (function (){
@@ -270,8 +361,8 @@ var snakePrototype = (function (){
         activate: {value: function (){}},
         attackNearby: {value: function (){
             if(!(this.levelId && this.x && this.y)){ return;}
-            var currentLevel = mapManager.getLevel(this.levelId);
-            var rangeContent = currentLevel.getRangeContents(this.x, this.y, 1);
+            var rangeContent = mapManager.getRangeContents(
+                this.x, this.y, this.levelId, 1);
             var target;
             while(!target && rangeContent.length){
                 var rI = randomInterval(0, rangeContent.length-1);
@@ -413,8 +504,12 @@ library.registerEnemy(Object.create(enemy, {
     rewardExperience: {value: 10, writable: true},
     turnDelay: {value: 2},
     baseAttack: {value: 2, writable: true},
-    baseHp: {value: 8}
+    baseHp: {value: 8},
+    vigilance: {value: 10, writable: true},
+        // The minimum distance from which the enemy can be activated by sound.
+    forgetful: {value: 0, writable: true},
     // Behavior:
+    opensDoors: {value: 1/4, writable: true}
     //skills: {value: ["breath fire", "attack"], writable: true},
 }));
 library.registerEnemy(Object.create(snakePrototype, {
@@ -428,7 +523,7 @@ library.registerEnemy(Object.create(snakePrototype, {
     bodyBackground: {value: undefined, writable: true},
     // Stats:
     rewardExperience: {value: 20, writable: true},
-    turnDelay: {value: 1/2, writable: true},
+    //turnDelay: {value: 1/2, writable: true},
     baseHp: {value: 15, writable: true},
     erratic: {value: 1/4, writable: true},
     // Behavior:
@@ -511,8 +606,9 @@ library.registerEnemy(Object.create(enemy, {
     baseAttack: {value: 3, writable: true},
     vigilance: {value: 10},
     erratic: {value: 1/8},
-    baseHp: {value: 20},
+    baseHp: {value: 15},
     // Behavior:
+    opensDoors: {value: 1, writable: true},
     skills: {value: ["teleport","attack"], writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
@@ -525,8 +621,9 @@ library.registerEnemy(Object.create(enemy, {
     baseAttack: {value: 4, writable: true},
     rewardExperience: {value: 40, writable: true},
     forgetful: {value: 15, writable: true},
-    baseHp: {value: 30}
+    baseHp: {value: 30},
     // Behavior:
+    opensDoors: {value: 1, writable: true}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -539,8 +636,9 @@ library.registerEnemy(Object.create(enemy, {
     baseAttack: {value: 7, writable: true},
     forgetful: {value: 15, writable: true},
     turnDelay: {value: 2, writable: true},
-    baseHp: {value: 60}
+    baseHp: {value: 60},
     // Behavior:
+    opensDoors: {value: 1, writable: true}
 }));
 
 //==============================================================================

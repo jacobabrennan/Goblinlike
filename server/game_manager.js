@@ -113,6 +113,21 @@ game = {
                 };
                 this.sendMessage(COMMAND_TURN, turnData);
             },
+            camp: function (theMover){
+                // Compile data about recent changes to the person.
+                var selfData = theMover.packageUpdates();
+                theMover.updates = undefined;
+                // Create final package and send it to the player.
+                var turnData = {
+                    characterData: selfData,
+                    time: gameManager.currentTime()
+                };
+                var delay = (Math.random() < 1/10)? 10 : 1;
+                this.sendMessage(COMMAND_SENSE, turnData);
+                setTimeout(function (){
+                    theMover.endTurn();
+                }, delay);
+            },
             gameOver: function (deathData){
                 this.sendMessage(COMMAND_GAMEOVER, deathData);
             }
@@ -157,19 +172,20 @@ game = {
     clientCommand: function (command, options){
         if(this.hero){
             switch(command){
-                case COMMAND_WAIT:    this.hero.commandWait(options);    break;
-                case COMMAND_MOVE:    this.hero.commandMove(options);    break;
-                case COMMAND_USE:     this.hero.commandUse(options);     break;
-                case COMMAND_GET:     this.hero.commandGet(options);     break;
+                case COMMAND_CLOSE:   this.hero.commandClose(options);   break;
+                case COMMAND_CAMP:    this.hero.commandCamp(options);    break;
                 case COMMAND_DROP:    this.hero.commandDrop(options);    break;
-                case COMMAND_LOOK:    this.hero.commandLook(options);    break;
                 case COMMAND_EQUIP:   this.hero.commandEquip(options);   break;
                 case COMMAND_UNEQUIP: this.hero.commandUnequip(options); break;
-                case COMMAND_STAIRS:  this.hero.commandStairs(options);  break;
                 case COMMAND_FIRE:    this.hero.commandFire(options);    break;
-                case COMMAND_THROW:   this.hero.commandThrow(options);   break;
-                case COMMAND_CLOSE:   this.hero.commandClose(options);   break;
+                case COMMAND_GET:     this.hero.commandGet(options);     break;
                 case COMMAND_LEADERSHIP: this.hero.commandLead(options); break;
+                case COMMAND_LOOK:    this.hero.commandLook(options);    break;
+                case COMMAND_MOVE:    this.hero.commandMove(options);    break;
+                case COMMAND_STAIRS:  this.hero.commandStairs(options);  break;
+                case COMMAND_THROW:   this.hero.commandThrow(options);   break;
+                case COMMAND_USE:     this.hero.commandUse(options);     break;
+                case COMMAND_WAIT:    this.hero.commandWait(options);    break;
             }
         }
     }

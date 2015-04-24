@@ -170,10 +170,10 @@ var helpMenu = Object.create(driver, {
         commandLink("g", COMMAND_GET, 'Get Item');
         commandLink("l", COMMAND_LOOK, 'Look');
         commandLink("L", COMMAND_LEADERSHIP, 'Leadership');
+        commandLink("r", COMMAND_CAMP, 'Rest (Heal)');
         commandLink("t", COMMAND_UNEQUIP, 'Take Off Item');
         commandLink("u", COMMAND_USE, 'Use Item');
-        commandLink("<", COMMAND_STAIRS, 'Descend Stairs');
-        commandLink(">", COMMAND_STAIRS, 'Ascend Stairs');
+        commandLink("< or >", COMMAND_STAIRS, 'Use Stairs');
         commandLink("?", COMMAND_HELP, 'Help');
         commandLink("Esc", COMMAND_CANCEL, 'Cancel');
         

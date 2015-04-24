@@ -41,9 +41,10 @@ var COMMAND_PAGEDOWN    = 79;
 var COMMAND_PAGEUP      = 80;
 var COMMAND_ENTER       = 81;
 var COMMAND_NONE        = 82;
-var COMMAND_LEADERSHIP  = 83;
-var COMMAND_LEAD_ATTACK = 84;
-var COMMAND_LEAD_RUN    = 85;
+var COMMAND_CAMP        = 83;
+var COMMAND_LEADERSHIP  = 84;
+var COMMAND_LEAD_ATTACK = 85;
+var COMMAND_LEAD_RUN    = 86;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;
@@ -68,6 +69,11 @@ var TYPE_TRAP = 4;
 var FACTION_GOBLIN = 1;
 var FACTION_PLAYER = FACTION_GOBLIN;
 var FACTION_ENEMY = 2;
+    // Companion AI modes:
+var MODE_FOLLOW = 1;
+var MODE_ATTACK = 2;
+var MODE_RETREAT = 3;
+var MODE_SCAVENGE = 4;
 
 
 /*===========================================================================
@@ -158,7 +164,7 @@ var distance = function (startX, startY, endX, endY){
     var deltaY = Math.abs(endY-startY);
     return Math.max(deltaX, deltaY);
 };
-var getStepCoords = function (startX, startY, directon){
+var getStepCoords = function (startX, startY, direction){
     if(direction & NORTH){ startY++;}
     if(direction & SOUTH){ startY--;}
     if(direction & EAST ){ startX++;}

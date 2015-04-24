@@ -48,6 +48,17 @@ var person = Object.create(actor, {
         }
         return success;
     }},
+    camp: {value: function (){
+        if(!this.camping){
+            return false;
+        }
+        var full = (this.hp == this.maxHp());
+        if(!full){
+            return true;
+        }
+        this.camping = false;
+        return false;
+    }, writable: true},
     takeTurn: {value: function (callback){
         /**
             This function alerts the player, possibly over a network, that it
@@ -60,6 +71,15 @@ var person = Object.create(actor, {
         // Setup turn storage.
         this.turnActive = true;
         this.turnCallback = callback;
+        // If camping, skip most intelligence.
+        if(this.camp()){
+            if(this.intelligence && this.intelligence.camp){
+                this.intelligence.camp(this);
+            } else{
+                this.endTurn();
+            }
+            return;
+        }
         // Defer to intelligence controller if one exists.
         if(this.intelligence && this.intelligence.takeTurn){
             this.intelligence.takeTurn(this);
