@@ -62,24 +62,24 @@ var mapManager = {
         /**
             This function returns the level at the specified depth, creating it
             if neccessary and buildNew is true. Otherwise, it return undefined.
-         **/
+        **/
         var depthLevel = this.depths[depth];
-        var higherDepth = this.depths[depth-1];
+        //var higherDepth = this.depths[depth-1];
         var disposeDepth = this.depths[depth-2];
         if(!depthLevel && buildNew){
-            var generatorOptions = { // TODO: MAGIC NUMBERS!
+            /*var generatorOptions = { // TODO: MAGIC NUMBERS!
                 'depth': depth,
                 'width': DEFAULT_MAP_SIZE,
                 'height': DEFAULT_MAP_SIZE
-            };
-            if(higherDepth){
+            };*/
+            /*if(higherDepth){
                 generatorOptions.startX = higherDepth.stairsDownCoords.x;
                 generatorOptions.startY = higherDepth.stairsDownCoords.y;
-            }
+            }*/
             if(disposeDepth){
                 disposeDepth.dispose();
             }
-            depthLevel = this.generateLevel(generatorOptions);
+            depthLevel = this.generateLevel(depth);
             this.depths[depth] = depthLevel;
         }
         return depthLevel;
@@ -87,7 +87,7 @@ var mapManager = {
     getTile: function (x, y, levelId){
         /**
             This function allows any part of the game to access any tile on any
-                level by coordinates and id.
+                level by coordinates and id.rsc/fonts/
             It returns a tile, if found. Otherwise, it returns undefined.
          **/
         var referencedLevel = this.getLevel(levelId);

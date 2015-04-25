@@ -28,6 +28,7 @@
         <script src="server/enemies.js"></script>
         <script src="server/skills.js"></script>
         <script src="server/items.js"></script>
+        <script src="server/traps.js"></script>
         <script src="server/swerd.js"></script>
         <!-- Client -->
         <script src="client/driver.js"></script>
@@ -39,6 +40,18 @@
         <script src="client/menu.js"></script>
         <script src="client/memory.js"></script>
         <style>
+@font-face {
+    font-family: 'press_start_kregular';
+    src: url('rsc/fonts/prstartk.eot');
+    src: url('rsc/fonts/prstartk.eot?#iefix') format('embedded-opentype'),
+         url('rsc/fonts/prstartk.woff2') format('woff2'),
+         url('rsc/fonts/prstartk.woff') format('woff'),
+         url('rsc/fonts/prstartk.ttf') format('truetype'),
+         url('rsc/fonts/prstartk.svg#press_start_kregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
 a:link{
     text-decoration: none;
     color: inherit;
@@ -52,13 +65,13 @@ html, body{
 }
 body{
     background-color: #030306;
-    background-image: url('resources/background_1.png');
+    background-image: url('rsc/background_1.png');
 }
 .central{
     text-align: center;
 }
 #game_area, #game_area *{
-    font-family: "press start k", monospace !important;
+    font-family: "press_start_kregular", monospace !important;
     font-size: 16px !important;
     line-height: 1em !important;
 }
@@ -133,10 +146,10 @@ pre{
     cursor: pointer;
 }
 #link_wrapper{
-    font-family: "press start k", monospace !important;
+    font-family: "press_start_kregular", monospace !important;
     display: inline-block;
     text-align: right;
-    color: #00f;
+    color: #104;
 }
 #link_wrapper > a:link{
     margin-right: 1em;

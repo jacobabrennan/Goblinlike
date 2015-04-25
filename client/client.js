@@ -80,6 +80,8 @@ client.preferences = {
     "?": COMMAND_HELP,
     "<": COMMAND_STAIRS,
     ">": COMMAND_STAIRS,
+    ",": COMMAND_STAIRS,
+    ".": COMMAND_STAIRS,
     "[": COMMAND_PAGEDOWN,
     "]": COMMAND_PAGEUP,
     "space": COMMAND_ENTER,

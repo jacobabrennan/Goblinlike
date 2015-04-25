@@ -66,16 +66,7 @@ game = {
         return this;
     },
     start: function (){
-        var newLevel = mapManager.generateLevel({
-            depth: 1,
-            roomSideMax: 10,
-            roomSideMin: 3,
-            hallLengthMax: 20,
-            hallLengthMin: 7,
-            width: displaySize,
-            height: displaySize,
-            placeStairsUp: false
-        });
+        var newLevel = mapManager.generateLevel(1);
         this.hero = Object.instantiate(hero);
         this.hero.place(
             newLevel.startCoords.x, newLevel.startCoords.y, newLevel.id);

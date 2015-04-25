@@ -116,7 +116,10 @@ var enemy = Object.create(actor, {
         if(!success){
             var dest = getStepCoords(this.x, this.y, direction);
             var testDoor = mapManager.getTile(dest.x, dest.y, this.levelId);
-            if(testDoor.toggleDoor && Math.random() < this.opensDoors){
+            if(
+                testDoor && testDoor.toggleDoor &&
+                (Math.random() < this.opensDoors)
+            ){
                 testDoor.toggleDoor(dest.x, dest.y, this, true);
                 return true;
             }
@@ -205,6 +208,15 @@ var behaviorErratic = function (){
         NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
     this.move(direction);
 };
+var behaviorDirect = enemy.behavior = function (){
+    var target = this.getViewTarget();
+    if(target){
+        if(this.trySkill(target)){ return;}
+    } else{
+        target = gameManager.currentGame.hero;
+    }
+    this.move(directionTo(this.x, this.y, target.x, target.y));
+};
 enemy.trySkill = function (target){
     // Breed
     if(this.breedRate && Math.random() < this.breedRate){
@@ -267,7 +279,7 @@ enemy.simplePursue = function (target, simpleThreshold, derp){
         console.log('Problem');
     }
     return this.move(stepDir);
-}
+};
 var behaviorNormal = enemy.behavior = function (){
     /**
         This is an enemy behavior function. It is called every time the enemy is
@@ -338,6 +350,170 @@ var behaviorNormal = enemy.behavior = function (){
     this.move(direction);
 };
 
+var blobPrototype = (function (){
+    var blobBody = Object.create(enemy, {
+        headId: {value: undefined, writable: true},
+        rewardExperience: {value: 0},
+        constructor: {value: function (options){
+            enemy.constructor.apply(this, arguments);
+            var head = options.head;
+            this.headId = head.id;
+            this.name = head.name;
+            this.faction = head.faction;
+            this.baseAttack = head.baseAttack;
+            this.dieExtension = head.dieExtension; // TODO: refactor this.
+            if(head.bodyCharacter){
+                this.character = head.bodyCharacter;
+            }
+            if(head.bodyColor){
+                this.color = head.bodyColor;
+            }
+            if(head.bodyBackground){
+                this.background = head.bodyBackground;
+            }
+            return this;
+        }, writable: true},
+        activate: {value: function (){}},
+        attackNearby: {value: function (){
+            if(!(this.levelId && this.x && this.y)){ return;}
+            var rangeContent = mapManager.getRangeContents(
+                this.x, this.y, this.levelId, 1);
+            var target;
+            while(!target && rangeContent.length){
+                var rI = randomInterval(0, rangeContent.length-1);
+                var rTarget = rangeContent[rI];
+                rangeContent.splice(rI,1);
+                if(rTarget.faction&this.faction){ continue;}
+                if(rTarget.type != TYPE_ACTOR){ continue;}
+                target = rTarget;
+                break;
+            }
+            if(target){
+                this.attack(target);
+            }
+        }, writable: true},
+        bump: {value: function (){
+            return actor.bump.apply(this, arguments);
+        }, writable: true},
+        hurt: {value: function (){
+            var head = mapManager.idManager.get(this.headId);
+            return head.hurt.apply(head, arguments);
+        }, writable: true},
+        pack: {value: function (){
+            // Prevent multiple copies from showing up in the look list.
+            var sensoryData = enemy.pack.apply(this, arguments);
+            var head = mapManager.idManager.get(this.headId);
+            if(!head){ return sensoryData;}
+            sensoryData.id = head.id;
+            return sensoryData;
+        }, writable: true},
+        move: {value: function (direction){
+            if(!(this.x && this.y && this.levelId) || (Math.random() < 1/4)){
+                var dirs = [NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,
+                    SOUTHEAST,SOUTHWEST];
+                while(dirs.length){
+                    var dir = dirs.shift();
+                    var head = mapManager.idManager.get(this.headId);
+                    if(!head){ return false;}
+                    var dCoords = getStepCoords(head.x, head.y, dir);
+                    this.place(dCoords.x, dCoords.y, head.levelId);
+                }
+                return true;
+            } else{
+                return enemy.move.apply(this, arguments);
+            }
+        }, writable: true},
+        die: {value: function (){
+            if(this.dieExtension){
+                this.dieExtension.apply(this, arguments);
+            }
+            return enemy.die.apply(this, arguments);
+        }, writable: true}
+    });
+    return Object.create(enemy, {
+        character: {value: 'B', writable: true},
+        bodyCharacter: {value: 'B', writable: true},
+        bodyColor: {value: undefined, writable: true},
+        bodyBackground: {value: undefined, writable: true},
+        bodyMass: {value: 4, writable: true},
+        turnDelay: {value: 2, writable: true},
+        dieExtension: {value: undefined, writable: true}, // Refactor this.
+        constructor: {value: function (options){
+            enemy.constructor.apply(this, arguments);
+            this.body = [];
+            for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
+                // Skip one, to include head in mass. Makes hp calc easier.
+                var segment = blobBody.constructor.call(
+                    Object.create(blobBody),
+                    {head: this}
+                );
+                this.body[bodyI] = segment;
+            }
+            return this;
+        }, writable: true},
+        bump: {value: function (obstruction){
+            if(this.body.indexOf(obstruction) >= 0){
+                mapManager.swapPlaces(this, obstruction);
+            }
+            return actor.bump.apply(this, arguments);
+        }, writable: true},
+        hurt: {value: function (){
+            var result = enemy.hurt.apply(this, arguments);
+            var maxBody = this.hp / (this.maxHp()/this.bodyMass);
+            while(this.body.length > maxBody){
+                var segment = this.body.shift();
+                segment.die();
+            }
+            return result;
+        }, writable: true},
+        move: {value: function (direction){
+            var success = enemy.move.apply(this, arguments);
+            this.body.forEach(function (segment){
+                var moveDirection = directionTo(
+                    segment.x, segment.y, this.x, this.y);
+                var success = segment.move(moveDirection);
+                var dirVert = moveDirection & (NORTH|SOUTH);
+                var dirHor  = moveDirection & (EAST |WEST );
+                if(!success){
+                    var primaryDir = dirVert;
+                    var secondaryDir = dirHor;
+                    if(Math.abs(this.x-segment.x) > Math.abs(this.y-segment.y)){
+                        primaryDir = dirHor;
+                        secondaryDir = dirVert;
+                    }
+                    success = (segment.move(primaryDir) ||
+                        segment.move(secondaryDir));
+                }
+            }, this);
+            return success;
+        }, writable: true},
+        place: {value: function (){
+            var fromTheVoid = !(this.x && this.y && this.levelId);
+            var success = enemy.place.apply(this, arguments);
+            if(fromTheVoid){
+                for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+                    var bodySegment = this.body[bodyI];
+                    bodySegment.move();
+                }
+            }
+            return success;
+        }, writable: true},
+        dispose: {value: function (){
+            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+                var bodySegment = this.body[bodyI];
+                bodySegment.dispose();
+            }
+            enemy.dispose.apply(this, arguments);
+        }, writable: true},
+        behavior: {value: function (){
+            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+                var bodySegment = this.body[bodyI];
+                bodySegment.attackNearby();
+            }
+            return behaviorNormal.apply(this, arguments);
+        }, writable: true}
+    });
+})();
 var snakePrototype = (function (){
     var snakeBody = Object.create(enemy, {
         headId: {value: undefined, writable: true},
@@ -380,6 +556,14 @@ var snakePrototype = (function (){
         hurt: {value: function (){
             var head = mapManager.idManager.get(this.headId);
             return head.hurt.apply(head, arguments);
+        }, writable: true},
+        pack: {value: function (){
+            // Prevent multiple copies from showing up in the look list.
+            var sensoryData = enemy.pack.apply(this, arguments);
+            var head = mapManager.idManager.get(this.headId);
+            if(!head){ return sensoryData;}
+            sensoryData.id = head.id;
+            return sensoryData;
         }, writable: true}
     });
     return Object.create(enemy, {
@@ -566,7 +750,7 @@ library.registerEnemy(Object.create(enemy, {
     name: {value: 'Ksuzzy', writable: true},
     // Display:
     character: {value: "k", writable: true},
-    color: {value: '#4fc', writable: true},
+    color: {value: '#4cf', writable: true},
     // Stats:
     rewardExperience: {value: 18, writable: true},
     vigilance: {value: 0},
@@ -588,8 +772,9 @@ library.registerEnemy(Object.create(enemy, {
     background: {value: "#440", writable: true},
     // Stats:
     rewardExperience: {value: 10, writable: true},
-    vigilance: {value: 1/2},
-    sedentary: {value: 1/2},
+    vigilance: {value: 0},
+    forgetful: {Value: 1},
+    sedentary: {value: 1},
     baseHp: {value: 3},
     // Behavior:
     breedRate: {value: 1/10, writable: true},
@@ -665,7 +850,7 @@ library.registerEnemy(Object.create(enemy, {
     // Stats:
     rewardExperience: {value: 50, writable: true},
     turnDelay: {value: 2},
-    baseAttack: {value: 4, writable: true},
+    baseAttack: {value: 6, writable: true},
     baseIntelligence: {value: 4, writable: true},
     baseHp: {value: 50},
     vigilance: {value: 10, writable: true},
@@ -674,6 +859,100 @@ library.registerEnemy(Object.create(enemy, {
     // Behavior:
     opensDoors: {value: 1/4, writable: true},
     skills: {value: ["breath fire", "attack"], writable: true}
+}));
+library.registerEnemy(Object.create(blobPrototype, {
+    // Id:
+    name: {value: 'Yellow Blob', writable: true},
+    // Display:
+    color: {value: "#990", writable: true},
+    background: {value: "#440", writable: true},
+    bodyColor: {value: "#990", writable: true},
+    bodyBackground: {value: "#440", writable: true},
+    // Stats:
+    rewardExperience: {value: 50, writable: true},
+    //turnDelay: {value: 1/2, writable: true},
+    baseHp: {value: 50, writable: true},
+    baseAttack: {value: 4, writable: true},
+    erratic: {value: 1/4, writable: true},
+    forgetful: {value: 5, writable: true},
+    // Behavior:
+    bodyMass: {value: 9, writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Imp', writable: true},
+    // Display:
+    character: {value: "i", writable: true},
+    color: {value: "#802", writable: true},
+    // Stats:
+    rewardExperience: {value: 55, writable: true},
+    baseAttack: {value: 6, writable: true},
+    vigilance: {value: 10},
+    erratic: {value: 1/8},
+    baseHp: {value: 40},
+    // Behavior:
+    opensDoors: {value: 1, writable: true},
+    skills: {value: ["teleport","attack"], writable: true}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Blue Mold', writable: true},
+    placementWeight: {value: 60, writable: true},
+    // Display:
+    character: {value: "m", writable: true},
+    color: {value: '#4cf', writable: true},
+    background: {value: "#08a", writable: true},
+    // Stats:
+    rewardExperience: {value: 30, writable: true},
+    vigilance: {value: 0},
+    forgetful: {Value: 1},
+    sedentary: {value: 1},
+    baseHp: {value: 10},
+    // Behavior:
+    breedRate: {value: 1/10, writable: true},
+    skills: {value: ["attack"], writable: true},
+    die: {value: function (){
+        var acidTrap = trapLibrary.getTrap('acid trap');
+        Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
+        return enemy.die.apply(this, arguments);
+    }}
+}));
+library.registerEnemy(Object.create(enemy, {
+    // Id:
+    name: {value: 'Wraith', writable: true},
+    // Display:
+    character: {value: "W", writable: true},
+    // Stats:
+    incorporeal: {value: true, writable: true},
+    rewardExperience: {value: 65, writable: true},
+    vigilance: {value: 10},
+    erratic: {value: 2/3, writable: true},
+    turnDelay: {value: 2/3, writable: true},
+    baseHp: {value: 50},
+    behavior: {value: behaviorDirect, writable: true}
+    // Behavior:
+}));
+library.registerEnemy(Object.create(blobPrototype, {
+    // Id:
+    name: {value: 'Blue Blob', writable: true},
+    // Display:
+    color: {value: '#4cf', writable: true},
+    background: {value: "#08a", writable: true},
+    bodyColor: {value: "#4cf", writable: true},
+    bodyBackground: {value: "#08a", writable: true},
+    // Stats:
+    rewardExperience: {value: 80, writable: true},
+    baseHp: {value: 22, writable: true},
+    baseAttack: {value: 4, writable: true},
+    erratic: {value: 1/4, writable: true},
+    forgetful: {value: 5, writable: true},
+    // Behavior:
+    bodyMass: {value: 16, writable: true},
+    dieExtension: {value: function (){
+        var acidTrap = trapLibrary.getTrap('acid trap');
+        Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
+        return enemy.die.apply(this, arguments);
+    }, writable: true}
 }));
 
 //==============================================================================

@@ -1,31 +1,79 @@
 
 
-/*===========================================================================
- *
- *  The level generator is a scaffold to create new proceedurally generated
- *      levels. It is private to the mapManager, and is only accessed through
- *      the method mapManager.generateLevel. Further, the only method of the
- *      generator accessed by the map manager is the generate method;
- *      everything else is private to the levelGenerator.
- *  The levelGenerator is a prototype. To use it, you must create a new
- *      instance, and call generate with the parameters for the new
- *      level:
- *      {
- *          id: 'string', // Optional. The name of this level.
- *          width: integer, // Optional.
- *          height: integer, // Optional.
- *          roomSideMax: integer, // Optional.
- *          roomSideMin: integer, // Optional.
- *          hallLengthMax: integer, // Optional.
- *          hallLengthMin: integer, // Optional.
- *          placeStairsUp: boolean, // Optional, true by default.
- *          placeStairsDown: boolean, // Optional, true by default.
- *      }
- *  It returns a new level object, ready for use.
- *
- *===========================================================================*/
+/*==============================================================================
+  
+    The level generator is a scaffold to create new proceedurally generated
+    levels. It is private to the mapManager, and is only accessed through the
+    method mapManager.generateLevel. Further, the only method of the generator
+    accessed by the map manager is the generate method; everything else is
+    private to the levelGenerator.
+    
+    The levelGenerator is a prototype. To use it, you must create a new
+    instance, and call generate with the parameters for the new level:
+        {
+            id: 'string', // Optional. The name of this level.
+            width: integer, // Optional.
+            height: integer, // Optional.
+            roomSideMax: integer, // Optional.
+            roomSideMin: integer, // Optional.
+            hallLengthMax: integer, // Optional.
+            hallLengthMin: integer, // Optional.
+            placeStairsUp: boolean, // Optional, true by default.
+            placeStairsDown: boolean, // Optional, true by default.
+        }
+    It returns a new level object, ready for use.
 
-mapManager.levelGenerator = {
+==============================================================================*/
+
+mapManager.generateLevel = (function (){
+//== Map Generator Namespace ===================================================
+var accessFunction = function (depth, options){
+    /**
+        This function proceedurally generates a new level with the supplied
+        parameters:
+            {
+                id: 'string', // Optional. The name of this level.
+                width: integer, // Optional.
+                height: integer, // Optional.
+                roomSideMax: integer, // Optional.
+                roomSideMin: integer, // Optional.
+                hallLengthMax: integer, // Optional.
+                hallLengthMin: integer, // Optional.
+            }
+        It returns a new level object, ready for use.
+    **/
+    var prototypeOptions = {};
+    if(options){
+        prototypeOptions = options;
+    } else{
+        //prototypeOptions.depth = depth;
+        switch(depth){
+            case 1:
+                prototypeOptions = {
+                    depth: 1,
+                    roomSideMax: 10,
+                    roomSideMin: 3,
+                    hallLengthMax: 20,
+                    hallLengthMin: 7,
+                    width: displaySize,
+                    height: displaySize,
+                    placeStairsUp: false
+                };
+                break;
+            default:
+                prototypeOptions = { // TODO: MAGIC NUMBERS!
+                    'depth': depth,
+                    'width': DEFAULT_MAP_SIZE,
+                    'height': DEFAULT_MAP_SIZE
+                };
+                break;
+        }
+    }
+    var generator = Object.create(protoLevel);
+    var newLevel = generator.generate(prototypeOptions);
+    return newLevel;
+};
+var protoLevel = {
     roomSideMax: 7,
     roomSideMin: 3,
     hallLengthMax: 20,
@@ -164,7 +212,7 @@ mapManager.levelGenerator = {
                 newLevel.placeTile(posX, posY, tileType);
             }
         }
-        // TODO: Derp
+        // TODO: Remove this
         var mapString = '';
         for(var I = this.height-1; I >= 0; I--){
             var S = this.mapText.substring(I*this.width, (I+1)*this.width);
@@ -193,8 +241,8 @@ mapManager.levelGenerator = {
                 var xPos = randomRoom.x + randomInterval(0,randomRoom.width-1);
                 var yPos = randomRoom.y + randomInterval(0,randomRoom.height-1);
                 */
-                var xPos = randomInterval(0, this.width);
-                var yPos = randomInterval(0, this.width);
+                var xPos = randomInterval(1, this.width-1);
+                var yPos = randomInterval(1, this.width-1);
                 placed = randomEnemy.place(xPos, yPos, newLevel.id);
             }
         }
@@ -632,3 +680,6 @@ mapManager.levelGenerator = {
         return true;
     }
 };
+//== Close generator namespace =================================================
+    return accessFunction;
+})();

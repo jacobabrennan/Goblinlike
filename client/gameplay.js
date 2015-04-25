@@ -391,15 +391,23 @@ client.drivers.gameplay.commandLook = function (){
         this.memory.character.y,
         this.memory.character.viewRange
     );
+    // Filter out duplicate ids (composite objects, like worms).
+    var uniqueIds = [];
     // Compile list of names of things in view.
     var viewNames = [];
+    var viewEntities = [];
     view.forEach(function (content, viewIndex){
-        viewNames[viewIndex] = content.name;
+        var cId = content.id;
+        var unique = (uniqueIds.indexOf(cId) == -1);
+        if(!unique){ return;}
+        uniqueIds.push(cId);
+        viewNames.push(content.name);
+        viewEntities.push(content);
     }, this);
     // Create callback function for when the player has made a selection.
     var self = this;
     var optionsCallback = function (selectedName, selectedIndex){
-        var selectedContent = view[selectedIndex];
+        var selectedContent = viewEntities[selectedIndex];
         var recallInfo = self.memory.recall(selectedContent);
         // TODO: Implement this.
         this.drivers.menu.info(

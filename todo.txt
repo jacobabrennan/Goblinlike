@@ -27,11 +27,13 @@ Unknown         : a Ant, q quasit, A Ant Lion
     Vampire, Lich, spider3, demon
 
     frog, golem, jackal, Cube, Fly, Jelly, Reptile,
+    
+Demons, Frogs, Fire Walls, Lich, Mummy, Scorpion, Turtle, Tarantula, Wight, Wraith
 
 aA + giant ant
-bB - bat, +beetle, Blob
+bB + beetle, Blob
 cC + centipede
-dD - skeletal dwarf, Demon
+dD - Demon
 eE + floating eye
 fF - frog, Fire
 gG + goblin
@@ -55,10 +57,14 @@ xX -
 yY - 
 zZ - zombie dwarf
 
-skeleton, zombie dwarf, Mummy,
++ skeleton, + zombie dwarf, Mummy,
 Wight, Wraith,
 Vampire, Lich
 
+TO DONE: Alpha7
+    Blobs
+    Proper Font Display
+    BugFix: Included Font
 TO DONE: Alpha6
     Make Camp.
     Companion AI. Goblins get and equip equipment items.
@@ -93,14 +99,15 @@ Haunt the House
 TODO(Beta):
     Bugs:
         ? Goblin's unhelpful dance.
-        $ Enemies move twice on first move.
-        ? Phantom Arrows ("That item is no longer there");
+        (Defered) Enemies move twice on first move.
+        (Unconfirmed) Phantom Arrows ("That item is no longer there");
         $ Things are placed in unhelpful positions.
             $ Goblin and enemies spawn in the same room.
             $ Items, goblin, and enemies are spawned on stairs, up and down.
         Enemies get stuck toggling doors.
             
     Absolute Must:
+        Larger dungeon rooms as levels go higher.
         Status Bar
         ? Advanced Goblin Moral (Seek out when moral is high)
         ? Look / Examine
@@ -129,6 +136,7 @@ TODO(Beta):
             About
     
     Later:
+        Miasma?
         Goblins get, keep, and use consumable items.
         $ charms, amulets
         '.' to run.
@@ -141,6 +149,7 @@ TODO(Beta):
             $ Look into tight coupling in targeting system.
             
     Done:
+        + Blobs
         + Goblins don't path through visible traps.
         + Bugfix: Enemies Occupy Stairs.
         + enemies bash through doors

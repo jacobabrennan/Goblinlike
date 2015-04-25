@@ -24,7 +24,9 @@ var tile = Object.create(mappable, {
          **/
         // Fail if tile is dense.
         if(this.dense){ // TODO: Bug - too much recursion.
-            return false;
+            if(!content.incorporeal){
+                return false;
+            }
         }
         // Movement is allowed, return true.
         return true;
@@ -136,6 +138,8 @@ var genericTileTypes = {
     '>': Object.create(tile, { // Stairs Down
         id: {value: 'stairs_down'},
         character: {value: '>'},
+        background: {value: '#fc0'},
+        color: {value: '#000'},
         dense: {value: false},
         opaque: {value: false},
         climb: {value: function (content){
@@ -189,6 +193,8 @@ var genericTileTypes = {
     '<': Object.create(tile, { // Stairs Up
         id: {value: 'stairs_up'},
         character: {value: '<'},
+        background: {value: '#fc0'},
+        color: {value: '#000'},
         dense: {value: false},
         opaque: {value: false},
         climb: {value: function (content){

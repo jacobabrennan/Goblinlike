@@ -313,7 +313,7 @@ var weapon = Object.create(item, {
 });
 var bow = Object.create(item, {
     // Redefined Properties
-    character: {value: '{', writable: true},
+    character: {value: '}', writable: true},
     placement: {value: EQUIP_MAINHAND, writable: true},
     // Redefined Methods
     // New Properties

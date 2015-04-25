@@ -36,7 +36,7 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         newCanvas.addEventListener('click', this.clickHandler);
         // Create Context.
         this.context = newCanvas.getContext('2d');
-        this.context.font = '16px press start k';
+        this.context.font = '16px press_start_kregular';
     }},
     clickHandler: {value: function (clickEvent){
         var TILE_SIZE = 16;
