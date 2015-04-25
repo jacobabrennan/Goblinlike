@@ -50,7 +50,12 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         var y = correctedY/TILE_SIZE;
         var centerX = Math.floor(mapDisplay.displayWidth/2);
         var centerY = Math.floor(mapDisplay.displayHeight/2);
-        var direction = directionTo(centerX, centerY, x, y);
+        var direction;
+        if(Math.max(Math.abs(centerX-x), Math.abs(centerY-y)) <= 1){
+            direction = COMMAND_WAIT;
+        } else{
+            direction = directionTo(centerX, centerY, x, y);
+        }
         client.command(direction, {key: null});
     }, writable: true},
     display: {value: function (displayOptions){

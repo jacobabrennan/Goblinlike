@@ -63,7 +63,6 @@ Vampire, Lich
 
 TO DONE: Alpha7
     Blobs
-    Proper Font Display
     BugFix: Included Font
 TO DONE: Alpha6
     Make Camp.

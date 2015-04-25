@@ -71,6 +71,9 @@ var menu = Object.create(driver, {
         helpMenu.display();
         this.focus(helpMenu);
     }},
+    commands: {value: function (){
+        this.help();
+    }},
     info: {value: function (message){
         /**
             This function displays a message to the player.
@@ -150,16 +153,22 @@ var helpMenu = Object.create(driver, {
     //  commandsMessage += '123456789abcdefghij';
         commandsMessage += 'Click/Arrows: Move\n';
         commandsMessage += 'Click/Arrows: Fight\n\n';
-        commandsMessage += 'Commands: \n\n';
         this.displayElement.textContent = commandsMessage;
         var commandLink = function (key, command, name){
-            var linkElement = document.createElement('a');
-            linkElement.textContent = key+'- '+name;
-            linkElement.setAttribute('class', 'control');
-            linkElement.addEventListener('click', function (){
+            var optionElement = document.createElement('a');
+            optionElement._characterIndex = key ;
+            //optionElement.addEventListener('click', optionLinkFunction);
+            var indexElement = document.createElement('span');
+            indexElement.textContent = key+'- ';
+            indexElement.setAttribute('class', 'control');
+            optionElement.appendChild(indexElement);
+            var nameElement = document.createElement('span');
+            nameElement.textContent = name;
+            optionElement.appendChild(nameElement);
+            optionElement.addEventListener('click', function (){
                 client.drivers.gameplay.command(command, {'key': key});
             }.bind(this));
-            this.displayElement.appendChild(linkElement);
+            this.displayElement.appendChild(optionElement);
             this.displayElement.appendChild(document.createElement('br'));
         }.bind(this);
         commandLink("c", COMMAND_DROP, 'Close Door');
@@ -172,9 +181,11 @@ var helpMenu = Object.create(driver, {
         commandLink("L", COMMAND_LEADERSHIP, 'Leadership');
         commandLink("r", COMMAND_CAMP, 'Rest (Heal)');
         commandLink("t", COMMAND_UNEQUIP, 'Take Off Item');
+        commandLink("s", COMMAND_STAIRS, 'Use Stairs');
         commandLink("u", COMMAND_USE, 'Use Item');
-        commandLink("< or >", COMMAND_STAIRS, 'Use Stairs');
         commandLink("?", COMMAND_HELP, 'Help');
+        this.displayElement.appendChild(document.createElement('br'));
+        this.displayElement.appendChild(document.createElement('br'));
         commandLink("Esc", COMMAND_CANCEL, 'Cancel');
         
         /*var escMessage = document.createElement('a');
@@ -205,7 +216,7 @@ var helpMenu = Object.create(driver, {
     command: {value: function (command, options){
         // TODO: Document.
         if(command == COMMAND_CANCEL){
-            menu.status();
+            menu.commands();
         }
         return false;
     }}
@@ -350,7 +361,7 @@ var infoMenu = Object.create(driver, {
                     var nextMessage = this.pendingMessages.shift();
                     this.stackMessage(nextMessage);
                 } else{
-                    menu.status();
+                    menu.commands();
                     return false;
                 }
         }
@@ -621,7 +632,7 @@ var optionsMenu = Object.create(driver, {
         }
         switch(command){
             case COMMAND_CANCEL:
-                menu.status();
+                menu.commands();
                 return true;
             case COMMAND_PAGEDOWN:
                 this.optionsPage = Math.max(0, this.optionsPage-1);
@@ -718,7 +729,7 @@ var directionSelectMenu = Object.create(driver, {
         // TODO: Document.
         switch(command){
             case COMMAND_CANCEL:
-                menu.status();
+                menu.commands();
                 break;
             case NORTH: case NORTHWEST: case WEST: case SOUTHWEST:
             case SOUTH: case SOUTHEAST: case EAST: case NORTHEAST:

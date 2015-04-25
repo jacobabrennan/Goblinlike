@@ -67,7 +67,7 @@ client.preferences = {
     "p": COMMAND_NONE,
     "q": COMMAND_USE, // Alias for those who 'quaff' potions.
     "r": COMMAND_CAMP,
-    "s": COMMAND_NONE,
+    "s": COMMAND_STAIRS,
     "t": COMMAND_UNEQUIP,
     "u": COMMAND_USE,
     "v": COMMAND_NONE,

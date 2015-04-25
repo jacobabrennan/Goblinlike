@@ -214,7 +214,7 @@ client.drivers.gameplay = Object.create(driver, {
 
 client.drivers.gameplay.commandMove = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.status();
+    this.drivers.menu.commands();
     if(direction === 0){
         client.networking.sendMessage(COMMAND_WAIT, {});
     } else{
@@ -223,7 +223,7 @@ client.drivers.gameplay.commandMove = function (direction){
 };
 client.drivers.gameplay.commandWait = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.status();
+    this.drivers.menu.commands();
     client.networking.sendMessage(COMMAND_WAIT, {});
 };
 client.drivers.gameplay.commandClose = function (){

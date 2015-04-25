@@ -5,6 +5,7 @@ client.skin = Object.create(driver, {
     panelSecondary:  {value: undefined, writable: true},
     panelPrimaryContent:{value: undefined, writable: true},
     panelSecondaryContent: {value: undefined, writable: true},
+    statusBar: {value: undefined, writable: true},
     setup: {value: function (configuration){
         /**
          *  This function configures the map to display game data. It is called
@@ -14,8 +15,10 @@ client.skin = Object.create(driver, {
          *  It should not be called more than once.
          *  It does not return anything.
          **/
+        this.statusBar = document.createElement('pre');
         this.panelPrimary = document.createElement('div');
         this.panelSecondary = document.createElement('div');
+        this.statusBar.setAttribute('id', 'statusBar');
         this.panelPrimary.setAttribute('id', 'panelPrimary');
         this.panelSecondary.setAttribute('id', 'panelSecondary');
         this.panelPrimary.setAttribute('class', 'panel');
@@ -23,8 +26,10 @@ client.skin = Object.create(driver, {
         this.container = document.getElementById(configuration.containerId);
         this.container.tabIndex = 1;
         this.container.focus();
+        this.container.appendChild(this.statusBar);
         this.container.appendChild(this.panelPrimary);
         this.container.appendChild(this.panelSecondary);
+        this.updateStatus('Status Display');
     }},
     registerPanel: {value: function (newElement, whichPanel){
         var parentPanel;
@@ -52,5 +57,8 @@ client.skin = Object.create(driver, {
             this.panelSecondary.removeChild(this.panelSecondaryContent);
             this.panelSecondaryContent = undefined;
         }
+    }},
+    updateStatus: {value: function (statusText){
+        this.statusBar.textContent = statusText;
     }}
 });

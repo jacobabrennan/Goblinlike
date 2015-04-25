@@ -28,11 +28,9 @@ client.drivers.title = Object.create(driver, {
         this.displayPane.setAttribute('id', 'title');
         this.displayPane.setAttribute('class', 'pane');
         var titleElement = document.createElement('span');
-        var versionElement = document.createElement('span');
         var linkNewGame = document.createElement('a');
         var linkAbout = document.createElement('a');
         titleElement.textContent = 'Goblin-like';
-        versionElement.textContent = 'v.'+VERSION;
         linkNewGame.textContent = 'Space- New Game';
         linkAbout.textContent = 'Esc- About';
         linkNewGame.setAttribute('class', 'control');
@@ -46,10 +44,8 @@ client.drivers.title = Object.create(driver, {
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
+        this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(titleElement);
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(versionElement);
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
@@ -58,6 +54,7 @@ client.drivers.title = Object.create(driver, {
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
         //this.displayPane.appendChild(linkAbout);
+        this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
         this.displayPane.appendChild(document.createElement('br'));
@@ -83,6 +80,7 @@ client.drivers.title = Object.create(driver, {
     }},
     display: {value: function (options){
         // TODO: Document.
+        client.skin.updateStatus('Version '+VERSION);
         var picture = '';
         picture += '                     '+'\n';
         picture += '                     '+'\n';
