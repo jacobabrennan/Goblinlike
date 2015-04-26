@@ -81,6 +81,7 @@ client.preferences = {
     "z": COMMAND_NONE,
     "F": COMMAND_THROW,
     "L": COMMAND_LEADERSHIP,
+    
     "?": COMMAND_HELP,
     "<": COMMAND_STAIRS,
     ">": COMMAND_STAIRS,
@@ -89,9 +90,19 @@ client.preferences = {
     "[": COMMAND_PAGEDOWN,
     "]": COMMAND_PAGEUP,
     "space": COMMAND_ENTER,
-    "enter": COMMAND_ENTER
+    "enter": COMMAND_ENTER,
     //"return": COMMAND_ENTER
         // Don't use. Mousetrap will fire events for both enter AND return.
+    "backspace": COMMAND_NONE,
+    "del": COMMAND_NONE,
+    
+    "A": COMMAND_NONE, "B": COMMAND_NONE, "C": COMMAND_CLOSE, "D": COMMAND_DROP,
+    "E": COMMAND_EQUIP, "G": COMMAND_GET, "H": COMMAND_NONE, "I": COMMAND_USE,
+    "J": COMMAND_NONE, "K": COMMAND_NONE, "M": COMMAND_NONE, "N": COMMAND_NONE,
+    "O": COMMAND_NONE, "P": COMMAND_NONE, "Q": COMMAND_USE, "R": COMMAND_CAMP,
+    "S": COMMAND_STAIRS, "T": COMMAND_UNEQUIP, "U": COMMAND_USE, "V":
+    COMMAND_NONE, "W": COMMAND_NONE, "X": COMMAND_NONE, "Y": COMMAND_NONE, "Z":
+    COMMAND_NONE
 };
 
 // TODO: Document.

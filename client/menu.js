@@ -146,7 +146,7 @@ var descriptionMenu = Object.create(driver, {
         if(description){
             client.skin.drawParagraph(1, 16, description);
         }
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
+        client.skin.drawCommand(1, 1, 'Esc', 'Done', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},

@@ -13,6 +13,7 @@
   ===========================================================================*/
 
 client.drivers.title = Object.create(driver, {
+    drivers: {value: {}, writable: true},
     setup: {value: function (configuration){
         /**
             This function is called by client.setup as soon as the page loads.
@@ -39,6 +40,9 @@ client.drivers.title = Object.create(driver, {
         this.display();
         //this.focus(client.drivers.gameplay.drivers.menu);
     }},
+    blurred: {value: function (){
+        this.focus(null);
+    }},
     newGame: {value: function (){
         // TODO: Document.
         /**
@@ -48,13 +52,17 @@ client.drivers.title = Object.create(driver, {
          *  It does not return anything.
          **/
         clearInterval(this.drawInterval);
+        this.focus(this.drivers.rollCharacter);
+        /*clearInterval(this.drawInterval);
         var gameDriver = client.drivers.gameplay;
         gameDriver.memory.blank();
         client.networking.sendMessage(COMMAND_NEWGAME, {});
-        client.focus(gameDriver);
+        client.focus(gameDriver);*/
     }},
     display: {value: function (options){
         // TODO: Document.
+        var block = driver.display.apply(this, arguments);
+        if(block){ return block;}
         client.skin.clearCommands();
         client.skin.status('Version '+VERSION, '#008');
         /*var picture = '';
@@ -219,6 +227,148 @@ client.drivers.title = Object.create(driver, {
             }
             client.skin.drawString(6, 13, 'Goblin-Like', color);
         }, 10);
+        return true;
         //client.displayText(picture);
+    }}
+});
+client.drivers.title.drivers.rollCharacter = Object.create(driver, {
+    roll: {value: function (){
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        client.skin.status('New Character');
+        var statTotal = 28; // TODO: Magic Number!
+        this.vitality = 1;
+        this.strength = 1;
+        this.wisdom = 1;
+        this.charisma = 1;
+        statTotal -= 4; // Total of innitial population of 1s.
+        while(statTotal){
+            switch(Math.floor(Math.random()*4)){
+                case 0:
+                    if(this.vitality >= 10){ continue;}
+                    this.vitality++;
+                    break;
+                case 1:
+                    if(this.strength >= 10){ continue;}
+                    this.strength++;
+                    break;
+                case 2:
+                    if(this.wisdom >= 10){ continue;}
+                    this.wisdom++;
+                    break;
+                case 3:
+                    if(this.charisma >= 10){ continue;}
+                    this.charisma++;
+                    break;
+            }
+            statTotal--;
+        }
+        this.display();
+    }},
+    display: {value: function (){
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        client.skin.status('New Character');
+        client.skin.drawString(14, 16, 'Roll Stats:');
+        client.skin.drawString(16, 14, 'Vitality: '+this.vitality);
+        client.skin.drawString(16, 13, 'Strength: '+this.strength);
+        client.skin.drawString(16, 12, 'Wisdom  : '+this.wisdom  );
+        client.skin.drawString(16, 11, 'Charisma: '+this.charisma);
+        if(!this.name && this.name !== ''){
+            client.skin.drawCommand(14,  9, 'A', 'Accept Stats', COMMAND_ENTER);
+            client.skin.drawCommand(14,  8, 'B', 'Reroll Stats', COMMAND_CANCEL);
+        } else{
+            client.skin.drawString(14, 9, 'Enter Name:');
+            client.skin.drawString(16, 7, this.name+'_');
+            if(this.name.length >= 1){
+                client.skin.drawCommand(14, 5, 'Enter', 'Finished', COMMAND_ENTER);
+                client.skin.drawCommand(16, 4, 'Esc', 'Reroll', COMMAND_CANCEL);
+            }
+        }
+        return true;
+    }},
+    command: {value: function (command, options){
+        // TODO: Document.
+        var block = driver.command.call(this, command, options);
+        if(block){
+            return block;
+        }
+        if(!this.name && this.name !== ''){
+            if(command == COMMAND_NONE){
+                if(options.key == 'a' || options.key == 'A'){
+                    command = COMMAND_ENTER;}
+                if(options.key == 'b' || options.key == 'B'){
+                    command = COMMAND_CANCEL;}
+            }
+            switch(command){
+                case COMMAND_ENTER:
+                    this.name = sWerd.name();
+                    this.display();
+                    return true;
+                case COMMAND_CANCEL:
+                    this.roll();
+                    return true;
+            }
+        } else {
+            if(options && options.key){
+                var key = options.key;
+                if(key.length === 1){
+                    if(this.name.length == 8){
+                        this.name = this.name.substring(0, 7);
+                    }
+                    this.name += key;
+                    if(this.name.length == 1){
+                        this.name = this.name.toUpperCase();
+                    }
+                } else if(key == 'backspace' || key == 'del'){
+                    this.name = this.name.substring(0, this.name.length-1);
+                }
+                this.display();
+            }
+            if(command == COMMAND_ENTER){
+                this.start();
+            } else if(command == COMMAND_CANCEL){
+                this.name = null;
+                this.roll();
+            }
+        }
+        return true;
+    }},
+    focused: {value: function (){
+        this.roll();
+        this.display();
+        //this.focus(client.drivers.gameplay.drivers.menu);
+    }},
+    blurred: {value: function (){
+        this.name = null;
+        this.vitality = null;
+        this.strength = null;
+        this.wisdom   = null;
+        this.charisma = null;
+    }},
+    start: {value: function (){
+        // TODO: Document.
+        /**
+         *  This function spawns a new hero when the game begins. It directs
+         *      the memory to blank out and prep for new data, places the hero,
+         *      and sets the game in motion.
+         *  It does not return anything.
+         **/
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        clearInterval(this.drawInterval);
+        var gameDriver = client.drivers.gameplay;
+        gameDriver.memory.blank();
+        client.networking.sendMessage(COMMAND_NEWGAME, {
+            name    : this.name,
+            vitality: this.vitality,
+            strength: this.strength,
+            wisdom  : this.wisdom,
+            charisma: this.charisma
+        });
+        client.focus(gameDriver);
+        gameDriver.display();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        gameDriver.drivers.menu.description(INTRO_TITLE, INTRO_BODY);
     }}
 });

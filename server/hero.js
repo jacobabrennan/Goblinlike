@@ -26,7 +26,7 @@ var hero = Object.create(person, {
     turnActive: {value: false, writable: true},
     turnCallback: {value: undefined, writable: true},
     // Redefined Methods
-    constructor: {value: function (){
+    constructor: {value: function (options){
         /**
             A standard constructor, used for inheritence and setup.
             The function updates several values so that the player will know
@@ -34,7 +34,9 @@ var hero = Object.create(person, {
             Returns a reference to itself.
          **/
         person.constructor.apply(this, arguments);
-        this.name = sWerd.name();
+        if(options && options.name){
+            this.name = options.name;
+        }
         this.update('id');
         this.update('name');
         this.update('viewRange');

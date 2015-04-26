@@ -57,40 +57,44 @@
     };
     // Redefined Methods
     base.constructor = (function (parentFunction){
-        return function (){
+        return function (options){
             this.setLevel(1);
             this.experience = 0;
             var statTotal = 28; // TODO: Magic Number!
-            this.vitality = 1;
-            this.strength = 1;
-            this.wisdom = 1;
-            this.charisma = 1;
-            statTotal -= 4; // Total of innitial population of 1s.
-            while(statTotal){
-                switch(Math.floor(Math.random()*4)){
-                    case 0:
-                        if(this.vitality >= 10){ continue;}
-                        this.vitality++;
-                        break;
-                    case 1:
-                        if(this.strength >= 10){ continue;}
-                        this.strength++;
-                        break;
-                    case 2:
-                        if(this.wisdom >= 10){ continue;}
-                        this.wisdom++;
-                        break;
-                    case 3:
-                        if(this.charisma >= 10){ continue;}
-                        this.charisma++;
-                        break;
+            if(options){
+                this.name     = options.name    ;
+                this.vitality = options.vitality;
+                this.strength = options.strength;
+                this.wisdom   = options.wisdom  ;
+                this.charisma = options.charisma;
+            } else{
+                this.vitality = 1;
+                this.strength = 1;
+                this.wisdom = 1;
+                this.charisma = 1;
+                statTotal -= 4; // Total of innitial population of 1s.
+                while(statTotal){
+                    switch(Math.floor(Math.random()*4)){
+                        case 0:
+                            if(this.vitality >= 10){ continue;}
+                            this.vitality++;
+                            break;
+                        case 1:
+                            if(this.strength >= 10){ continue;}
+                            this.strength++;
+                            break;
+                        case 2:
+                            if(this.wisdom >= 10){ continue;}
+                            this.wisdom++;
+                            break;
+                        case 3:
+                            if(this.charisma >= 10){ continue;}
+                            this.charisma++;
+                            break;
+                    }
+                    statTotal--;
                 }
-                statTotal--;
             }
-            /*this.vitality = randomInterval(1,10);
-            this.strength = randomInterval(1,10);
-            this.wisdom = randomInterval(1,10);
-            this.charisma = randomInterval(1,10);*/
             parentFunction.apply(this, arguments);
             return this;
         };

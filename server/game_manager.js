@@ -2,10 +2,10 @@ var gameManager = (function (){
 // ============================================================================
 var manager = {
     currentGame: undefined,
-    newGame: function (){
+    newGame: function (options){
         if(this.currentGame){ return false;}
         this.currentGame = Object.instantiate(game);
-        this.currentGame.start();
+        this.currentGame.start(options);
         return this.currentGame;
     },
     gameOver: function (){
@@ -53,7 +53,25 @@ var manager = {
     },
     clientCommand: function (command, options){
         if(command == COMMAND_NEWGAME){
-            this.newGame();
+            var name     = options.name || '';
+            var vitality = options.vitality || 0;
+            var strength = options.strength || 0;
+            var wisdom   = options.wisdom || 0;
+            var charisma = options.charisma || 0;
+            var reroll = false;
+            if(!vitality.toPrecision || vitality > 10 || vitality < 0 ||
+                (vitality != Math.round(vitality))){ reroll = true;}
+            if(!strength.toPrecision || strength > 10 || strength < 0 ||
+                (strength != Math.round(strength))){ reroll = true;}
+            if(!wisdom.toPrecision || wisdom > 10 || wisdom < 0 ||
+                (wisdom != Math.round(wisdom))){ reroll = true;}
+            if(!charisma.toPrecision || charisma > 10 || charisma < 0 ||
+                (charisma != Math.round(charisma))){ reroll = true;}
+            if(!name.substring || name.length < 1 || name.length > 8){
+                reroll = true;
+            }
+            if(reroll){ options = null;}
+            this.newGame(options);
         } else{
             this.currentGame.clientCommand(command, options);
         }
@@ -65,9 +83,9 @@ game = {
     constructor: function (){
         return this;
     },
-    start: function (){
+    start: function (options){
         var newLevel = mapManager.generateLevel(1);
-        this.hero = Object.instantiate(hero);
+        this.hero = Object.instantiate(hero, options);
         this.hero.place(
             newLevel.startCoords.x, newLevel.startCoords.y, newLevel.id);
         this.hero.update('levelId');
