@@ -55,7 +55,8 @@ client.drivers.title = Object.create(driver, {
     }},
     display: {value: function (options){
         // TODO: Document.
-        client.skin.status('Version '+VERSION);
+        client.skin.clearCommands();
+        client.skin.status('Version '+VERSION, '#008');
         /*var picture = '';
         picture += '                     '+'\n';
         picture += '                     '+'\n';
@@ -79,29 +80,31 @@ client.drivers.title = Object.create(driver, {
         picture += 'T\\:::~ -   - ~:  .:/T'+'\n';
         picture += 'T\\|: -  - -  ~ :. .::';*/
         var drawMountain = function (){
-            client.skin.drawString(0,20,'                                          ');
-            client.skin.drawString(0,19,'                                          ');
-            client.skin.drawString(0,18,'                                          ');
-            client.skin.drawString(0,17,'                                    /\\    ');
-            client.skin.drawString(0,16,'                                   /D \\ _ ');
-            client.skin.drawString(0,15,'                     ____-----  __/   \\\\  ');
-            client.skin.drawString(0,14,'                      _ ____     /     \\\\ ');
-            client.skin.drawString(0,13,'                              /\\/        \\');
-            client.skin.drawString(0,12,'                             /   \\     \\\\ ');
-            client.skin.drawString(0,11,'                            /   \\\\      \\ ');
-            client.skin.drawString(0,10,'                          _/     \\ \\  /   ');
-            client.skin.drawString(0, 9,'                         / \\      \\  /   \\');
-            client.skin.drawString(0, 8,'\\                 _    |/|\\ \\     \\\\/     ');
-            client.skin.drawString(0, 7,' \\              _/ \\ ||/|  | |  |  /      ');
-            client.skin.drawString(0, 6,' \\\\___         /  \\ |T\\|T|| \\ |  |/     | ');
-            client.skin.drawString(0, 5,'\\ \\   \\_      /   |/T||/T\\T ||  |    | /T\\');
-            client.skin.drawString(0, 4,':\\|  \\ \\\\__|_/|  /T\\T/T|T/T\\ : |  | |.|/T\\');
-            client.skin.drawString(0, 3,'|:.\\|_\\__\\/T\\|_|_/T|\\//T\\/T\\~~~:.: . /T\\T|');
-            client.skin.drawString(0, 2,':.:.:. . ./T\\ /T\\//T\\|/T:|:~-  ~~~: ./T\\/T');
-            client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T');
-            client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::');
-            client.skin.drawCommand(8, 11, 'A', 'Start');
-            client.skin.drawCommand(8, 10, 'B', 'About');
+            client.skin.drawString(0,20,'                                          ','#008');
+            client.skin.drawString(0,19,'                                          ','#008');
+            client.skin.drawString(0,18,'                                          ','#008');
+            client.skin.drawString(0,17,'                                    /\\    ','#008');
+            client.skin.drawString(0,16,'                                   /D \\ _ ','#008');
+            client.skin.drawString(0,15,'                     ____-----  __/   \\\\  ','#008');
+            client.skin.drawString(0,14,'                      _ ____     /     \\\\ ','#008');
+            client.skin.drawString(0,13,'                              /\\/        \\','#008');
+            client.skin.drawString(0,12,'                             /   \\     \\\\ ','#008');
+            client.skin.drawString(0,11,'                            /   \\\\      \\ ','#008');
+            client.skin.drawString(0,10,'                          _/     \\ \\  /   ','#008');
+            client.skin.drawString(0, 9,'                         / \\      \\  /   \\','#008');
+            client.skin.drawString(0, 8,'\\                 _    |/|\\ \\     \\\\/     ','#008');
+            client.skin.drawString(0, 7,' \\              _/ \\ ||/|  | |  |  /      ','#008');
+            client.skin.drawString(0, 6,' \\\\___         /  \\ |T\\|T|| \\ |  |/     | ','#008');
+            client.skin.drawString(0, 5,'\\ \\   \\_      /   |/T||/T\\T ||  |    | /T\\','#008');
+            client.skin.drawString(0, 4,':\\|  \\ \\\\__|_/|  /T\\T/T|T/T\\ : |  | |.|/T\\','#008');
+            client.skin.drawString(0, 3,'|:.\\|_\\__\\/T\\|_|_/T|\\//T\\/T\\~~~:.: . /T\\T|','#008');
+            client.skin.drawString(0, 2,':.:.:. . ./T\\ /T\\//T\\|/T:|:~-  ~~~: ./T\\/T','#008');
+            client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
+            client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
+            client.skin.drawCommand(8, 11, 'A', 'Start', function (){
+                client.drivers.title.newGame();
+            });
+            client.skin.drawCommand(8, 10, 'B', 'About', function (){});
         };
         var maxCloud = 40;
         var cloudFalloff = 0;
@@ -109,9 +112,9 @@ client.drivers.title = Object.create(driver, {
             var clouds = '';
             clouds += '   **********          ';
             clouds += ' *** *     * * **    **';
-            clouds += '**  *    *  * **    *_*';
-            clouds += '**____-----**__      **';
-            clouds += ' **_*____* ***        *';
+            clouds += '**  *    *  * **    * *';
+            clouds += '**         **        **';
+            clouds += ' ** *    * ***        *';
             clouds += '   *  *** *            ';
             clouds += '  ****  **             ';
             clouds += '      ***              ';
@@ -202,7 +205,6 @@ client.drivers.title = Object.create(driver, {
             blue  = Math.floor(Math.sin((Math.PI/2)*(blue /colorTime))*256);
             green = Math.floor(Math.sin((Math.PI/2)*(green/colorTime))*256);
             var color = 'rgb('+red+','+green+','+blue+')';
-            client.skin.drawString(6, 13, 'Goblin-Like', color);
             if(hue == spectrumTime - 25){
                 drawMountain();
             }
@@ -215,6 +217,7 @@ client.drivers.title = Object.create(driver, {
             } else if(hue >= spectrumTime-15){
                 lightningStrike();
             }
+            client.skin.drawString(6, 13, 'Goblin-Like', color);
         }, 10);
         //client.displayText(picture);
     }}

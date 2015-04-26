@@ -86,6 +86,8 @@ hero.endTurn = (function (p){
             this.update('color');
             this.sound('courage', 10, this, this.name+' regains their courage!');
         }
+        this.update('moral');
+        return amount;
     };
     base.takeTurn = (function (parentFunction){
         return function (){

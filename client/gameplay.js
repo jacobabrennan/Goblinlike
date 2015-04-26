@@ -40,6 +40,17 @@ client.drivers.gameplay = Object.create(driver, {
         this.dead = true;
         this.takeTurn(deathData);
     }},
+    handleClick: {value: function (x, y, options){
+        var block = driver.handleClick.apply(this, arguments);
+        if(block){
+            return block;
+        }
+        if(this.dead){
+            return true;
+        }
+        console.log('Trying')
+        return this.drivers.map.handleClick(x, y, options);
+    }, writable: true},
     command: {value: function (command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
@@ -402,10 +413,14 @@ client.drivers.gameplay.commandLook = function (){
     var optionsCallback = function (selectedName, selectedIndex){
         var selectedContent = viewEntities[selectedIndex];
         var recallInfo = self.memory.recall(selectedContent);
-        // TODO: Implement this.
-        this.drivers.menu.info(
-            'You see the '+recallInfo.name+'. (Unfinished)'
-        );
+        if(recallInfo.companion){
+            self.drivers.menu.status(recallInfo);
+        } else{
+            self.drivers.menu.description(
+                'Examine '+recallInfo.name+':',
+                recallInfo.viewText
+            );
+        }
     };
     // Display options to player.
     this.drivers.menu.options('Look at what?', viewNames, optionsCallback);

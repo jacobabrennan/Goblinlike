@@ -664,7 +664,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 1},
     // Behavior:
     breedRate: {value: 1/8, writable: true},
-    skills: {value: ["attack"], writable: true}
+    skills: {value: ["attack"], writable: true},
+    // Description:
+    viewText: {value: 'You see a small white rodent.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -675,8 +677,10 @@ library.registerEnemy(Object.create(enemy, {
     rewardExperience: {value: 10, writable: true},
     vigilance: {value: 10},
     erratic: {value: 1/8},
-    baseHp: {value: 3}
+    baseHp: {value: 3},
     // Behavior:
+    // Description:
+    viewText: {value: 'You see a giant ant about the size of a wolf.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -693,8 +697,9 @@ library.registerEnemy(Object.create(enemy, {
         // The minimum distance from which the enemy can be activated by sound.
     forgetful: {value: 0, writable: true},
     // Behavior:
-    opensDoors: {value: 1/4, writable: true}
-    //skills: {value: ["breath fire", "attack"], writable: true},
+    opensDoors: {value: 1/4, writable: true},
+    // Description:
+    viewText: {value: 'You see a large armored beetle about the size of a bear. It menaces with sharp pincers.'}
 }));
 library.registerEnemy(Object.create(snakePrototype, {
     // Id:
@@ -711,7 +716,9 @@ library.registerEnemy(Object.create(snakePrototype, {
     baseHp: {value: 15, writable: true},
     erratic: {value: 1/4, writable: true},
     // Behavior:
-    bodyLength: {value: 3, writable: true}
+    bodyLength: {value: 3, writable: true},
+    // Description:
+    viewText: {value: 'You see a long centipede, large enough to block the narrow halls of the dwarven city.'}
 }));
 /*var spiderPrototype = (function (){
     return Object.create(enemy, {
@@ -743,7 +750,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 10},
     // Behavior:
     sedentary: {value: true, writable: true},
-    skills: {value: ["glare","attack"], writable: true}
+    skills: {value: ["glare","attack"], writable: true},
+    // Description:
+    viewText: {value: 'You see a large eyeball. It bobs up and down slowly.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -760,7 +769,9 @@ library.registerEnemy(Object.create(enemy, {
     behavior: {value: function (){
         behaviorErratic.call(this);
         skillLibrary.getSkill('acid trap').use(this);
-    }, writable: true}
+    }, writable: true},
+    // Description:
+    viewText: {value: "You see a small blob with many small eyes on stalks rising from it's body. It squirms slowly through a puddle of acid."}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -778,7 +789,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 3},
     // Behavior:
     breedRate: {value: 1/10, writable: true},
-    skills: {value: ["attack"], writable: true}
+    skills: {value: ["attack"], writable: true},
+    // Description:
+    viewText: {value: 'You see a mass of dense yellow mold covering the walls and floor. It seems to be growing at an alarming rate.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -794,7 +807,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 15},
     // Behavior:
     opensDoors: {value: 1, writable: true},
-    skills: {value: ["teleport","attack"], writable: true}
+    skills: {value: ["teleport","attack"], writable: true},
+    // Description:
+    viewText: {value: 'You see a minor imp, one of the lowest of demons. This dwarven city must have once housed a wizard or two.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -808,7 +823,9 @@ library.registerEnemy(Object.create(enemy, {
     forgetful: {value: 15, writable: true},
     baseHp: {value: 30},
     // Behavior:
-    opensDoors: {value: 1, writable: true}
+    opensDoors: {value: 1, writable: true},
+    // Description:
+    viewText: {value: "You see a skeletal dwarf, one of the citizens of this city raised from the dead. It's vacant eye sockets seem to be fixed directly on you."}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -823,7 +840,9 @@ library.registerEnemy(Object.create(enemy, {
     turnDelay: {value: 2, writable: true},
     baseHp: {value: 60},
     // Behavior:
-    opensDoors: {value: 1, writable: true}
+    opensDoors: {value: 1, writable: true},
+    // Description:
+    viewText: {value: 'You see a zombie dwarf, a mighty warrior of this city raised from the dead.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -839,7 +858,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 8},
     // Behavior:
     breedRate: {value: 1/8, writable: true},
-    skills: {value: ["attack"], writable: true}
+    skills: {value: ["attack"], writable: true},
+    // Description:
+    viewText: {value: 'You see a large black rat.'}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -858,7 +879,9 @@ library.registerEnemy(Object.create(enemy, {
     forgetful: {value: 0, writable: true},
     // Behavior:
     opensDoors: {value: 1/4, writable: true},
-    skills: {value: ["breath fire", "attack"], writable: true}
+    skills: {value: ["breath fire", "attack"], writable: true},
+    // Description:
+    viewText: {value: "You see a large armored red beetle. Tendrils of smoke escape from the corners of it's crooked mouth."}
 }));
 library.registerEnemy(Object.create(blobPrototype, {
     // Id:
@@ -876,7 +899,9 @@ library.registerEnemy(Object.create(blobPrototype, {
     erratic: {value: 1/4, writable: true},
     forgetful: {value: 5, writable: true},
     // Behavior:
-    bodyMass: {value: 9, writable: true}
+    bodyMass: {value: 9, writable: true},
+    // Description:
+    viewText: {value: "You see a large yellow blob. It is gelatinous and jiggles and convulses constantly."}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -892,7 +917,9 @@ library.registerEnemy(Object.create(enemy, {
     baseHp: {value: 40},
     // Behavior:
     opensDoors: {value: 1, writable: true},
-    skills: {value: ["teleport","attack"], writable: true}
+    skills: {value: ["teleport","attack"], writable: true},
+    // Description:
+    viewText: {value: "You see an imp. These artificial creatures of magic are filled with malice."}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -915,7 +942,9 @@ library.registerEnemy(Object.create(enemy, {
         var acidTrap = trapLibrary.getTrap('acid trap');
         Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
         return enemy.die.apply(this, arguments);
-    }}
+    }},
+    // Description:
+    viewText: {value: "You see a mass of blue mold. Acid drips from all parts of it, and it seems to be growing at an alarming rate."}
 }));
 library.registerEnemy(Object.create(enemy, {
     // Id:
@@ -929,8 +958,11 @@ library.registerEnemy(Object.create(enemy, {
     erratic: {value: 2/3, writable: true},
     turnDelay: {value: 2/3, writable: true},
     baseHp: {value: 50},
-    behavior: {value: behaviorDirect, writable: true}
+    behavior: {value: behaviorDirect, writable: true},
     // Behavior:
+    skills: {value: ['attack', 'wail']},
+    // Description:
+    viewText: {value: 'You see a shadowy figure shifting through the air. The hairs on your neck stand on end as you think you hear a shrill voice inches away from your ear.'}
 }));
 library.registerEnemy(Object.create(blobPrototype, {
     // Id:
@@ -952,7 +984,9 @@ library.registerEnemy(Object.create(blobPrototype, {
         var acidTrap = trapLibrary.getTrap('acid trap');
         Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
         return enemy.die.apply(this, arguments);
-    }, writable: true}
+    }, writable: true},
+    // Description:
+    viewText: {value: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."}
 }));
 
 //==============================================================================

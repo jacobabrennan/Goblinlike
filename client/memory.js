@@ -58,8 +58,8 @@ var memory = {
             this.map.recordData(sensoryData.view, this.currentTime);
         }
     },
-    storeIdObject: function (object, id){
-        /**
+    /*storeIdObject: function (object, id){
+        / **
             Maintains a library of all objects the player has encountered, by
             id. This allows the player to recognize when something they saw in
             one place suddenly shows up in another. This way, the map doesn't
@@ -67,32 +67,32 @@ var memory = {
             seen them in a new position.
             
             It does not return anything.
-        **/
+        ** /
         this.idObjects[id] = object;
     },
     cancelIdObject: function (id){
-        /**
+        / **
             Removes an object, referenced by id, from memory. Because ids are
             recycled, this is neccessary to prevent the memory from identifying
             an item as a new monster, for example.
             
             It does not return anything.
-        **/
+        ** /
         delete this.idObjects[id];
     },
     getIdObject: function (id, name){
-        /**
+        / **
             Returns an object previously stored in memory using storeIdObject,
             or undefined if no object is known. It will, optionally, only return
             an object that has the same name as one provided. This is helpful to
             ensure that, when an id is recycled, an object is misremembered.
-        **/
+        ** /
         var rememberedObject = this.idObjects[id];
         if(name && rememberedObject.name != name){
             return undefined;
         }
         return rememberedObject;
-    },
+    },*/
     recall: function (containable){
         /**
             Allows the character to remember information about enemies
@@ -100,8 +100,28 @@ var memory = {
             
             It returns an object containing everything known about the enemy.
         **/
-        var objMemory = this.getIdObject(containable.id);
-        return {name: objMemory.name};
+        // TODO: Tightly coupled to server!
+        /*
+            This is ok for this project, as it is a single player game with no
+            server to browser communication, and sending whole descriptions all
+            the time is inefficient. Future projects would require an uncoupled
+            solution.
+        */
+        var objId = containable.id;
+        var objMemory = mapManager.idManager.get(objId);
+        var objViewText = objMemory.viewText;
+        if(objMemory.companion){
+            return objMemory;
+        } else if(objMemory == gameManager.currentGame.hero){
+            return {name: objMemory.name, viewText: "You see a tired and ragged goblin, tired of being hunted by humans in the forest, and looking for a better life, maybe underground..."};
+        } else if(objMemory.lore && gameManager.currentGame){
+            if(objMemory.lore > gameManager.currentGame.hero.lore()){
+                objViewText = "You know nothing about the "+objMemory.description()+".";
+            }
+        }
+        //var objMemory = this.getIdObject(containable.id);
+        // --
+        return {name: objMemory.name, viewText: objViewText};
         // TODO: Finish this with real stuffs.
     },
     getDisplayLevel: function (){
@@ -138,9 +158,6 @@ var memory = {
         if(!currentLevel){ return [];}
         return currentLevel.getRange(x, y, range);
     },
-    statusUpdate: false,
-    statusUpdateList: ['name', 'hp', 'maxHp', 'level', 'experience',
-        'vitality', 'strength', 'wisdom', 'charisma', 'equipment'],
     updateSelf: function (updateData){
         /**
             This function parses data about updates to the player's hero object
@@ -189,11 +206,11 @@ var memory = {
         for(var key in updateData){
             if(updateData.hasOwnProperty(key)){
                 this.character[key] = updateData[key];
-                if(this.statusUpdateList.indexOf(key) != -1){
-                    this.statusUpdate = true;
-                }
             }
         }
+        var statusText = 'HP:'+this.character.hp+'/'+this.character.maxHp+', ';
+        statusText += 'Moral:' + Math.floor(this.character.moral);
+        client.skin.status(statusText);
     }
 };
     

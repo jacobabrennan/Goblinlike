@@ -50,14 +50,6 @@
          url('rsc/fonts/prstartk.svg#press_start_kregular') format('svg');
     font-weight: normal;
     font-style: normal;
-
-}
-a:link{
-    text-decoration: none;
-    color: inherit;
-}
-a:visited{
-    color: inherit;
 }
 html, body{
     padding: 0px;
@@ -71,95 +63,30 @@ body{
     text-align: center;
 }
 #game_area, #game_area *{
-    font-family: "press start 2p", monospace !important;
     font-size: 16px !important;
     line-height: 1em !important;
+    margin: 0em;
+    padding: 0px;
 }
 #game_area{
-    text-align: left;
-    color: #fff;
+    cursor: pointer;
     background: #000;
-    vertical-align: top;
     display: inline-block;
-    padding: 0em;
-    overflow: hidden;
     border: double 16px #104;
     outline: 0px;
-}
-#statusBar{
-    /*display: inline-block;*/
-    margin: 0em;
-    padding: 0em;
-    width: 42em;
-    height: 1em;
-}
-.pane, .panel{
-    display: inline-block;
-    margin: 0em;
-    padding: 0em;
-    width: 21em;
-    height: 21em;
-}
-.panel{
-    vertical-align: top;
-    overflow: hidden;
-}
-.panel > *{
-    margin: 0em;
-    padding: 0em;
-}
-#panelPrimary, #panelSecondary{
-    
-}
-#panelPrimary{
-}
-#panelSecondary{
-    float: left;
-}
-pre{
-    padding: 0em;
-    margin: 0em;
-}
-#map_data{
-    display: inline-block;
-    margin: 0em;
-    line-height: 1em;
-    color: #fff;
-    vertical-align: top;
-    overflow: hidden;
-}
-#info, #menu{
-    display: inline-block;
-    margin: 1em;
-    font-size: 16px;
-    line-height: 1em;
-    color: #fff;
-    width: 19em;
-    height: 19em;
-    vertical-align: top;
-}
-#title{
-    text-align: center;
-}
-#game_area a{
-    cursor: pointer;
-}
-.control{
-    color: #fc0;
-    border: 1px solid transparent;
-    /* Transparent border increases its clickable size. */
-}
-.mapTile{
-    cursor: pointer;
 }
 #link_wrapper{
     font-family: "press_start_kregular", monospace !important;
     display: inline-block;
     text-align: right;
-    color: #104;
+    color: #008;
+}
+a:link, a:visited{
+    color: inherit;
 }
 #link_wrapper > a:link{
     margin-right: 1em;
+    text-decoration: none;
     /* Chrome adds an extra -1em margin to this element, for some reason. */
 }
 #link_wrapper > a:hover{

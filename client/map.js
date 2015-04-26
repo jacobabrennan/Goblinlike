@@ -11,8 +11,8 @@
 ==============================================================================*/
 
 client.drivers.gameplay.drivers.map = Object.create(driver, {
-    displayWidth: {value: displaySize},
-    displayHeight: {value: displaySize},
+    displayWidth: {value: displaySize, writable: true},
+    displayHeight: {value: displaySize, writable: true},
     setup: {value: function (configuration){
         /**
             This function configures the map to display game data. It is called
@@ -25,17 +25,13 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
             It does not return anything.
          **/
     }},
-    clickHandler: {value: function (clickEvent){
-        // Extract coordinates of click from DOM mouse event.
-        var correctedX = clickEvent.pageX - clickEvent.target.offsetLeft;
-        var correctedY = clickEvent.pageY - clickEvent.target.offsetTop;
-        // Correct Y coordinate for difference of coordinate systems.
-        correctedY = (displaySize*TILE_SIZE)-correctedY;
-        var mapDisplay = client.drivers.gameplay.drivers.map;
-        var x = correctedX/TILE_SIZE;
-        var y = correctedY/TILE_SIZE;
-        var centerX = Math.floor(mapDisplay.displayWidth/2);
-        var centerY = Math.floor(mapDisplay.displayHeight/2);
+    handleClick: {value: function (x, y, options){
+        x -= displaySize;
+        if(x < 0){ return false;}
+        var centerX = Math.floor(displaySize/2);
+        var centerY = Math.floor(displaySize/2);
+        //var coordX = Math.floor(x);
+        //var coordY = Math.floor(y);
         var direction;
         if(Math.max(Math.abs(centerX-x), Math.abs(centerY-y)) <= 1){
             direction = COMMAND_WAIT;
@@ -43,6 +39,7 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
             direction = directionTo(centerX, centerY, x, y);
         }
         client.command(direction, {key: null});
+        return true;
     }, writable: true},
     display: {value: function (displayOptions){
         /*

@@ -48,19 +48,24 @@ oO -
 pP - 
 qQ - 
 rR + rat
-sS - snake, skull, scorpion, skeleton
+sS - snake, skull, scorpion, +skeleton
 tT - turtle, Tarantula
 uU - 
 vV - Vampire
 wW - +worm, Wight, Wraith
 xX - 
 yY - 
-zZ - zombie dwarf
+zZ + zombie dwarf
 
 + skeleton, + zombie dwarf, Mummy,
 Wight, Wraith,
 Vampire, Lich
 
+TO DONE: Beta1
+    Examine System, with descriptions.
+    View companions.
+    Full Canvas Display, with new status bar.
+    Full new canvas clicking system.
 TO DONE: Alpha7
     Blobs
     BugFix: Included Font
@@ -83,12 +88,6 @@ TO DONE: Alpha3
     Switched map drawing from html to canvas to improve game speed.
     Enemy Breeding.
 
-Car Guy Video:
-    I love seeing another developer dealing with little glitches, but still loving his game.
-    The joy of doing doughnuts in a big blue van.
-    This guy really loves this car, and you will too! It is the car you've always wanted!
-    "This is not fantasy game - this is realism, comrade!
-
 Monica hedadl (High dal)
 Anni Defranco
 Ask Chris about portfolios (who should I talk to?)
@@ -97,6 +96,7 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
+        Black screen when starting first game. Possibly because of actors spawned at start location.
         ? Goblin's unhelpful dance.
         (Defered) Enemies move twice on first move.
         (Unconfirmed) Phantom Arrows ("That item is no longer there");
@@ -107,9 +107,7 @@ TODO(Beta):
             
     Absolute Must:
         Larger dungeon rooms as levels go higher.
-        Status Bar
         ? Advanced Goblin Moral (Seek out when moral is high)
-        ? Look / Examine
         $ More Enemies
         $ More Armor
         Companions:
@@ -135,19 +133,24 @@ TODO(Beta):
             About
     
     Later:
+        Goblin corpses
         Miasma?
         Goblins get, keep, and use consumable items.
         $ charms, amulets
         '.' to run.
         Saving / Loading
         $ Larger Title Display
-        ? Switch Menu system to canvas
         Locked doors, door bashing
         $ Enemies drop items
-        * Uncouple client from server
+        Uncouple client from server
             $ Look into tight coupling in targeting system.
+            Look / examine system is tightly coupled.
             
     Done:
+        + Full Canvas Display, with new status bar.
+        + Full new canvas clicking system.
+        + Status Bar
+        + Look / Examine
         + Blobs
         + Goblins don't path through visible traps.
         + Bugfix: Enemies Occupy Stairs.
@@ -220,12 +223,12 @@ Description of game:
         + Kill Enemies.
         Enemies drop items.
         + Run away and heal.
-        Camp
+        + Camp
         + Gain Levels.
-        * Find companions.
+        + Find companions.
         + Travel deeper.
-        Kill hard enemies.
-        Game Over.
+        + Kill hard enemies.
+        + Game Over.
         Kill a boss.
         Settle Down.
         Win.
@@ -242,7 +245,6 @@ Unfinished Features:
     Extentions
     Containables show in memory, but positions update once seen in new places.
 TODO:
-    Look / Examine
     Leadership Menu
 
 Simple Rogue

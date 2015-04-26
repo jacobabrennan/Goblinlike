@@ -58,8 +58,7 @@ var wand = Object.create(item, {
     lore: {value: 10, writable: true},
     // Redefined Methods
     description: {value: function (){
-        return mapManager.idManager.describeWand(this)
-        ;
+        return mapManager.idManager.describeWand(this);
     }},
     // New Properties
     charges: {value: 5, writable: true},
@@ -178,19 +177,25 @@ library.registerItem(Object.create(potion, {
             );
         }
         potion.effect.apply(this, arguments);
-    }}
+    }},
+    // Description:
+    viewText: {value: 'You see a weak health potion. Drinking this potion will restore a small amount of health.'}
 }));
 library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
     potency: {value: 30, writable: true},
     baseValue: {value: 5, writable: true},
     lore: {value: 20, writable: true},
-    name: {value: 'Health Pot'}
+    name: {value: 'Health Pot'},
+    // Description:
+    viewText: {value: 'You see a health potion. Drinking this potion will restore a moderate amount of health.'}
 }));
 library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
     baseValue: {value: 9, writable: true},
     potency: {value: 80, writable: true},
     lore: {value: 40, writable: true},
-    name: {value: 'StrHealth Pot'}
+    name: {value: 'StrHealth Pot'},
+    // Description:
+    viewText: {value: 'You see a strong health potion. Drinking this potion will restore a large amount of health.'}
 }));
 library.registerItem(Object.create(potion, {
     baseValue: {value: 3, writable: true},
@@ -208,13 +213,17 @@ library.registerItem(Object.create(potion, {
             );
         }
         potion.effect.apply(this, arguments);
-    }}
+    }},
+    // Description:
+    viewText: {value: 'You see an acid potion. Most organic materials will corrode when covered in this liquid.'}
 }));
 library.registerItem(Object.create(wand, {// Test Wand
     // Id:
     lore: {value: 18, writable: true},
     name: {value: 'Wand of Fire', writable: true},
-    baseValue: {value: 4, writable: true}
+    baseValue: {value: 4, writable: true},
+    // Description:
+    viewText: {value: 'You see a wand of fire. This magical item can shoot fireballs at your enemies.'}
 }));/*
 library.registerItem(Object.create(wand, {// Test Wand
     // Id:
@@ -241,7 +250,10 @@ library.registerItem(Object.create(scroll, {
         }
         scroll.effect.apply(this, arguments);
         // TODO: Other kinds of checks.
-    }}
+        
+    }},
+    // Description:
+    viewText: {value: 'You see a fire scroll. This magical item can summon a blast of fire to envelope your enemy.'}
 }));
 library.registerItem(Object.create(weapon, { // Rock
     // Id:
@@ -256,7 +268,9 @@ library.registerItem(Object.create(weapon, { // Rock
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
     throwable: {value: true, writable: true},
-    stackable: {value: true, writable: true}
+    stackable: {value: true, writable: true},
+    // Description:
+    viewText: {value: "You see a heavy rock, a weapon of last resort. Many goblins have lived another day thanks to a well thrown rock."}
 }));
 library.registerItem(Object.create(weapon, { // Club
     // Id:
@@ -267,8 +281,10 @@ library.registerItem(Object.create(weapon, { // Club
     // Stats:
     weight: {value: 4, writable: true},
     baseDamage: {value: 2, writable: true},
-    damageSigma: {value: 1/3, writable: true}
+    damageSigma: {value: 1/3, writable: true},
     // Behavior:
+    // Description:
+    viewText: {value: 'You see a wooden club. This is a crude weapon, but effective.'}
 }));
 library.registerItem(Object.create(weapon, { // Cleaver
     // Id:
@@ -279,8 +295,10 @@ library.registerItem(Object.create(weapon, { // Cleaver
     // Stats:
     weight: {value: 2, writable: true},
     baseDamage: {value: 4, writable: true},
-    damageSigma: {value: 1, writable: true}
+    damageSigma: {value: 1, writable: true},
     // Behavior:
+    // Description:
+    viewText: {value: 'You see a cleaver. This hacking weapon is much more effective in the hands of a goblin than when wielded by a dwarf.'}
 }));
 library.registerItem(Object.create(weapon, { // Spear
     // Id:
@@ -294,7 +312,9 @@ library.registerItem(Object.create(weapon, { // Spear
     damageSigma: {value: 1, writable: true},
     // Behavior:
     twoHanded: {value: true, writable: true},
-    throwable: {value: true, writable: true}
+    throwable: {value: true, writable: true},
+    // Description:
+    viewText: {value: 'You see a spear, a favorite weapon of goblin when hunting. It is equally effected when thrown.'}
 }));
 library.registerItem(Object.create(bow, { // Short Bow
     // Id:
@@ -305,8 +325,10 @@ library.registerItem(Object.create(bow, { // Short Bow
     weight: {value: 2, writable: true},
     range: {value: 5, writable: true},
     damageScale: {value: 1, writable: true},
-    ammoType: {value: 'arrow', writable: true}
+    ammoType: {value: 'arrow', writable: true},
     // Behavior:
+    // Description:
+    viewText: {value: 'You see a short bow. Most goblin carry a short bow to hunt and defend themselves in the wilderness.'}
 }));
 library.registerItem(Object.create(projectile, { // arrow
     // Id:
@@ -323,7 +345,9 @@ library.registerItem(Object.create(projectile, { // arrow
     ammoType : {value: 'arrow', writable:true},
     placement: {value: EQUIP_OFFHAND, writable:true},
     stackable: {value: true, writable: true},
-    ephemeral: {value: false, writable: true}
+    ephemeral: {value: false, writable: true},
+    // Description:
+    viewText: {value: 'You see an arrow.'}
 }));
 
 
@@ -334,28 +358,36 @@ library.registerItem(Object.create(item, {
     character: {value: '('},
     name: {value: 'LeatherShield'},
     placement: {value: EQUIP_OFFHAND},
-    evade: {value: 1/10}
+    evade: {value: 1/10},
+    // Description:
+    viewText: {value: 'You see a leather shield.'}
 }));
 library.registerItem(Object.create(item, {
     baseValue: {value: 3, writable: true},
     character: {value: '('},
     name: {value: 'WoodShield'},
     placement: {value: EQUIP_OFFHAND},
-    evade: {value: 1/8}
+    evade: {value: 1/8},
+    // Description:
+    viewText: {value: 'You see a tough wooden shield, like those favored by goblin everywhere.'}
 }));
 library.registerItem(Object.create(item, {
     baseValue: {value: 3, writable: true},
     character: {value: ']'},
     name: {value: 'LeatherArmor'},
     placement: {value: EQUIP_BODY},
-    defense: {value: 1}
+    defense: {value: 1},
+    // Description:
+    viewText: {value: 'You see leather body armor. It was made by dwarves, but you could probably wear it.'}
 }));
 library.registerItem(Object.create(item, {
     baseValue: {value: 2, writable: true},
     character: {value: '^'},
     name: {value: 'LeatherCap'},
     placement: {value: EQUIP_HEAD},
-    defense: {value: 1/2}
+    defense: {value: 1/2},
+    // Description:
+    viewText: {value: 'You see a leather cap.'}
 }));
 
 //==============================================================================

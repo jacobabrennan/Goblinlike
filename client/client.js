@@ -9,6 +9,10 @@ var client = Object.create(driver, {
         this.focus(this.drivers.title);
     }}
 });
+driver.handleClick = function (x, y, options){
+    if(!(this.currentFocus && this.currentFocus.handleClick)){ return false;}
+    return this.currentFocus.handleClick(x, y, options);
+};
 
 client.networking = {
     sendMessage: function (command, options){

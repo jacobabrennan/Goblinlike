@@ -13,18 +13,35 @@ client.skin = Object.create(driver, {
             
             It does not return anything.
         **/
+        this.clearCommands();
         this.font = configuration.font || 'monospace';
         this.highlightColor = configuration.highlightColor || '#ff0';
         var ownCanvas = document.createElement('canvas');
         ownCanvas.width = (displaySize*2)*TILE_SIZE; // Two panels wide.
         ownCanvas.height = (displaySize+1)*TILE_SIZE; // One Panel High, plus status bar.
+        ownCanvas.addEventListener('click', this.clickHandler);
         this.context = ownCanvas.getContext('2d');
         this.context.font = '16px '+this.font;
         this.container = document.getElementById(configuration.containerId);
         this.container.tabIndex = 1;
         this.container.focus();
         this.container.appendChild(ownCanvas);
-    }},/*
+    }},
+    clickHandler: {value: function (clickEvent){
+        // Extract coordinates of click from DOM mouse event.
+        var correctedX = clickEvent.pageX - clickEvent.target.offsetLeft;
+        var correctedY = clickEvent.pageY - clickEvent.target.offsetTop;
+        // Correct Y coordinate for difference of coordinate systems.
+        correctedY = ((displaySize+1)*TILE_SIZE)-correctedY;
+            // +1 for status bar.
+        var x = correctedX/TILE_SIZE;
+        var y = correctedY/TILE_SIZE;
+        //var centerX = Math.floor(mapDisplay.displayWidth/2);
+        //var centerY = Math.floor(mapDisplay.displayHeight/2);
+        if(!client.skin.triggerCommand(Math.floor(x), Math.floor(y))){
+            client.handleClick(x, y);
+        }
+    }, writable: true},/*
     registerPanel: {value: function (newDriver, whichPanel){
         if(!whichPanel){
             this.panelPrimary = newDriver;
@@ -90,15 +107,67 @@ client.skin = Object.create(driver, {
         this.context.fillText(newText, x*TILE_SIZE, y*TILE_SIZE);
         if(font){ this.context.font = '16px '+this.font;}
     }, writable: true},
-    status: {value: function (statusText){
+    drawParagraph: {value: function (x, y, newText, color, background, font){
+        if(color == HIGHLIGHT){ color = this.highlightColor;}
+        // Display Background
+        this.context.fillStyle = background || '#000';
+        var maxWidth = (displaySize * 2)-2;
+        var words = newText.split(' ');
+        var runningLength = 0;
+        var currentLine = 0;
+        var currentString = '';
+        while(words.length){
+            var nextWord = words.shift();
+            if(nextWord.length + 1 + runningLength > maxWidth){ // 1 for ' '.
+                this.drawString(
+                    x, y-currentLine, currentString, color, background, font);
+                currentLine++;
+                currentString = '';
+                runningLength = 0;
+            } else if(runningLength !== 0){
+                currentString += ' ';
+                runningLength += 1;
+            }
+            runningLength += nextWord.length;
+            currentString += nextWord;
+        }
+        this.drawString(
+            x, y-currentLine, currentString, color, background, font);
+    }, writable: true},
+    status: {value: function (statusText, color){
         //this.statusBar.textContent = statusText;
-        this.drawString(0, displaySize, statusText);
+        this.fillRect(0, displaySize, (displaySize*2)*TILE_SIZE, TILE_SIZE);
+        this.drawString(0, displaySize, statusText, color);
     }},
-    drawCommand: {value: function (x, y, key, command){
+    drawCommand: {value: function (x, y, key, name, command){
         var keyLength = key.length;
         this.drawString(x, y, key, HIGHLIGHT);
-        if(command){
-            this.drawString(x+keyLength+1, y, command);
+        if(name){
+            this.drawString(x+keyLength+1, y, name);
         }
+        var totalLength = keyLength + (name? name.length : 0) +1; // +1 for ' '.
+        for(var posX = 0; posX < totalLength; posX++){
+            this.registerCommand(x+posX, y, command);
+        }
+    }},
+    clearCommands: {value: function (){
+        this.commandCoords = [];
+    }},
+    registerCommand: {value: function (x, y, command){
+        var compoundIndex = (y*displaySize*2) + x;
+        this.commandCoords[compoundIndex] = command;
+    }},
+    triggerCommand: {value: function (x, y){
+        var compoundIndex = (y*displaySize*2) + x;
+        var command = this.commandCoords[compoundIndex];
+        if(command){
+            if((typeof command) == 'function'){
+                command();
+            } else{
+                client.command(command);
+            }
+            return true;
+        }
+        return false;
     }}
 });

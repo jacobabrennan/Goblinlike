@@ -44,7 +44,9 @@ library.registerTrap(Object.create(trap, {
         content.hear('acid', 10, null, "You're splashed with acid!");
         content.hurt(5, DAMAGE_ACID);
         this.dispose();
-    }, writable: true}
+    }, writable: true},
+    // Description
+    viewText: {value: "You see a puddle of acid. Hot vapors rise from the surface and sting your eyes."}
 }));
 //==============================================================================
     return library; // Return library, close namespace.

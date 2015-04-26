@@ -36,6 +36,7 @@ var menu = Object.create(driver, {
         optionsMenu.setup(configuration);
         infoMenu.setup(configuration);
         directionSelectMenu.setup(configuration);
+        descriptionMenu.setup(configuration);
     }},
     focused: {value: function (){
         this.showDefault();
@@ -56,6 +57,7 @@ var menu = Object.create(driver, {
     }},*/
     blank: {value: function (){
         client.skin.fillRect(0, 0, displaySize, displaySize, '#000');
+        client.skin.clearCommands();
     }},
     commands: {value: function (){
         /**
@@ -68,6 +70,10 @@ var menu = Object.create(driver, {
     help: {value: function (){
         this.commands();
     }},
+    description: {value: function (title, description){
+        descriptionMenu.display(title, description);
+        this.focus(descriptionMenu);
+    }},
     info: {value: function (messages){
         /**
             This function displays an array of messages to the player.
@@ -79,12 +85,12 @@ var menu = Object.create(driver, {
         this.focus(infoMenu);
         infoMenu.display();
     }},
-    status: {value: function (){
+    status: {value: function (goblinInfo){
         /**
             This function displays the player's hero's status.
             It does not return anything.
          **/
-        statusMenu.display();
+        statusMenu.display(goblinInfo);
         this.focus(statusMenu);
     }},
     options: {value: function (title, options, callback){
@@ -126,6 +132,36 @@ var menu = Object.create(driver, {
 ==============================================================================*/
 
 
+var descriptionMenu = Object.create(driver, {
+    setup: {value: function (){}, writable: true},
+    display: {value: function (title, description){
+        /**
+            This function displays the descriptionMenu in the document.
+            It returns true to signify that drawing should not continue;
+         **/
+        menu.blank();
+        if(title){
+            client.skin.drawString(1, 18, title);
+        }
+        if(description){
+            client.skin.drawParagraph(1, 16, description);
+        }
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
+        menu.focus(this);
+        return true;
+    }},
+    command: {value: function (command, options){
+        // TODO: Document.
+        client.drivers.gameplay.drivers.map.display();
+        switch(command){
+            case COMMAND_PAGEDOWN:
+                menu.info();
+                return true;
+        }
+        menu.showDefault();
+        return false;
+    }},
+});
 var commandsMenu = Object.create(driver, {
     /**
         The statusMenu is used by the menuing system to display information
@@ -140,14 +176,16 @@ var commandsMenu = Object.create(driver, {
             This function displays the statusMenu in the document.
             It returns true to signify that drawing should not continue;
          **/
+        if(client.drivers.gameplay.dead){
+            menu.focus(statusMenu);
+            statusMenu.display();
+            return false;
+        }
         menu.blank();
         var commandLink = function (x, y, key, command, name){
-            /*optionElement.addEventListener('click', function (){
-                client.drivers.gameplay.command(command, {'key': key});
-            }.bind(this));*/
-            client.skin.drawCommand(x, y, key, name);
+            client.skin.drawCommand(x, y, key, name, command);
         }.bind(this);
-        commandLink(1, 17, "c", COMMAND_DROP, 'Close Door');
+        commandLink(1, 17, "c", COMMAND_CLOSE, 'Close Door');
         commandLink(1, 16, "d", COMMAND_DROP, 'Drop Item');
         commandLink(1, 15, "e", COMMAND_EQUIP, 'Equip Item');
         commandLink(1, 14, "f", COMMAND_FIRE, 'Fire Weapon');
@@ -161,7 +199,7 @@ var commandsMenu = Object.create(driver, {
         commandLink(1,  6, "u", COMMAND_USE, 'Use Item');
         //commandLink(1,  7, "?", COMMAND_HELP, 'Help');
         commandLink(1,  3, "[", COMMAND_PAGEDOWN, 'Show Messages');
-        commandLink(1,  1, "?", COMMAND_CANCEL, 'Status');
+        commandLink(1,  1, "?", COMMAND_HELP, 'Status');
         menu.focus(this);
         return true;
     }},
@@ -230,19 +268,19 @@ var infoMenu = Object.create(driver, {
             It returns true to signify that drawing should not continue;
          **/
         menu.blank();
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
         var pageStart = this.pendingIndex-this.pageLength;
         pageStart += this.pageIndex*this.pageLength;
         var pageEnd = pageStart+this.pageLength;
         pageStart = Math.max(0, pageStart);
         pageEnd = Math.min(this.messages.length, pageEnd);
         if(this.pageIndex > 0){
-            client.skin.drawCommand(1, 3, ']', 'Newer Messages');
+            client.skin.drawCommand(1, 3, ']', 'Newer Messages', COMMAND_PAGEUP);
         } else {
-            client.skin.drawCommand(1, 3, ']', 'Back', '');
+            client.skin.drawCommand(1, 3, ']', 'Back', COMMAND_PAGEUP);
         }
         if(pageEnd < this.messages.length){
-            client.skin.drawCommand(1, 19, '[', 'Older Messages');
+            client.skin.drawCommand(1, 19, '[', 'Older Messages', COMMAND_PAGEDOWN);
         }
         var pageMessages = this.messages.slice(pageStart, pageEnd);
         var stackIndex = 0;
@@ -266,7 +304,7 @@ var infoMenu = Object.create(driver, {
             case COMMAND_PAGEUP:
                 var oldPage = this.pageIndex;
                 this.advanceMessage(1);
-                if(this.pageIndex === oldPage){
+                if(this.pageIndex === oldPage || isNaN(this.pageIndex)){
                     this.command(COMMAND_ENTER, {key: ' '});
                 }
                 return true;
@@ -297,14 +335,13 @@ var statusMenu = Object.create(driver, {
         It is not a prototype, and should not be instanced.
      **/
     setup: {value: function (){}},
-    display: {value: function (){
+    display: {value: function (goblinInfo){
         /**
             This function displays the statusMenu in the document.
             It returns true to signify that drawing should not continue;
         **/
         if(client.drivers.gameplay.dead){
-            var gameOverText = '\n\n\n\n\n\n\n';
-            gameOverText += '     Game Over     \n\n';
+            menu.blank();
             var score = ''+Math.floor(client.drivers.gameplay.memory.character.experience);
             var scoreText;
             if(score.length == 1){
@@ -316,22 +353,19 @@ var statusMenu = Object.create(driver, {
             } else{
                 scoreText = 'Exp: '+score;
             }
-            gameOverText += '     '+scoreText+'     \n\n\n';
-            this.displayElement.textContent = gameOverText;
-            var resetLink = document.createElement('a');
-            this.displayElement.appendChild(resetLink);
-            resetLink.setAttribute('class', 'control');
-            resetLink.textContent = '   Esc- Continue   ';
-            resetLink.addEventListener('click', function (){
+            client.skin.drawString(6, 12, 'Game Over');
+            client.skin.drawString(6, 10, scoreText);
+            client.skin.drawCommand(4, 7, 'Esc', ' Continue', COMMAND_CANCEL);
+            /*resetLink.addEventListener('click', function (){
                 client.focus(client.drivers.title);
-            });
+            });*/
             return true;
         }
         //if(!client.drivers.gameplay.memory.statusUpdate){ return true;}
         client.drivers.gameplay.memory.statusUpdate = false;
         menu.blank();
         // Get values for display from memory.
-        var character = client.drivers.gameplay.memory.character;
+        var character = goblinInfo || client.drivers.gameplay.memory.character;
         var name = character.name;
         var hp = character.hp;
         var maxHp = character.maxHp;
@@ -345,22 +379,29 @@ var statusMenu = Object.create(driver, {
         var eShield = character.equipment[EQUIP_OFFHAND ];
         var eHelmet = character.equipment[EQUIP_HEAD    ];
         var eArmor  = character.equipment[EQUIP_BODY    ];
-        client.skin.drawString(1, 17, 'Name : '+name);
-        client.skin.drawString(1, 16, 'Class: Goblin');
-        client.skin.drawString(1, 15, ('Level: '+level+' /'+Math.floor(experience)));
-        
-        client.skin.drawString(1, 13, ('Vitality: '+((vitality < 10)? ' ' : '')+vitality));
-        client.skin.drawString(1, 12, ('Strength: '+((strength < 10)? ' ' : '')+strength));
-        client.skin.drawString(1, 11, ('Wisdom  : '+((wisdom   < 10)? ' ' : '')+wisdom  ));
-        client.skin.drawString(1, 10, ('Charisma: '+((charisma < 10)? ' ' : '')+charisma));
-        
-        client.skin.drawString(1,  8, (eWeapon? ('Hand: '+eWeapon.name) : ''));
-        client.skin.drawString(1,  7, (eShield? ('Hand: '+eShield.name) : ''));
-        client.skin.drawString(1,  6, (eArmor ? ('Body: '+eArmor.name ) : ''));
-        client.skin.drawString(1,  5, (eHelmet? ('Head: '+eHelmet.name) : ''));
-        
-        client.skin.drawCommand(1, 3, "[", 'Show Messages');
-        client.skin.drawCommand(1, 1, '?', 'Commands');
+        var line = 17;
+        client.skin.drawString(1, line--, 'Name : '+name);
+        client.skin.drawString(1, line--, 'Class: Goblin');
+        if(goblinInfo){
+            client.skin.drawString(1, line--, ('Level: '+level));
+            client.skin.drawString(1, line--, ('HP   : '+hp));
+        } else{
+            client.skin.drawString(1, line--, ('Level: '+level+' /'+Math.floor(experience)));
+        }
+        line--;
+        client.skin.drawString(1, line--, ('Vitality: '+((vitality < 10)? ' ' : '')+vitality));
+        client.skin.drawString(1, line--, ('Strength: '+((strength < 10)? ' ' : '')+strength));
+        client.skin.drawString(1, line--, ('Wisdom  : '+((wisdom   < 10)? ' ' : '')+wisdom  ));
+        client.skin.drawString(1, line--, ('Charisma: '+((charisma < 10)? ' ' : '')+charisma));
+        line--;
+        client.skin.drawString(1,  line--, (eWeapon? ('Hand: '+eWeapon.name) : ''));
+        client.skin.drawString(1,  line--, (eShield? ('Hand: '+eShield.name) : ''));
+        client.skin.drawString(1,  line--, (eArmor ? ('Body: '+eArmor.name ) : ''));
+        client.skin.drawString(1,  line--, (eHelmet? ('Head: '+eHelmet.name) : ''));
+        if(!goblinInfo){
+            client.skin.drawCommand(1, 3, "[", 'Show Messages', COMMAND_PAGEDOWN);
+        }
+        client.skin.drawCommand(1, 1, '?', 'Commands', COMMAND_HELP);
         return true;
     }},
     command: {value: function (command, options){
@@ -432,12 +473,14 @@ var optionsMenu = Object.create(driver, {
             var displayMax = Math.min(this.optionsDisplayMax, pagedLength);
             // Add Page Up link if needed.
             if(this.optionsPage > 0){
-                client.skin.drawCommand(1, 17, '[ Page Up');
+                client.skin.drawCommand(1, 17, '[ Previous', null, COMMAND_PAGEDOWN);
             }
             // Create the options links.
             var self = this;
-            var optionLinkFunction = function (){
-                self.command(COMMAND_NONE, {key: this._characterIndex});
+            var optionLinkFunction = function (_char){
+                return function (){
+                    self.command(COMMAND_NONE, {key: _char});
+                };
             };
             for(var displayIndex = 0; displayIndex < displayMax; displayIndex++){
                 var indexedOption = this.actionOptions[displayIndex+pagedOffset];
@@ -446,19 +489,20 @@ var optionsMenu = Object.create(driver, {
                 client.skin.drawCommand(
                     1, 16-displayIndex,
                     indexCharacter.toUpperCase(),
-                    indexedOption
+                    indexedOption,
+                    optionLinkFunction(indexCharacter)
                 );
             }
             // Add the Page Down Link if needed.
             var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);
             if(this.optionsPage < maxPage){
-                client.skin.drawCommand(1, 3, '] Page Down');
+                client.skin.drawCommand(1, 3, '] Next', null, COMMAND_PAGEUP);
             }
         } else{ // Display the "empty" message.
             client.skin.drawString(1, 15, '(empty)');
         }
         // Add the Cancel / Escape link.
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},
@@ -521,7 +565,7 @@ var directionSelectMenu = Object.create(driver, {
         if(callback){ this.directionCallback = callback;}
         menu.blank();
         client.skin.drawString(1, 16, (message || 'Input a direction:'));
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},

@@ -30,6 +30,7 @@ var containable = Object.create(mappable, {
     nextContent: {value: undefined, writable: true},
         // Tile contents implemented as linked list.
     type: {value: TYPE_CONTAINABLE, writable: true},
+    viewText: {value: 'You know nothing about this.', writable: true},
     constructor: {value: function (levelId){
         // TODO: Document.
         this.levelId = levelId;
