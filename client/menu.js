@@ -185,18 +185,21 @@ var commandsMenu = Object.create(driver, {
         var commandLink = function (x, y, key, command, name){
             client.skin.drawCommand(x, y, key, name, command);
         }.bind(this);
-        commandLink(1, 17, "c", COMMAND_CLOSE, 'Close Door');
-        commandLink(1, 16, "d", COMMAND_DROP, 'Drop Item');
-        commandLink(1, 15, "e", COMMAND_EQUIP, 'Equip Item');
-        commandLink(1, 14, "f", COMMAND_FIRE, 'Fire Weapon');
-        commandLink(1, 13, "F", COMMAND_THROW, 'Throw Item');
-        commandLink(1, 12, "g", COMMAND_GET, 'Get Item');
-        commandLink(1, 11, "l", COMMAND_LOOK, 'Look');
-        commandLink(1, 10, "L", COMMAND_LEADERSHIP, 'Leadership');
-        commandLink(1,  9, "r", COMMAND_CAMP, 'Rest (Heal)');
-        commandLink(1,  8, "t", COMMAND_UNEQUIP, 'Take Off Item');
-        commandLink(1,  7, "s", COMMAND_STAIRS, 'Use Stairs');
-        commandLink(1,  6, "u", COMMAND_USE, 'Use Item');
+        client.skin.drawString(1,19,'Arrows & NumerPad');
+        client.skin.drawString(1,18,'    Move & Attack');
+        commandLink(1, 16, "c", COMMAND_CLOSE, 'Close Door');
+        commandLink(1, 15, "d", COMMAND_DROP, 'Drop Item');
+        commandLink(1, 14, "e", COMMAND_EQUIP, 'Equip Item');
+        commandLink(1, 13, "f", COMMAND_FIRE, 'Fire Weapon');
+        commandLink(1, 12, "F", COMMAND_THROW, 'Throw Item');
+        commandLink(1, 11, "g", COMMAND_GET, 'Get Item');
+        commandLink(1, 10, "l", COMMAND_LOOK, 'Look');
+        commandLink(1,  9, "L", COMMAND_LEADERSHIP, 'Leadership');
+        commandLink(1,  8, "r", COMMAND_CAMP, 'Rest (Heal)');
+        commandLink(1,  7, "t", COMMAND_UNEQUIP, 'Take Off Item');
+        commandLink(1,  6, "s", COMMAND_STAIRS, 'Use Stairs');
+        client.skin.drawString(14, 6, '>', '#000', '#fc0');
+        commandLink(1,  5, "u", COMMAND_USE, 'Use Item');
         //commandLink(1,  7, "?", COMMAND_HELP, 'Help');
         commandLink(1,  3, "[", COMMAND_PAGEDOWN, 'Show Messages');
         commandLink(1,  1, "?", COMMAND_HELP, 'Status');
@@ -338,6 +341,7 @@ var statusMenu = Object.create(driver, {
     display: {value: function (goblinInfo){
         /**
             This function displays the statusMenu in the document.
+            
             It returns true to signify that drawing should not continue;
         **/
         if(client.drivers.gameplay.dead){

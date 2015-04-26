@@ -107,11 +107,11 @@ client.skin = Object.create(driver, {
         this.context.fillText(newText, x*TILE_SIZE, y*TILE_SIZE);
         if(font){ this.context.font = '16px '+this.font;}
     }, writable: true},
-    drawParagraph: {value: function (x, y, newText, color, background, font){
+    drawParagraph: {value: function (x, y, newText, color, background, font, width){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
         // Display Background
         this.context.fillStyle = background || '#000';
-        var maxWidth = (displaySize * 2)-2;
+        var maxWidth = width || (displaySize * 2)-2;
         var words = newText.split(' ');
         var runningLength = 0;
         var currentLine = 0;

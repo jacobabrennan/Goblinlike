@@ -208,8 +208,8 @@ var memory = {
                 this.character[key] = updateData[key];
             }
         }
-        var statusText = 'HP:'+this.character.hp+'/'+this.character.maxHp+', ';
-        statusText += 'Moral:' + Math.floor(this.character.moral);
+        var statusText = 'Health: '+this.character.hp+'/'+this.character.maxHp+',  ';
+        statusText += 'Moral: ' + Math.floor(this.character.moral);
         client.skin.status(statusText);
     }
 };

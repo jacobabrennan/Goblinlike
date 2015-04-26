@@ -27,11 +27,20 @@ client.drivers.title = Object.create(driver, {
         if(block){
             return block;
         }
+        if(command == COMMAND_NONE){
+            if(options.key == 'a' || options.key == 'A'){
+                command = COMMAND_ENTER;}
+            if(options.key == 'b' || options.key == 'B'){
+                command = COMMAND_HELP;}
+        }
         switch(command){
             case COMMAND_ENTER:
+                clearInterval(this.drawInterval);
                 this.newGame();
                 return true;
-            case COMMAND_CANCEL:
+            case COMMAND_HELP:
+                clearInterval(this.drawInterval);
+                this.focus(this.drivers.about);
                 return true;
         }
         return false;
@@ -51,7 +60,6 @@ client.drivers.title = Object.create(driver, {
          *      and sets the game in motion.
          *  It does not return anything.
          **/
-        clearInterval(this.drawInterval);
         this.focus(this.drivers.rollCharacter);
         /*clearInterval(this.drawInterval);
         var gameDriver = client.drivers.gameplay;
@@ -64,7 +72,6 @@ client.drivers.title = Object.create(driver, {
         var block = driver.display.apply(this, arguments);
         if(block){ return block;}
         client.skin.clearCommands();
-        client.skin.status('Version '+VERSION, '#008');
         /*var picture = '';
         picture += '                     '+'\n';
         picture += '                     '+'\n';
@@ -109,10 +116,8 @@ client.drivers.title = Object.create(driver, {
             client.skin.drawString(0, 2,':.:.:. . ./T\\ /T\\//T\\|/T:|:~-  ~~~: ./T\\/T','#008');
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
-            client.skin.drawCommand(8, 11, 'A', 'Start', function (){
-                client.drivers.title.newGame();
-            });
-            client.skin.drawCommand(8, 10, 'B', 'About', function (){});
+            client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
+            client.skin.drawCommand(8, 10, 'B', 'About', COMMAND_HELP);
         };
         var maxCloud = 40;
         var cloudFalloff = 0;
@@ -186,16 +191,14 @@ client.drivers.title = Object.create(driver, {
                 }
             }
         };
-        drawMountain();
         var colorTime = 256;
         var spectrumTime = colorTime*3;
         var currentTime = Math.round(colorTime/3); // Yellow
         this.drawInterval = setInterval(function (){
+            client.skin.status('Version '+VERSION, '#008');
+            drawMountain();
             currentTime++;
             var hue = currentTime%spectrumTime;
-            if(hue === 0){
-                drawMountain();
-            }
             var red = 0;
             var green = 0;
             var blue = 0;
@@ -213,14 +216,11 @@ client.drivers.title = Object.create(driver, {
             blue  = Math.floor(Math.sin((Math.PI/2)*(blue /colorTime))*256);
             green = Math.floor(Math.sin((Math.PI/2)*(green/colorTime))*256);
             var color = 'rgb('+red+','+green+','+blue+')';
-            if(hue == spectrumTime - 25){
-                drawMountain();
-            }
             if(cloudFalloff > 0){
                 drawClouds();
                 cloudFalloff--;
             }
-            if(hue == spectrumTime - 30){
+            if(hue >= spectrumTime - 30 && hue < spectrumTime -25){
                 lightningStrike();
             } else if(hue >= spectrumTime-15){
                 lightningStrike();
@@ -269,7 +269,7 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
         client.skin.status('New Character');
-        client.skin.drawString(14, 16, 'Roll Stats:');
+        client.skin.drawString(14, 16, 'Character Stats');
         client.skin.drawString(16, 14, 'Vitality: '+this.vitality);
         client.skin.drawString(16, 13, 'Strength: '+this.strength);
         client.skin.drawString(16, 12, 'Wisdom  : '+this.wisdom  );
@@ -368,7 +368,73 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
         });
         client.focus(gameDriver);
         gameDriver.display();
+    }}
+});
+client.drivers.title.drivers.about = Object.create(driver, {
+    display: {value: function (){
+        client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
-        gameDriver.drivers.menu.description(INTRO_TITLE, INTRO_BODY);
+        client.skin.status('About                Jacob A Brennan, 2015');
+        var aboutText = "This is a Roguelike, a genre of games that are known for using letters as graphics. The example map on the right shows:";
+        client.skin.drawParagraph(1, 17, aboutText, undefined, undefined, undefined, 27);
+        client.skin.drawString(4, 11, "The player, a goblin.");
+        client.skin.drawCharacter(2, 11, 'g', '#0f0');
+        client.skin.drawString(4, 10, "Walls around a room.");
+        client.skin.drawCharacter(2, 10, '#', '#fff', '#111');
+        client.skin.drawString(4,  9, "The floor of the room.");
+        client.skin.drawCharacter(2,  9, '.', '#444', '#111');
+        client.skin.drawString(4,  8, "An enemy Giant Beetle.");
+        client.skin.drawCharacter(2,  8, 'b', '#888');
+        client.skin.drawString(4,  7, "Stairs to a deeper level.");
+        client.skin.drawCharacter(2,  7, '>', '#000', '#fc0');
+        client.skin.drawString(4,  6, "Doors to other rooms and halls.");
+        client.skin.drawCharacter(2,  6, '+', '#fc0', '#111');
+        client.skin.drawString(6,  5, "A Potion and a stack of Arrows.");
+        client.skin.drawCharacter(2,  5, '¡ \\', '#963');
+        var mapText = "#########";
+        mapText    += "#.......#";
+        mapText    += "#......b+";
+        mapText    += "#.\\.....#";
+        mapText    += "#¡......#";
+        mapText    += "#...g...#";
+        mapText    += "#..>....#";
+        mapText    += "#.......#";
+        mapText    += "######+##";
+        var mapWidth = 9;
+        for(var charI = 0; charI < mapText.length; charI++){
+            var indexChar = mapText.charAt(charI);
+            var xPos = charI % mapWidth;
+            var yPos = Math.floor(charI/mapWidth);
+            var charBack = '#111';
+            var charColor = '#fff';
+            switch(indexChar){
+                case '.': charColor = '#444', charBack = '#111'; break;
+                case 'b': charColor = '#888'; break;
+                case 'g': charColor = '#0f0'; break;
+                case '+': charColor = '#fc0'; charBack = '#111'; break;
+                case '#': charBack = '#111'; break;
+                case '>': charColor = '#000'; charBack = '#fc0'; break;
+                case '\\': case '¡': charColor = "#963"; break;
+            }
+            client.skin.drawCharacter(
+                30+xPos, 9+yPos, indexChar, charColor, charBack);
+        }
+        client.skin.drawCommand(1,  1, 'Enter', 'Back to Title Screen', COMMAND_ENTER);
+        return true;
+    }},
+    command: {value: function (command, options){
+        // TODO: Document.
+        var block = driver.command.call(this, command, options);
+        if(block){
+            return block;
+        }
+        if(command == COMMAND_ENTER){
+            client.drivers.title.focus(null);
+            client.drivers.title.display();
+        }
+        return true;
+    }},
+    focused: {value: function (){
+        this.display();
     }}
 });

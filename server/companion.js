@@ -176,7 +176,7 @@ var companion = Object.create(person, {
         if(gameManager.currentGame.hero.companions.indexOf(this) == -1){
             this.setLevel(gameManager.currentGame.hero.level);
             gameManager.currentGame.hero.companions.push(this);
-            this.sound('greeting', 10, this, this.name+' greets you!');
+            this.sound('greeting', 10, this, this.name+' joins you!');
         }
         this.active = true;
     }},
