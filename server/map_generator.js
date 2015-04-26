@@ -168,6 +168,13 @@ var protoLevel = {
                 }
             }
         }
+        // Pick room to be companion (other goblin) room.
+        var cRoom;
+        if(this.rooms.length === 1){ cRoom = this.rooms[0];}
+        else{
+            crIndex = randomInterval(1, this.rooms.length-1);
+            cRoom = this.rooms[crIndex];
+        }
         // Place stairs, down and up.
         var stairsUpX;
         var stairsUpY;
@@ -242,7 +249,17 @@ var protoLevel = {
                 var yPos = randomRoom.y + randomInterval(0,randomRoom.height-1);
                 */
                 var xPos = randomInterval(1, this.width-1);
-                var yPos = randomInterval(1, this.width-1);
+                var yPos = randomInterval(1, this.height-1);
+                if(
+                    (xPos >= upRoom.x && xPos <= upRoom.x+upRoom.width) &&
+                    (yPos >= upRoom.y && yPos <= upRoom.y+upRoom.height)
+                ){ continue;}
+                if(
+                    (xPos >= cRoom.x && xPos <= cRoom.x+cRoom.width) &&
+                    (yPos >= cRoom.y && yPos <= cRoom.y+cRoom.height)
+                ){ continue;}
+                var eTile = mapManager.getTile(xPos, yPos, newLevel.id);
+                if(eTile.id != 'floor' && eTile.id != 'hall'){ continue;}
                 placed = randomEnemy.place(xPos, yPos, newLevel.id);
             }
         }
@@ -260,9 +277,13 @@ var protoLevel = {
             var randomItem = Object.instantiate(itemPrototype);
             var iPlaced = false;
             while(!iPlaced){
-                var iRandomRoom = arrayPick(this.rooms);
-                var iXPos = iRandomRoom.x + randomInterval(0,iRandomRoom.width-1);
-                var iYPos = iRandomRoom.y + randomInterval(0,iRandomRoom.height-1);
+                //var iRandomRoom = arrayPick(this.rooms);
+                var iXPos = randomInterval(1, this.width-1);
+                var iYPos = randomInterval(1, this.height-1);
+                //var iXPos = iRandomRoom.x + randomInterval(0,iRandomRoom.width-1);
+                //var iYPos = iRandomRoom.y + randomInterval(0,iRandomRoom.height-1);
+                var iTile = mapManager.getTile(iXPos, iYPos, newLevel.id);
+                if(iTile.id != 'floor' && iTile.id != 'hall'){ continue;}
                 iPlaced = randomItem.place(iXPos, iYPos, newLevel.id);
             }
         }
@@ -270,7 +291,17 @@ var protoLevel = {
         var createC = function (index){
             var cPrototype = companion;
             var C = cPrototype.constructor.call(Object.create(cPrototype));
-            while(!C.place(randomInterval(0,31),randomInterval(0,31),newLevel.id)){}
+            var cPlaced = false;
+            var tries = 100;
+            while(!cPlaced && tries > 0){
+                tries--;
+                var crx = randomInterval(cRoom.x, cRoom.x+cRoom.width );
+                var cry = randomInterval(cRoom.y, cRoom.y+cRoom.height);
+                cPlaced = C.place(crx, cry, newLevel.id);
+            }
+            if(!cPlaced){
+                while(!C.place(randomInterval(0,31),randomInterval(0,31),newLevel.id)){}
+            }
         };
         var Cs = 1;
         for(var cI = 0; cI < Cs; cI++){
@@ -312,6 +343,19 @@ var protoLevel = {
             createT.call(this, I);
         }
         // --
+        // Close all doors near goblins
+        var closeRooms = [upRoom, cRoom];
+        for(var roomIndex = 0; roomIndex < closeRooms.length; roomIndex++){
+            var iRoom = closeRooms[roomIndex];
+            for(var rPosY = iRoom.y-1; rPosY < iRoom.y+iRoom.height+1; rPosY++){
+                for(var rPosX = iRoom.x-1; rPosX < iRoom.x+iRoom.width+1; rPosX++){
+                    var rTile = mapManager.getTile(rPosX, rPosY, newLevel.id);
+                    if(rTile.id == 'doorOpen'){
+                        rTile.toggleDoor(rPosX, rPosY, newLevel.id);
+                    }
+                }
+            }
+        }
         return newLevel;
     },
     getCoordsRotate: function (x1, y1, x2, y2, direction){

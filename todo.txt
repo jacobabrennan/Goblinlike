@@ -66,6 +66,7 @@ TO DONE: Beta1
     View companions.
     Full Canvas Display, with new status bar.
     Full new canvas clicking system.
+    Character Creation.
 TO DONE: Alpha7
     Blobs
     BugFix: Included Font
@@ -96,20 +97,29 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
-        Black screen when starting first game. Possibly because of actors spawned at start location.
+        (Possibly Fixed) Black screen when starting first game. Possibly because of actors spawned at start location.
         ? Goblin's unhelpful dance.
         (Defered) Enemies move twice on first move.
-        (Unconfirmed) Phantom Arrows ("That item is no longer there");
-        $ Things are placed in unhelpful positions.
-            $ Goblin and enemies spawn in the same room.
-            $ Items, goblin, and enemies are spawned on stairs, up and down.
-        Enemies get stuck toggling doors.
+        (Possibly Fixed) Phantom Arrows ("That item is no longer there");
+        (Possibly Fixed) Enemies get stuck toggling doors.
+        (Defered) Problem: Goblins are attacked by roving enemies before they're ever found.
             
     Absolute Must:
         Larger dungeon rooms as levels go higher.
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies
         $ More Armor
+    
+    Should:
+        $ Goblins equip items the player throws at them.
+        Spiders make webs, chase players.
+        Settle Down / Win.
+        Win / Score Display.
+        More items
+            wand
+            scrolls
+            potions
+            About
         Companions:
             ? Heal the leader if possible
             ? Persist in actions (no hard distance boundry preventing planning)
@@ -120,18 +130,6 @@ TODO(Beta):
                 * Attack!
                 Collect Items
     
-    Should:
-        $ Goblins equip items the player throws at them.
-        Spiders make webs, chase players.
-        Roll Character
-        Settle Down / Win.
-        Win / Score Display.
-        More items
-            wand
-            scrolls
-            potions
-            About
-    
     Later:
         Goblin corpses
         Miasma?
@@ -139,14 +137,18 @@ TODO(Beta):
         $ charms, amulets
         '.' to run.
         Saving / Loading
-        $ Larger Title Display
         Locked doors, door bashing
         $ Enemies drop items
         Uncouple client from server
             $ Look into tight coupling in targeting system.
             Look / examine system is tightly coupled.
+        Colorful Title Display
             
     Done:
+        + Bugfix: Goblins and enemies spawned in same room.
+        + Bugfix: Items and enemies are spawned on stairs, up and down.
+        + Roll Character
+        + Larger Title Display
         + Full Canvas Display, with new status bar.
         + Full new canvas clicking system.
         + Status Bar

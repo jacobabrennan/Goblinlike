@@ -89,7 +89,13 @@ var genericTileTypes = {
         color: {value: '#fc0'},
         background: {value: '#111'},
         toggleDoor: {value: function (x, y, theActor, force){
-            var currentLevel = mapManager.getLevel(theActor.levelId);
+            var levelId;
+            if(theActor.levelId){
+                levelId = theActor.levelId;
+            } else{
+                levelId = theActor;
+            }
+            var currentLevel = mapManager.getLevel(levelId);
             if(currentLevel){
                 if(!force){
                     currentLevel.placeTile(x, y, genericTileTypes["'"]);
@@ -110,14 +116,20 @@ var genericTileTypes = {
         color: {value: '#fc0'},
         background: {value: '#111'},
         toggleDoor: {value: function (x, y, theActor){
-            var testActor = mapManager.getTileContents(
-                x, y, theActor.levelId, true);
-            if(testActor){   
-                if(testActor.dense){
-                    return false;
+            var levelId;
+            if(theActor.levelId){
+                levelId = theActor.levelId;
+                var testActor = mapManager.getTileContents(
+                    x, y, theActor.levelId, true);
+                if(testActor){   
+                    if(testActor.dense){
+                        return false;
+                    }
                 }
+            } else{
+                levelId = theActor;
             }
-            var currentLevel = mapManager.getLevel(theActor.levelId);
+            var currentLevel = mapManager.getLevel(levelId);
             if(currentLevel){
                 currentLevel.placeTile(x, y, genericTileTypes["+"]);
             }
