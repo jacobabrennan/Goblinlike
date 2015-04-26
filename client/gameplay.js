@@ -30,8 +30,6 @@ client.drivers.gameplay = Object.create(driver, {
         */
     }},
     focused: {value: function (options){
-        client.skin.registerPanel(this.drivers.map.displayPane);
-        client.skin.registerPanel(this.drivers.menu.displayPane, true);
         this.focus(this.drivers.menu);
     }},
     newGame: {value: function (gameData){
@@ -81,12 +79,7 @@ client.drivers.gameplay = Object.create(driver, {
     }},
     display: {value: function (options){
         // TODO: Document.
-        this.drivers.map.display({
-            level: this.memory.getDisplayLevel(),
-            x: this.memory.character.x,
-            y: this.memory.character.y,
-            currentTime: this.memory.currentTime
-        });
+        this.drivers.map.display();
         var block = driver.display.apply(this, arguments);
         if(block){ return block;}
         //this.drivers.menu.display();
@@ -214,7 +207,7 @@ client.drivers.gameplay = Object.create(driver, {
 
 client.drivers.gameplay.commandMove = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.commands();
+    this.drivers.menu.showDefault();
     if(direction === 0){
         client.networking.sendMessage(COMMAND_WAIT, {});
     } else{
@@ -223,7 +216,7 @@ client.drivers.gameplay.commandMove = function (direction){
 };
 client.drivers.gameplay.commandWait = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.commands();
+    this.drivers.menu.showDefault();
     client.networking.sendMessage(COMMAND_WAIT, {});
 };
 client.drivers.gameplay.commandClose = function (){

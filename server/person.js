@@ -189,12 +189,8 @@ var person = Object.create(actor, {
         if(!this.messages){ this.messages = [];}
         // Display all the messages!   _(o-°)/
             //this.messages.push(message);
-        var oldMessage = this.messages[0];
-        if(!oldMessage){
-            oldMessage = '';
-        }
-        oldMessage += ' \n '+message;
-        this.messages[0] = oldMessage;
+        //var oldMessage = this.messages[0];
+        this.messages.push(message);
     }, writable: true},
     inventoryAdd: {value: function (newItem){
         // Remove from current Location.

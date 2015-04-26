@@ -131,14 +131,15 @@ var hero = Object.create(person, {
             It doesn't return anything.
          **/
         if(!this.messages){ this.messages = [];}
-        // Display all the messages!   _(o-°)/
+        // Display all the messages!   \(°-o)_
             //this.messages.push(message);
-        var oldMessage = this.messages[0];
+        this.messages.push(message);
+        /*var oldMessage = this.messages[0];
         if(!oldMessage){
             oldMessage = '';
         }
-        oldMessage += ' \n '+message;
-        this.messages[0] = oldMessage;
+        oldMessage += message;
+        this.messages[0] = oldMessage;*/
     }, writable: true},
     
     

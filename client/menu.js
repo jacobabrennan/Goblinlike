@@ -15,85 +15,75 @@ client.drivers.gameplay.drivers.menu = (function (){ // Create a namespace.
 var menu = Object.create(driver, {
     displayWidth: {value: displaySize},
     displayHeight: {value: displaySize},
-    displayPane: {value: undefined, writable: true},
-    currentDisplay: {value: undefined, writable: true},
+    defaultMenu: {value: undefined, writable: true},
+    showDefault: {value: function (){
+        if(this.focus == statusMenu || this.focus == commandsMenu){ return;}
+        else{
+            var defaultMenu = this.defaultMenu || commandsMenu;
+            this.focus(defaultMenu);
+            defaultMenu.display();
+        }
+    }, writable: true},
     setup: {value: function (configuration){
         /**
             This function is called by client.setup as soon as the page loads.
             It configures the client to be able to display the menu.
             It does not return anything.
-         **/
-        this.displayPane = document.createElement('div');
-        this.displayPane.setAttribute('id', 'menu');
+        **/
         // Configure sub-drivers.
-        helpMenu.setup(configuration);
+        commandsMenu.setup(configuration);
         statusMenu.setup(configuration);
         optionsMenu.setup(configuration);
         infoMenu.setup(configuration);
         directionSelectMenu.setup(configuration);
     }},
     focused: {value: function (){
-        this.display();
-    }},
+        this.showDefault();
+    }},/*
     display: {value: function (){
-        /**
+        / **
             This function displays the menu, and any focused submenus.
             It returns
                 false to signal that parent drivers should continue drawing, or
                 true to signal that this driver has blocked further drawing.
-         **/
+         ** /
         if(!this.currentFocus){
             this.focus(statusMenu);
         }
         if(!(this.currentFocus && this.currentFocus.display)){ return false;}
-        return this.currentFocus.display.apply(this.currentFocus, arguments);
+        return true;
+        //return this.currentFocus.display.apply(this.currentFocus, arguments);
+    }},*/
+    blank: {value: function (){
+        client.skin.fillRect(0, 0, displaySize, displaySize, '#000');
     }},
-    swap: {value: function (newDisplay){
-        /**
-            This function displays the supplied element in the menu display
-                area (this.displayPane). It removes any old content that
-                was currently being displayed there.
-            It does not return anything.
-         **/
-        if(newDisplay == this.currentDisplay){ return;}
-        if(this.currentDisplay){
-            this.displayPane.replaceChild(newDisplay, this.currentDisplay);
-        } else{
-            this.displayPane.appendChild(newDisplay);
-        }
-        this.currentDisplay = newDisplay;
-    }},
-    help: {value: function (){
+    commands: {value: function (){
         /**
             This function displays the help / commands menu to the player.
             It does not return anything.
          **/
-        helpMenu.display();
-        this.focus(helpMenu);
+        commandsMenu.display();
+        this.focus(commandsMenu);
     }},
-    commands: {value: function (){
-        this.help();
+    help: {value: function (){
+        this.commands();
     }},
-    info: {value: function (message){
+    info: {value: function (messages){
         /**
-            This function displays a message to the player.
+            This function displays an array of messages to the player.
             It does not return anything.
          **/
-        var messages = arguments[0];
-        if(messages && messages.shift){ // Test if messages is an array.
-            infoMenu.pendingMessages = messages;
-            infoMenu.command(COMMAND_NONE, {});
-        } else{
-            infoMenu.stackMessage(message);
-            this.focus(infoMenu);
+        if(messages){
+            infoMenu.stackMessages(messages);
         }
+        this.focus(infoMenu);
+        infoMenu.display();
     }},
     status: {value: function (){
         /**
             This function displays the player's hero's status.
             It does not return anything.
          **/
-        //this.statusMenu.draw(); // Status is drawn in display.
         statusMenu.display();
         this.focus(statusMenu);
     }},
@@ -103,8 +93,12 @@ var menu = Object.create(driver, {
             The optionsMenu has focus once this function ends.
             It does not return anything.
          **/
-        optionsMenu.draw(title, options, callback, 0);
-        optionsMenu.display();
+        optionsMenu.display({
+            title: title,
+            options: options,
+            callback: callback,
+            page: 0
+        });
         this.focus(optionsMenu);
     }},
     directionSelect: {value: function(message, callback){
@@ -112,14 +106,13 @@ var menu = Object.create(driver, {
             This function prompts the player to input a direction.
             It does not return anything.
          **/
-        directionSelectMenu.draw(message, callback);
-        directionSelectMenu.display();
+        directionSelectMenu.display(message, callback);
         focus(directionSelectMenu);
     }}
 });
     
     
-/*===========================================================================
+/*==============================================================================
 
     The following objects are sub-drivers used by the main menuing system to
     display info to the player and to prompt the player for input.
@@ -130,10 +123,10 @@ var menu = Object.create(driver, {
     
     They are not prototypes, and should not be instanced.
     
-  ===========================================================================*/
+==============================================================================*/
 
 
-var helpMenu = Object.create(driver, {
+var commandsMenu = Object.create(driver, {
     /**
         The statusMenu is used by the menuing system to display information
             about the character. It is the default display state of the
@@ -141,82 +134,47 @@ var helpMenu = Object.create(driver, {
             infoMenu so the player can access old messages more easily.
         It is not a prototype, and should not be instanced.
      **/
-    displayElement: {value: undefined, writable: true},
-    setup: {value: function (){
-        /**
-            This function is called by menu.setup as soon as the page loads.
-            It configures the client to be able to display the help menu.
-            It does not return anything.
-         **/
-        this.displayElement = document.createElement('pre');
-        var commandsMessage = '';
-    //  commandsMessage += '123456789abcdefghij';
-        commandsMessage += 'Click/Arrows: Move\n';
-        commandsMessage += 'Click/Arrows: Fight\n\n';
-        this.displayElement.textContent = commandsMessage;
-        var commandLink = function (key, command, name){
-            var optionElement = document.createElement('a');
-            optionElement._characterIndex = key ;
-            //optionElement.addEventListener('click', optionLinkFunction);
-            var indexElement = document.createElement('span');
-            indexElement.textContent = key+'- ';
-            indexElement.setAttribute('class', 'control');
-            optionElement.appendChild(indexElement);
-            var nameElement = document.createElement('span');
-            nameElement.textContent = name;
-            optionElement.appendChild(nameElement);
-            optionElement.addEventListener('click', function (){
-                client.drivers.gameplay.command(command, {'key': key});
-            }.bind(this));
-            this.displayElement.appendChild(optionElement);
-            this.displayElement.appendChild(document.createElement('br'));
-        }.bind(this);
-        commandLink("c", COMMAND_DROP, 'Close Door');
-        commandLink("d", COMMAND_DROP, 'Drop Item');
-        commandLink("e", COMMAND_EQUIP, 'Equip Item');
-        commandLink("f", COMMAND_FIRE, 'Fire Weapon');
-        commandLink("F", COMMAND_THROW, 'Throw Item');
-        commandLink("g", COMMAND_GET, 'Get Item');
-        commandLink("l", COMMAND_LOOK, 'Look');
-        commandLink("L", COMMAND_LEADERSHIP, 'Leadership');
-        commandLink("r", COMMAND_CAMP, 'Rest (Heal)');
-        commandLink("t", COMMAND_UNEQUIP, 'Take Off Item');
-        commandLink("s", COMMAND_STAIRS, 'Use Stairs');
-        commandLink("u", COMMAND_USE, 'Use Item');
-        commandLink("?", COMMAND_HELP, 'Help');
-        this.displayElement.appendChild(document.createElement('br'));
-        this.displayElement.appendChild(document.createElement('br'));
-        commandLink("Esc", COMMAND_CANCEL, 'Cancel');
-        
-        /*var escMessage = document.createElement('a');
-        escMessage.setAttribute('class', 'control');
-        escMessage.textContent = '\nESC - Cancel';
-        escMessage.addEventListener('click', (function(){
-            this.command(COMMAND_CANCEL, {key: 'Esc'});
-        }).bind(this));
-        this.displayElement.appendChild(escMessage);*/
-    }},
-    draw: {value: function (){
-        /**
-            This function redraws the statusMenu and places it in the
-                document for display to the user.
-            It does not return anything.
-         **/
-    }},
+    setup: {value: function (){}},
     display: {value: function (){
         /**
             This function displays the statusMenu in the document.
             It returns true to signify that drawing should not continue;
          **/
-        this.draw();
-        menu.swap(this.displayElement);
+        menu.blank();
+        var commandLink = function (x, y, key, command, name){
+            /*optionElement.addEventListener('click', function (){
+                client.drivers.gameplay.command(command, {'key': key});
+            }.bind(this));*/
+            client.skin.drawCommand(x, y, key, name);
+        }.bind(this);
+        commandLink(1, 17, "c", COMMAND_DROP, 'Close Door');
+        commandLink(1, 16, "d", COMMAND_DROP, 'Drop Item');
+        commandLink(1, 15, "e", COMMAND_EQUIP, 'Equip Item');
+        commandLink(1, 14, "f", COMMAND_FIRE, 'Fire Weapon');
+        commandLink(1, 13, "F", COMMAND_THROW, 'Throw Item');
+        commandLink(1, 12, "g", COMMAND_GET, 'Get Item');
+        commandLink(1, 11, "l", COMMAND_LOOK, 'Look');
+        commandLink(1, 10, "L", COMMAND_LEADERSHIP, 'Leadership');
+        commandLink(1,  9, "r", COMMAND_CAMP, 'Rest (Heal)');
+        commandLink(1,  8, "t", COMMAND_UNEQUIP, 'Take Off Item');
+        commandLink(1,  7, "s", COMMAND_STAIRS, 'Use Stairs');
+        commandLink(1,  6, "u", COMMAND_USE, 'Use Item');
+        //commandLink(1,  7, "?", COMMAND_HELP, 'Help');
+        commandLink(1,  3, "[", COMMAND_PAGEDOWN, 'Show Messages');
+        commandLink(1,  1, "?", COMMAND_CANCEL, 'Status');
         menu.focus(this);
         return true;
     }},
     command: {value: function (command, options){
         // TODO: Document.
-        if(command == COMMAND_CANCEL){
-            menu.commands();
+        switch(command){
+            case COMMAND_PAGEDOWN:
+                menu.info();
+                return true;
+            case COMMAND_HELP:
+                menu.defaultMenu = statusMenu;
+                menu.status();
+                return true;
         }
         return false;
     }}
@@ -226,12 +184,11 @@ var infoMenu = Object.create(driver, {
         The infoMenu is used by the menuing system to display blocks of
         text to the player.
         It is not a prototype, and should not be instanced.
-     **/
-    oldMessages: {value: undefined, writable: true},
-    pendingMessages: {value: undefined, writable: true},
-    displayElement: {value: undefined, writable: true},
-    messageElement: {value: undefined, writable: true},
-    messageIndex: {value: undefined, writable: true},
+    **/
+    messages: {value: undefined, writable: true},
+    pendingIndex: {value: undefined, writable: true},
+    pageIndex: {value: undefined, writable: true},
+    pageLength: {value: 13, writable: true},
     setup: {value: function (){
         /**
             This function is called by menu.setup as soon as the page loads.
@@ -239,96 +196,32 @@ var infoMenu = Object.create(driver, {
             It does not return anything.
          **/
         this.messageIndex = 0;
-        this.oldMessages = [];
-        this.displayElement = document.createElement('span');
-        //
-        this.previousElement = document.createElement('a');
-        this.previousElement.textContent = '[ - Older Message';
-        this.previousElement.setAttribute('class', 'control');
-        this.previousElement.addEventListener('click', (function(){
-            this.command(COMMAND_PAGEDOWN, {key: '['});
-        }).bind(this));
-        this.displayElement.appendChild(this.previousElement);
-        this.displayElement.appendChild(document.createElement('br'));
-        //
-        this.messageElement = document.createElement('div');
-        this.messageElement.style.height = (displaySize - 6)+'em';
-        this.displayElement.appendChild(this.messageElement);
-        //
-        this.displayElement.appendChild(document.createElement('br'));
-        this.displayElement.appendChild(document.createElement('br'));
-        this.nextElement = document.createElement('a');
-        this.nextElement.setAttribute('class', 'control');
-        this.nextElement.textContent = '] - Newer Message';
-        this.nextElement.addEventListener('click', (function(){
-            this.command(COMMAND_PAGEUP, {key: ']'});
-        }).bind(this));
-        this.displayElement.appendChild(this.nextElement);
+        this.messages = [];
     }},
-    stackMessage: {value: function (message){
+    stackMessages: {value: function (messages){
         /**
-         *  Used to display a new message. It also adds the message to the
-         *      old messages list so it can be recalled later.
-         *  It does not return anything.
-         **/
-        this.oldMessages.unshift(message);
-        this.draw(message);
-        this.messageIndex = 0;
+            Used to display new messages. It also adds the messages to the old
+            messages list so they can be recalled later.
+            It does not return anything.
+        **/
+        this.pendingIndex = 0;
+        while(messages.length){
+            this.messages.unshift(messages.shift());
+            this.pendingIndex++;
+        }
+        this.pageIndex = 0;
+        this.display();
     }},
     advanceMessage: {value: function (direction){
         /**
          *  Used to cycle through and display old messages.
          *  It does not return anything.
          **/
-        this.messageIndex -= direction;
-        this.messageIndex = Math.max(0, Math.min(this.oldMessages.length-1, this.messageIndex));
-        var indexedMessage = this.oldMessages[this.messageIndex];
-        if(!indexedMessage){ return;}
-        this.draw(indexedMessage);
-    }},
-    draw: {value: function (message){
-        /**
-            This function redraws the infoMenu and places it in the
-                document for display to the user.
-            It does not return anything.
-         **/
-        var displayNext = false;
-        var displayPrevious = false;
-        if(!this.pendingMessages || !this.pendingMessages.length){
-            if(this.messageIndex > 0){ displayNext = true;}
-            if(this.messageIndex < this.oldMessages.length-1){
-                displayPrevious = true;
-            }
-        }
-        if(displayNext){
-            //this.nextElement.style.visibility = "visible";
-            this.nextElement.textContent = '] - Newer Message';
-        } else {
-            //this.nextElement.style.visibility = "hidden";
-            this.nextElement.textContent = '] - Status';
-        }
-        if(displayPrevious){ this.previousElement.style.visibility = "visible";}
-        else { this.previousElement.style.visibility = "hidden";}
-        //this.messageElement.textContent = message;
-        var messageLines = message.split('\n');
-        var oldMsgBlock = this.messageBlock;
-        this.messageBlock = document.createElement('span');
-        for(var msgIndex = 0; msgIndex < messageLines.length; msgIndex++){
-            var indexedMsg = messageLines[msgIndex];
-            var msgLineE = document.createElement('span');
-            msgLineE.textContent = indexedMsg;
-            this.messageBlock.appendChild(msgLineE);
-            this.messageBlock.appendChild(document.createElement('br'));
-        }
-        if(oldMsgBlock){
-            this.messageElement.replaceChild(this.messageBlock, oldMsgBlock);
-        } else{
-            this.messageElement.appendChild(this.messageBlock);
-        }
-        /*
-            Display the newDisplay element in the document, removing the old
-                display if necessary.
-        */
+        client.drivers.gameplay.drivers.map.display();
+        this.pageIndex -= direction;
+        var offsetLength = (this.messages.length-1)+(this.pageLength-this.pendingIndex);
+        var maxPage = Math.floor((offsetLength)/this.pageLength);
+        this.pageIndex = Math.max(0, Math.min(maxPage, this.pageIndex));
         this.display();
     }},
     display: {value: function (){
@@ -336,7 +229,28 @@ var infoMenu = Object.create(driver, {
             This function displays the infoMenu in the document.
             It returns true to signify that drawing should not continue;
          **/
-        menu.swap(this.displayElement);
+        menu.blank();
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
+        var pageStart = this.pendingIndex-this.pageLength;
+        pageStart += this.pageIndex*this.pageLength;
+        var pageEnd = pageStart+this.pageLength;
+        pageStart = Math.max(0, pageStart);
+        pageEnd = Math.min(this.messages.length, pageEnd);
+        if(this.pageIndex > 0){
+            client.skin.drawCommand(1, 3, ']', 'Newer Messages');
+        } else {
+            client.skin.drawCommand(1, 3, ']', 'Back', '');
+        }
+        if(pageEnd < this.messages.length){
+            client.skin.drawCommand(1, 19, '[', 'Older Messages');
+        }
+        var pageMessages = this.messages.slice(pageStart, pageEnd);
+        var stackIndex = 0;
+        for(var msgIndex = pageMessages.length-1; msgIndex >= 0; msgIndex--){
+            var indexedMsg = pageMessages[msgIndex];
+            client.skin.drawString(1, 17-stackIndex, indexedMsg);
+            stackIndex++;
+        }
         menu.focus(this);
         return true;
     }},
@@ -350,9 +264,9 @@ var infoMenu = Object.create(driver, {
                 this.advanceMessage(-1);
                 return true;
             case COMMAND_PAGEUP:
-                var oldPage = this.messageIndex;
+                var oldPage = this.pageIndex;
                 this.advanceMessage(1);
-                if(this.messageIndex == oldPage){
+                if(this.pageIndex === oldPage){
                     this.command(COMMAND_ENTER, {key: ' '});
                 }
                 return true;
@@ -361,7 +275,7 @@ var infoMenu = Object.create(driver, {
                     var nextMessage = this.pendingMessages.shift();
                     this.stackMessage(nextMessage);
                 } else{
-                    menu.commands();
+                    menu.showDefault();
                     return false;
                 }
         }
@@ -369,7 +283,9 @@ var infoMenu = Object.create(driver, {
     }},
     blurred: {value: function (){
         // TODO: Document.
-        this.messageIndex = 0;
+        //this.pendingIndex = 0;
+        this.pageIndex = 0;
+        client.drivers.gameplay.drivers.map.display();
     }}
 });
 var statusMenu = Object.create(driver, {
@@ -380,29 +296,12 @@ var statusMenu = Object.create(driver, {
             infoMenu so the player can access old messages more easily.
         It is not a prototype, and should not be instanced.
      **/
-    displayElement: {value: undefined, writable: true},
-    statusTextElement: {value: undefined, writable: true},
-    helpElement: {value: undefined, writable: true},
-    setup: {value: function (){
+    setup: {value: function (){}},
+    display: {value: function (){
         /**
-            This function is called by menu.setup as soon as the page loads.
-            It configures the client to be able to display the status.
-            It does not return anything.
-         **/
-        this.displayElement = document.createElement('pre');
-        this.helpElement = document.createElement('a');
-        this.helpElement.textContent = '? - Commands / Help';
-        this.helpElement.setAttribute('class', 'control');
-        this.helpElement.addEventListener('click', function (){
-            this.command(COMMAND_HELP, {key: '?'});
-        }.bind(this));
-    }},
-    draw: {value: function (){
-        /**
-            This function redraws the statusMenu and places it in the
-                document for display to the user.
-            It does not return anything.
-         **/
+            This function displays the statusMenu in the document.
+            It returns true to signify that drawing should not continue;
+        **/
         if(client.drivers.gameplay.dead){
             var gameOverText = '\n\n\n\n\n\n\n';
             gameOverText += '     Game Over     \n\n';
@@ -426,17 +325,16 @@ var statusMenu = Object.create(driver, {
             resetLink.addEventListener('click', function (){
                 client.focus(client.drivers.title);
             });
-            return;
+            return true;
         }
-        if(!client.drivers.gameplay.memory.statusUpdate){ return;}
+        //if(!client.drivers.gameplay.memory.statusUpdate){ return true;}
         client.drivers.gameplay.memory.statusUpdate = false;
+        menu.blank();
         // Get values for display from memory.
         var character = client.drivers.gameplay.memory.character;
         var name = character.name;
         var hp = character.hp;
-        //var mp = client.drivers.gameplay.memory.character.mp;
         var maxHp = character.maxHp;
-        //var maxMp = client.drivers.gameplay.memory.character.maxMp;
         var experience = character.experience;
         var level = character.level;
         var vitality = character.vitality;
@@ -447,36 +345,22 @@ var statusMenu = Object.create(driver, {
         var eShield = character.equipment[EQUIP_OFFHAND ];
         var eHelmet = character.equipment[EQUIP_HEAD    ];
         var eArmor  = character.equipment[EQUIP_BODY    ];
-        var statusText = '';
-        statusText += 'Status: \n';
-        statusText += '-------------------\n\n';
-        statusText += 'Name : '+name+'\n';
-        statusText += 'Class: Goblin\n';
-        statusText += 'Level: '+level+' /'+Math.floor(experience)+'\n';
-        statusText += 'HP   : '+hp+' /'+maxHp+'\n\n';
-        //statusText += 'Exp  : '+Math.floor(experience)+'\n\n';
-        statusText += 'Vitality: '+((vitality < 10)? ' ' : '')+vitality+'\n';
-        statusText += 'Strength: '+((strength < 10)? ' ' : '')+strength+'\n';
-        statusText += 'Wisdom  : '+((wisdom   < 10)? ' ' : '')+wisdom  +'\n';
-        statusText += 'Charisma: '+((charisma < 10)? ' ' : '')+charisma+'\n';
-        statusText += '\n';
-        // TODO: Display actual equipped items.
-        statusText += eWeapon? ('Hand: '+eWeapon.name+'\n') : '\n';
-        statusText += eShield? ('Hand: '+eShield.name+'\n') : '\n';
-        statusText += eArmor ? ('Body: '+eArmor.name +'\n') : '\n';
-        statusText += eHelmet? ('Head: '+eHelmet.name+'\n') : '\n';
-        statusText += '\n';
-        this.displayElement.textContent = statusText;
-        this.displayElement.appendChild(this.helpElement);
-    }},
-    display: {value: function (){
-        /**
-            This function displays the statusMenu in the document.
-            It returns true to signify that drawing should not continue;
-         **/
-        this.draw();
-        menu.swap(this.displayElement);
-        menu.focus(this);
+        client.skin.drawString(1, 17, 'Name : '+name);
+        client.skin.drawString(1, 16, 'Class: Goblin');
+        client.skin.drawString(1, 15, ('Level: '+level+' /'+Math.floor(experience)));
+        
+        client.skin.drawString(1, 13, ('Vitality: '+((vitality < 10)? ' ' : '')+vitality));
+        client.skin.drawString(1, 12, ('Strength: '+((strength < 10)? ' ' : '')+strength));
+        client.skin.drawString(1, 11, ('Wisdom  : '+((wisdom   < 10)? ' ' : '')+wisdom  ));
+        client.skin.drawString(1, 10, ('Charisma: '+((charisma < 10)? ' ' : '')+charisma));
+        
+        client.skin.drawString(1,  8, (eWeapon? ('Hand: '+eWeapon.name) : ''));
+        client.skin.drawString(1,  7, (eShield? ('Hand: '+eShield.name) : ''));
+        client.skin.drawString(1,  6, (eArmor ? ('Body: '+eArmor.name ) : ''));
+        client.skin.drawString(1,  5, (eHelmet? ('Head: '+eHelmet.name) : ''));
+        
+        client.skin.drawCommand(1, 3, "[", 'Show Messages');
+        client.skin.drawCommand(1, 1, '?', 'Commands');
         return true;
     }},
     command: {value: function (command, options){
@@ -492,6 +376,7 @@ var statusMenu = Object.create(driver, {
                 infoMenu.advanceMessage(0);
                 return true;
             case COMMAND_HELP:
+                menu.defaultMenu = commandsMenu;
                 menu.help();
                 return true;
         }
@@ -509,7 +394,6 @@ var optionsMenu = Object.create(driver, {
     actionOptions: {value: undefined, writable: true},
     optionsPage: {value: undefined, writable: true},
     actionCallback: {value: undefined, writable: true},
-    currentDisplay: {value: undefined, writable: true},
     setup: {value: function (){
         /**
             This function is called by menu.setup as soon as the page loads.
@@ -517,48 +401,38 @@ var optionsMenu = Object.create(driver, {
             It does not return anything.
          **/
     }},
-    draw: {value: function (title, options, callback, page){
+    display: {value: function (options){
         /**
-            This function redraws the optionsMenu and places it in the
-                document for display to the user.
-            It does not return anything.
+            This function displays the optionsMenu in the document.
+            It returns true to signify that drawing should not continue;
          **/
+        
         // Setup defaults for unpassed options.
-        this.actionTitle    = (title    !== undefined)? title    : this.actionTitle;
-        this.actionOptions  = (options  !== undefined)? options  : this.actionOptions;
-        this.actionCallback = (callback !== undefined)? callback : this.actionCallback;
-        this.optionsPage    = (page     !== undefined)? page     : (this.optionsPage || 0);
-        // Create a new display element, and begin to fill it with content.
-        var newDisplay = document.createElement('span');
-        // Add the title display.
-        var titleElement = document.createElement('span');
-        titleElement.textContent = this.actionTitle;
-        newDisplay.appendChild(titleElement);
-        newDisplay.appendChild(document.createElement('br'));
+        menu.blank();
+        if(!options){ options = {};}
+        this.actionTitle    = options.title || this.actionTitle;
+        this.actionOptions  = options.options || this.actionOptions;
+        this.actionCallback = options.callback || this.actionCallback;
+        if(options.page !== undefined){
+            this.optionsPage = options.page;
+        } else{
+            this.optionsPage = this.optionsPage || 0;
+        }
+        // Add the title.
+        client.skin.drawString(1, 19, this.actionTitle+':');
         /*
             If there are options, then populate the newDisplay element with
                 option links, and possibly page up and page down links.
             Otherwise, add a message saying it is empty.
             Add the cancel / escape link in either case.
         */
-        var optionsContainer = document.createElement('div');
-        optionsContainer.style.height = (this.optionsDisplayMax+3)+'em';
-        newDisplay.appendChild(optionsContainer);
         if(this.actionOptions && this.actionOptions.length){ // Populate.
-            titleElement.textContent += ':';
             var pagedOffset = this.optionsPage*this.optionsDisplayMax;
             var pagedLength = this.actionOptions.length - pagedOffset;
             var displayMax = Math.min(this.optionsDisplayMax, pagedLength);
-            optionsContainer.appendChild(document.createElement('br'));
             // Add Page Up link if needed.
             if(this.optionsPage > 0){
-                var pageUpMessage = document.createElement('a');
-                pageUpMessage.setAttribute('class', 'control');
-                pageUpMessage.textContent = ' [- Page Up';
-                pageUpMessage.addEventListener('click', (function(){
-                    this.command(COMMAND_PAGEUP, {key: ']'});
-                }).bind(this));
-                optionsContainer.appendChild(pageUpMessage);
+                client.skin.drawCommand(1, 17, '[ Page Up');
             }
             // Create the options links.
             var self = this;
@@ -569,59 +443,22 @@ var optionsMenu = Object.create(driver, {
                 var indexedOption = this.actionOptions[displayIndex+pagedOffset];
                 var alphabet = 'abcdefghijklmnopqrstuvwxyz';
                 var indexCharacter = alphabet.charAt(displayIndex);
-                var optionElement = document.createElement('a');
-                optionElement._characterIndex = indexCharacter;
-                optionElement.addEventListener('click', optionLinkFunction);
-                var indexElement = document.createElement('span');
-                indexElement.textContent = ' '+indexCharacter+'- ';
-                indexElement.setAttribute('class', 'control');
-                optionElement.appendChild(indexElement);
-                var nameElement = document.createElement('span');
-                nameElement.textContent = indexedOption;
-                optionElement.appendChild(nameElement);
-                optionsContainer.appendChild(document.createElement('br'));
-                optionsContainer.appendChild(optionElement);
+                client.skin.drawCommand(
+                    1, 16-displayIndex,
+                    indexCharacter.toUpperCase(),
+                    indexedOption
+                );
             }
             // Add the Page Down Link if needed.
             var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);
             if(this.optionsPage < maxPage){
-                var pageDownMessage = document.createElement('a');
-                pageDownMessage.textContent = ' ]- Page Down';
-                pageDownMessage.setAttribute('class', 'control');
-                pageDownMessage.addEventListener('click', (function(){
-                    this.command(COMMAND_PAGEDOWN, {key: '['});
-                }).bind(this));
-                optionsContainer.appendChild(document.createElement('br'));
-                optionsContainer.appendChild(pageDownMessage);
+                client.skin.drawCommand(1, 3, '] Page Down');
             }
         } else{ // Display the "empty" message.
-            optionsContainer.appendChild(document.createElement('br'));
-            var emptyMessage = document.createElement('span');
-            emptyMessage.textContent = '(empty)';
-            optionsContainer.appendChild(emptyMessage);
+            client.skin.drawString(1, 15, '(empty)');
         }
         // Add the Cancel / Escape link.
-        newDisplay.appendChild(document.createElement('br'));
-        var escMessage = document.createElement('a');
-        escMessage.setAttribute('class', 'control');
-        escMessage.textContent = 'ESC - Cancel';
-        escMessage.addEventListener('click', (function(){
-            this.command(COMMAND_CANCEL, {key: 'Esc'});
-        }).bind(this));
-        newDisplay.appendChild(escMessage);
-        /*
-            Display the newDisplay element in the document, removing the old
-                display if necessary.
-        */
-        this.currentDisplay = newDisplay;
-        this.display();
-    }},
-    display: {value: function (){
-        /**
-            This function displays the optionsMenu in the document.
-            It returns true to signify that drawing should not continue;
-         **/
-        menu.swap(this.currentDisplay);
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
         menu.focus(this);
         return true;
     }},
@@ -632,17 +469,17 @@ var optionsMenu = Object.create(driver, {
         }
         switch(command){
             case COMMAND_CANCEL:
-                menu.commands();
+                menu.showDefault();
                 return true;
             case COMMAND_PAGEDOWN:
                 this.optionsPage = Math.max(0, this.optionsPage-1);
-                this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
+                this.display(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
                 return true;
             case COMMAND_PAGEUP:
                 if(!this.actionOptions){ return true;}
                 var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);
                 this.optionsPage = Math.min(maxPage, this.optionsPage+1);
-                this.draw(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
+                this.display(this.actionTitle, this.actionOptions, this.actionCallback, this.optionsPage);
                 return true;
             default:
                 if(options.key){
@@ -675,53 +512,16 @@ var directionSelectMenu = Object.create(driver, {
         It is not a prototype, and should not be instanced.
      **/
     directionCallback: {value: undefined, writable: true},
-    displayElement: {value: undefined, writable: true},
-    titleElement: {value: undefined, writable: true},
-    setup: {value: function (){
-        /**
-            This function is called by menu.setup as soon as the page loads.
-            It configures the client to be able to display the direction
-                prompt.
-            It does not return anything.
-         **/
-        this.displayElement = document.createElement('span');
-        //
-        this.displayElement.appendChild(document.createElement('br'));
-        this.displayElement.appendChild(document.createElement('br'));
-        this.displayElement.appendChild(document.createElement('br'));
-        this.titleElement = document.createElement('div');
-        this.titleElement.textContent = 'Input a direction:';
-        this.displayElement.appendChild(this.titleElement);
-        //
-        this.messageElement = document.createElement('div');
-        this.messageElement.style.height = (displaySize - 8)+'em';
-        this.displayElement.appendChild(this.messageElement);
-        //
-        this.displayElement.appendChild(document.createElement('br'));
-        this.cancelElement = document.createElement('a');
-        this.cancelElement.setAttribute('class', 'control');
-        this.cancelElement.textContent = 'ESC - Cancel';
-        this.cancelElement.addEventListener('click', (function(){
-            this.command(COMMAND_CANCEL, {key: 'Escape'});
-        }).bind(this));
-        this.displayElement.appendChild(this.cancelElement);
-    }},
-    draw: {value: function (message, callback){
-        /**
-            This function redraws the infoMenu and places it in the
-                document for display to the user.
-            It does not return anything.
-         **/
-        this.directionCallback = callback;
-        this.titleElement.textContent = message || 'Input a direction:';
-        this.display();
-    }},
-    display: {value: function (){
+    setup: {value: function (){}},
+    display: {value: function (message, callback){
         /**
             This function displays the infoMenu in the document.
             It returns true to signify that drawing should not continue;
          **/
-        menu.swap(this.displayElement);
+        if(callback){ this.directionCallback = callback;}
+        menu.blank();
+        client.skin.drawString(1, 16, (message || 'Input a direction:'));
+        client.skin.drawCommand(1, 1, 'Esc', 'Cancel');
         menu.focus(this);
         return true;
     }},
@@ -729,11 +529,12 @@ var directionSelectMenu = Object.create(driver, {
         // TODO: Document.
         switch(command){
             case COMMAND_CANCEL:
-                menu.commands();
+                menu.showDefault();
                 break;
             case NORTH: case NORTHWEST: case WEST: case SOUTHWEST:
             case SOUTH: case SOUTHEAST: case EAST: case NORTHEAST:
                 var callbackStorage = this.directionCallback;
+                menu.showDefault();
                 this.directionCallback = undefined;
                 callbackStorage(command);
         }
@@ -747,3 +548,6 @@ var directionSelectMenu = Object.create(driver, {
 // ============================================================================
     return menu; // Return the menu; end the namespace.
 })();
+
+
+

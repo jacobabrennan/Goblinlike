@@ -6,9 +6,11 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = 'Beta';
+var VERSION = 'Alpha7';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
+var HIGHLIGHT = 'highlight';
+var TILE_SIZE = 16;
     // Directions:
 var WAIT      = 0;
 var NORTH     = 1;
