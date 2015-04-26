@@ -46,27 +46,15 @@ var accessFunction = function (depth, options){
     if(options){
         prototypeOptions = options;
     } else{
-        //prototypeOptions.depth = depth;
-        switch(depth){
-            case 1:
-                prototypeOptions = {
-                    depth: 1,
-                    roomSideMax: 10,
-                    roomSideMin: 3,
-                    hallLengthMax: 20,
-                    hallLengthMin: 7,
-                    width: displaySize,
-                    height: displaySize,
-                    placeStairsUp: false
-                };
-                break;
-            default:
-                prototypeOptions = { // TODO: MAGIC NUMBERS!
-                    'depth': depth,
-                    'width': DEFAULT_MAP_SIZE,
-                    'height': DEFAULT_MAP_SIZE
-                };
-                break;
+        prototypeOptions.depth = depth;
+        prototypeOptions.roomSideMax = Math.min(10, (5+depth));
+        prototypeOptions.roomSideMin = Math.min(6, (2+depth));
+        prototypeOptions.hallLengthMax = 20;
+        prototypeOptions.hallLengthMin = 7;
+        prototypeOptions.width = Math.min(64, displaySize+(depth-1)*15);
+        prototypeOptions.height = Math.min(64, displaySize+(depth-1)*15);
+        if(depth == 1){
+            prototypeOptions.placeStairsUp = false;
         }
     }
     var generator = Object.create(protoLevel);
@@ -264,7 +252,7 @@ var protoLevel = {
             }
         }
         // Fill Level with Items:
-        var itemPoints = (this.width * this.height * this.depth) / 64; // TODO: MAGIC NUMBERS! Enemy Density.
+        var itemPoints = (this.width * this.height * this.depth) / 80; // TODO: MAGIC NUMBERS! Item Density.
         while(itemPoints >= 0 && this.rooms.length > 1){
             var iMean = this.depth;
             var iAttemptedWeight = Math.max(1, Math.round(gaussRandom(iMean, iMean/3)));

@@ -165,7 +165,7 @@ var potion = Object.create(item, {
 library.registerItem(Object.create(potion, {
     potency: {value: 10, writable: true},
     baseValue: {value: 2, writable: true},
-    lore: {value: 10, writable: true},
+    lore: {value: 15, writable: true},
     name: {value: 'WkHealth Pot'},
     effect: {value: function(user, targetData){
         if(user.type == TYPE_ACTOR){
@@ -219,7 +219,7 @@ library.registerItem(Object.create(potion, {
 }));
 library.registerItem(Object.create(wand, {// Test Wand
     // Id:
-    lore: {value: 18, writable: true},
+    lore: {value: 20, writable: true},
     name: {value: 'Wand of Fire', writable: true},
     baseValue: {value: 4, writable: true},
     // Description:
@@ -234,7 +234,7 @@ library.registerItem(Object.create(wand, {// Test Wand
 
 library.registerItem(Object.create(scroll, {
     name: {value: 'Fire Scroll'},
-    lore: {value: 10, writable: true},
+    lore: {value: 18, writable: true},
     baseValue: {value: 2, writable: true},
     effect: {value: function(user, targetData){
         // Attempt to find the target, by ID within view.

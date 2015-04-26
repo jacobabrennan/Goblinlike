@@ -67,6 +67,7 @@ TO DONE: Beta1
     Full Canvas Display, with new status bar.
     Full new canvas clicking system.
     Character Creation.
+    Larger dungeon rooms on deeper levels.
 TO DONE: Alpha7
     Blobs
     BugFix: Included Font
@@ -105,7 +106,6 @@ TODO(Beta):
         (Defered) Problem: Goblins are attacked by roving enemies before they're ever found.
             
     Absolute Must:
-        Larger dungeon rooms as levels go higher.
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies
         $ More Armor
@@ -145,6 +145,8 @@ TODO(Beta):
         Colorful Title Display
             
     Done:
+        + Larger dungeon rooms as levels go higher.
+        + Goblins try not to be too greedy about arrows.
         + Bugfix: Goblins and enemies spawned in same room.
         + Bugfix: Items and enemies are spawned on stairs, up and down.
         + Roll Character

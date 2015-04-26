@@ -974,7 +974,7 @@ library.registerEnemy(Object.create(blobPrototype, {
     bodyBackground: {value: "#08a", writable: true},
     // Stats:
     rewardExperience: {value: 80, writable: true},
-    baseHp: {value: 22, writable: true},
+    baseHp: {value: 60, writable: true},
     baseAttack: {value: 4, writable: true},
     erratic: {value: 1/4, writable: true},
     forgetful: {value: 5, writable: true},

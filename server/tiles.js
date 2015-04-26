@@ -74,7 +74,7 @@ var genericTileTypes = {
         //background: {value: '#111'}
     }),
     ' ': Object.create(tile, { // Hall
-        id: {value: 'floor2'},
+        id: {value: 'hall'},
         character: {value: '.'},
         dense: {value: false},
         opaque: {value: false},

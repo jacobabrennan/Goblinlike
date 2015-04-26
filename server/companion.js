@@ -129,9 +129,26 @@ var companion = Object.create(person, {
         this.name = sWerd.name()+' (g)';
         var theHero = gameManager.currentGame.hero;
         if(theHero){ this.setLevel(theHero.level);}
-        
-        this.equip(Object.instantiate(itemLibrary.getItem('short bow')));
-        this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
+        var randomIndex = randomInterval(0, 5);
+        if(!theHero){ randomIndex = 0;}
+        switch(randomIndex){
+            case 0:
+            case 1:
+                this.equip(Object.instantiate(itemLibrary.getItem('short bow')));
+                this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
+                break;
+            case 2:
+            case 4:
+            case 5:
+                var aRock = Object.instantiate(itemLibrary.getItem('rock'));
+                if(this.equip(aRock)){
+                    console.log('Rocking it')
+                    break;
+                }
+            case 3:
+                this.equip(Object.instantiate(itemLibrary.getItem('club')));
+                break;
+        }
         
         return this;
     }, writable: true},
@@ -395,11 +412,13 @@ var companion = Object.create(person, {
             var ownWeapon = this.equipment[EQUIP_MAINHAND];
             if(ownWeapon){
                 if(ownWeapon.damageScale && theItem.damageScale){
-                    // Check Weapon.
-                    desire += (theItem.damageScale - ownWeapon.damageScale)*5;
-                } else if(ownWeapon.baseDamabe && theItem.baseDamage){
                     // Check Bow.
+                    desire += (theItem.damageScale - ownWeapon.damageScale)*5;
+                    desire -= (theItem.weight - ownWeapon.weight);
+                } else if(ownWeapon.baseDamage && theItem.baseDamage){
+                    // Check Weapon.
                     desire += theItem.baseDamage - ownWeapon.baseDamage;
+                    desire -= (theItem.weight - ownWeapon.weight);
                 }
             }
         } else if(thePlace){
@@ -410,16 +429,25 @@ var companion = Object.create(person, {
                 // Check ammo.
                 var ownBow = this.equipment[EQUIP_MAINHAND];
                 if(ownBow && ownBow.damageScale && ownBow.ammoType){
+                    // We have a bow.
                     if(ownBow.ammoType == theItem.ammoType){
-                        if(ownEquip && ownEquip.ammoType == ownBow.ammoType &&
-                            (ownEquip.name != theItem.name)
-                        ){
-                            desire += theItem.baseDamage - ownEquip.baseDamage;
+                        // The ammo is good for our bow.
+                        if(ownEquip && ownEquip.ammoType == ownBow.ammoType){
+                            // We already have proper ammo.
+                            if(ownEquip.name != theItem.name){
+                                // This is proper ammo, but a different kind.
+                                desire += theItem.baseDamage - ownEquip.baseDamage;
+                            } else{
+                                // This is the same kind of ammo we have.
+                                if(ownEquip.stackCount >= 10){ return 0;}
+                                desire += theItem.stackCount || 1;
+                            }
                         } else{
+                            // We don't have proper ammo yet, so get this.
                             desire += theItem.stackCount || 1;
                         }
-                        
                     } else{
+                        // The ammo is not good for our bow.
                         desire = 0;
                     }
                     skipCheck = true;

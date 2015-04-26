@@ -48,7 +48,6 @@ client.drivers.gameplay = Object.create(driver, {
         if(this.dead){
             return true;
         }
-        console.log('Trying')
         return this.drivers.map.handleClick(x, y, options);
     }, writable: true},
     command: {value: function (command, options){
