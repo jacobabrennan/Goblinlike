@@ -1,52 +1,8 @@
-var itemLibrary = (function (){ // Open new namespace for items library.
+(function (){ // Open new namespace for items (to hide base item types).
 //==============================================================================
-var library = {
-    items: {},
-    itemWeights: [],
-    registerItem: function (newPrototype){
-        var prototypeName = newPrototype.name;
-        if(!prototypeName || this.items[prototypeName]){
-            console.log('Problem: Non-unique name for item prototype '+prototypeName);
-        }
-        var itemWeight = newPrototype.baseValue;
-        if(itemWeight){
-            var totalWeight = itemWeight;
-            if(newPrototype.stackCount > 1){
-                totalWeight *= newPrototype.stackCount;
-            }
-            var weightClass = this.itemWeights[totalWeight];
-            if(!weightClass){
-                weightClass = [];
-                this.itemWeights[totalWeight] = weightClass;
-            }
-            weightClass.push(prototypeName);
-        }
-        this.items[prototypeName] = newPrototype;
-    },
-    getItem: function (itemName){
-        var itemPrototype = this.items[itemName];
-        return itemPrototype;
-    },
-    getItemByWeight: function (weight){
-        weight = Math.round(weight);
-        var weightClass;
-        var itemPrototype;
-        while(!weightClass && weight > 0){
-            weightClass = this.itemWeights[weight];
-            if(!weightClass){
-                weight--;
-                continue;
-            }
-            prototypeName = arrayPick(weightClass);
-            itemPrototype = this.getItem(prototypeName);
-            if(itemPrototype){
-                break;
-            }
-        }
-        return itemPrototype;
-    }
-};
-item.baseValue = 1;
+
+//item.generationId = '';
+item.generationWeight = 1;
 
 //== Base Prototypes (wands, rings, etc.) ======================================
 
@@ -162,9 +118,10 @@ var potion = Object.create(item, {
 
 //== Specific Mappable Items ===================================================
 
-library.registerItem(Object.create(potion, {
+modelLibrary.registerModel('item', Object.create(potion, {
+    generationId: {value: 'weak health potion'},
+    generationWeight: {value: 2, writable: true},
     potency: {value: 10, writable: true},
-    baseValue: {value: 2, writable: true},
     lore: {value: 15, writable: true},
     name: {value: 'WkHealth Pot'},
     effect: {value: function(user, targetData){
@@ -181,24 +138,29 @@ library.registerItem(Object.create(potion, {
     // Description:
     viewText: {value: 'You see a weak health potion. Drinking this potion will restore a small amount of health.'}
 }));
-library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'weak health potion'), {
+    generationId: {value: 'health potion'},
+    generationWeight: {value: 5, writable: true},
     potency: {value: 30, writable: true},
-    baseValue: {value: 5, writable: true},
     lore: {value: 20, writable: true},
     name: {value: 'Health Pot'},
     // Description:
     viewText: {value: 'You see a health potion. Drinking this potion will restore a moderate amount of health.'}
 }));
-library.registerItem(Object.create(library.getItem('WkHealth Pot'), {
-    baseValue: {value: 9, writable: true},
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'weak health potion'), {
+    generationId: {value: 'strong health potion'},
+    generationWeight: {value: 9, writable: true},
     potency: {value: 80, writable: true},
     lore: {value: 40, writable: true},
     name: {value: 'StrHealth Pot'},
     // Description:
     viewText: {value: 'You see a strong health potion. Drinking this potion will restore a large amount of health.'}
 }));
-library.registerItem(Object.create(potion, {
-    baseValue: {value: 3, writable: true},
+modelLibrary.registerModel('item', Object.create(potion, {
+    generationId: {value: 'acid potion'},
+    generationWeight: {value: 3, writable: true},
     potency: {value: 10, writable: true},
     lore: {value: 15, writable: true},
     name: {value: 'Acid Potion'},
@@ -217,25 +179,27 @@ library.registerItem(Object.create(potion, {
     // Description:
     viewText: {value: 'You see an acid potion. Most organic materials will corrode when covered in this liquid.'}
 }));
-library.registerItem(Object.create(wand, {// Test Wand
+modelLibrary.registerModel('item', Object.create(wand, {// Test Wand
     // Id:
+    generationId: {value: 'fire wand'},
+    generationWeight: {value: 4, writable: true},
     lore: {value: 20, writable: true},
     name: {value: 'Wand of Fire', writable: true},
-    baseValue: {value: 4, writable: true},
     // Description:
     viewText: {value: 'You see a wand of fire. This magical item can shoot fireballs at your enemies.'}
 }));/*
-library.registerItem(Object.create(wand, {// Test Wand
+modelLibrary.registerModel('item', Object.create(wand, {// Test Wand
     // Id:
     lore: {value: 30, writable: true},
     name: {value: 'Wand of Haste', writable: true},
-    baseValue: {value: 4, writable: true}
+    generationWeight: {value: 4, writable: true}
 }));*/
 
-library.registerItem(Object.create(scroll, {
-    name: {value: 'Fire Scroll'},
+modelLibrary.registerModel('item', Object.create(scroll, {
+    generationId: {value: 'fire scroll', writable: true},
+    generationWeight: {value: 2, writable: true},
+    name: {value: 'FireScroll'},
     lore: {value: 18, writable: true},
-    baseValue: {value: 2, writable: true},
     effect: {value: function(user, targetData){
         // Attempt to find the target, by ID within view.
         var targetId = targetData.target.id;
@@ -255,15 +219,16 @@ library.registerItem(Object.create(scroll, {
     // Description:
     viewText: {value: 'You see a fire scroll. This magical item can summon a blast of fire to envelope your enemy.'}
 }));
-library.registerItem(Object.create(weapon, { // Rock
+modelLibrary.registerModel('item', Object.create(weapon, { // Rock
     // Id:
-    name: {value: 'rock', writable: true},
-    baseValue: {value: 1, writable: true},
+    generationId: {value: 'rock'},
+    generationWeight: {value: 1, writable: true},
     // Display:
+    name: {value: 'Rock', writable: true},
     character: {value: ':', writable: true},
     color: {value: '#444', writable: true},
     // Stats:
-    weight: {value: 8, writable: true},
+    weight: {value: 6, writable: true},
     baseDamage: {value: 2, writable: true},
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
@@ -272,11 +237,12 @@ library.registerItem(Object.create(weapon, { // Rock
     // Description:
     viewText: {value: "You see a heavy rock, a weapon of last resort. Many goblins have lived another day thanks to a well thrown rock."}
 }));
-library.registerItem(Object.create(weapon, { // Club
+modelLibrary.registerModel('item', Object.create(weapon, { // Club
     // Id:
-    name: {value: 'club', writable: true},
-    baseValue: {value: 2, writable: true},
+    generationId: {value: 'club'},
+    generationWeight: {value: 2, writable: true},
     // Display:
+    name: {value: 'Club', writable: true},
     character: {value: '|', writable: true},
     // Stats:
     weight: {value: 4, writable: true},
@@ -286,11 +252,12 @@ library.registerItem(Object.create(weapon, { // Club
     // Description:
     viewText: {value: 'You see a wooden club. This is a crude weapon, but effective.'}
 }));
-library.registerItem(Object.create(weapon, { // Cleaver
+modelLibrary.registerModel('item', Object.create(weapon, { // Cleaver
     // Id:
-    name: {value: 'cleaver', writable: true},
-    baseValue: {value: 4, writable: true},
+    generationId: {value: 'cleaver'},
+    generationWeight: {value: 4, writable: true},
     // Display:
+    name: {value: 'Cleaver', writable: true},
     character: {value: '|', writable: true},
     // Stats:
     weight: {value: 2, writable: true},
@@ -300,11 +267,12 @@ library.registerItem(Object.create(weapon, { // Cleaver
     // Description:
     viewText: {value: 'You see a cleaver. This hacking weapon is much more effective in the hands of a goblin than when wielded by a dwarf.'}
 }));
-library.registerItem(Object.create(weapon, { // Spear
+modelLibrary.registerModel('item', Object.create(weapon, { // Spear
     // Id:
-    name: {value: 'spear', writable: true},
-    baseValue: {value: 5, writable: true},
+    generationId: {value: 'spear'},
+    generationWeight: {value: 5, writable: true},
     // Display:
+    name: {value: 'Spear', writable: true},
     character: {value: '/', writable: true},
     // Stats:
     weight: {value: 5, writable: true},
@@ -316,11 +284,12 @@ library.registerItem(Object.create(weapon, { // Spear
     // Description:
     viewText: {value: 'You see a spear, a favorite weapon of goblin when hunting. It is equally effected when thrown.'}
 }));
-library.registerItem(Object.create(bow, { // Short Bow
+modelLibrary.registerModel('item', Object.create(bow, { // Short Bow
     // Id:
-    name: {value: 'short bow', writable: true},
-    baseValue: {value: 2, writable: true},
+    generationId: {value: 'short bow'},
+    generationWeight: {value: 2, writable: true},
     // Display:
+    name: {value: 'ShortBow', writable: true},
     // Stats:
     weight: {value: 2, writable: true},
     range: {value: 5, writable: true},
@@ -330,17 +299,33 @@ library.registerItem(Object.create(bow, { // Short Bow
     // Description:
     viewText: {value: 'You see a short bow. Most goblin carry a short bow to hunt and defend themselves in the wilderness.'}
 }));
-library.registerItem(Object.create(projectile, { // arrow
+modelLibrary.registerModel('item', Object.create(bow, { // Crossbow
     // Id:
-    name: {value: 'arrow', writable: true},
-    baseValue: {value: 2/5, writable: true},
+    generationId: {value: 'crossbow'},
+    generationWeight: {value: 4, writable: true},
     // Display:
+    name: {value: 'Crossbow', writable: true},
+    // Stats:
+    weight: {value: 7, writable: true},
+    range: {value: 5, writable: true},
+    damageScale: {value: 2, writable: true},
+    ammoType: {value: 'arrow', writable: true},
+    // Behavior:
+    // Description:
+    viewText: {value: "You see a dwarven crossbow. It's heavy, and looks more complicated than it needs to be."}
+}));
+modelLibrary.registerModel('item', Object.create(projectile, { // arrow
+    // Id:
+    generationId: {value: 'arrow1'},
+    generationWeight: {value: 2, writable: true},
+    // Display:
+    name: {value: 'Arrow', writable: true},
     character: {value: '\\', writable: true},
     // Stats:
     weight: {value: 1/4, writable: true},
     baseDamage: {value: 2, writable: true},
     damageSigma: {value: 0, writable: true},
-    stackCount: {value: 5, writable: true},
+    stackCount: {value: 1, writable: true},
     // Behavior:
     ammoType : {value: 'arrow', writable:true},
     placement: {value: EQUIP_OFFHAND, writable:true},
@@ -349,49 +334,95 @@ library.registerItem(Object.create(projectile, { // arrow
     // Description:
     viewText: {value: 'You see an arrow.'}
 }));
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'arrow1'),
+    {
+        generationId: {value: 'arrow5'},
+        generationWeight: {value: 10, writable: true},
+        stackCount: {value: 5, writable: true}
+    }
+));
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'arrow1'),
+    {
+        generationId: {value: 'arrow10'},
+        generationWeight: {value: 20, writable: true},
+        stackCount: {value: 10, writable: true}
+    }
+));
 
 
 //== Armor =====================================================================
 
-library.registerItem(Object.create(item, {
-    baseValue: {value: 2, writable: true},
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'leather shield'},
+    generationWeight: {value: 2, writable: true},
     character: {value: '('},
     name: {value: 'LeatherShield'},
     placement: {value: EQUIP_OFFHAND},
     evade: {value: 1/10},
+    weight: {value: 1},
     // Description:
     viewText: {value: 'You see a leather shield.'}
 }));
-library.registerItem(Object.create(item, {
-    baseValue: {value: 3, writable: true},
-    character: {value: '('},
-    name: {value: 'WoodShield'},
-    placement: {value: EQUIP_OFFHAND},
-    evade: {value: 1/8},
-    // Description:
-    viewText: {value: 'You see a tough wooden shield, like those favored by goblin everywhere.'}
-}));
-library.registerItem(Object.create(item, {
-    baseValue: {value: 3, writable: true},
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'leather armor'},
+    generationWeight: {value: 3, writable: true},
     character: {value: ']'},
     name: {value: 'LeatherArmor'},
     placement: {value: EQUIP_BODY},
     defense: {value: 1},
+    weight: {value: 2},
     // Description:
     viewText: {value: 'You see leather body armor. It was made by dwarves, but you could probably wear it.'}
 }));
-library.registerItem(Object.create(item, {
-    baseValue: {value: 2, writable: true},
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'leather cap'},
+    generationWeight: {value: 2, writable: true},
     character: {value: '^'},
     name: {value: 'LeatherCap'},
     placement: {value: EQUIP_HEAD},
     defense: {value: 1/2},
+    weight: {value: 1/2},
     // Description:
     viewText: {value: 'You see a leather cap.'}
 }));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'chain cowl'},
+    generationWeight: {value: 4, writable: true},
+    character: {value: '^'},
+    name: {value: 'ChainCowl'},
+    placement: {value: EQUIP_HEAD},
+    defense: {value: 1},
+    weight: {value: 2},
+    // Description:
+    viewText: {value: "You see a chainmail cowl. It's rusty, but well made."}
+}));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'wood shield'},
+    generationWeight: {value: 4, writable: true},
+    character: {value: '('},
+    name: {value: 'WoodShield'},
+    placement: {value: EQUIP_OFFHAND},
+    evade: {value: 1/8},
+    weight: {value: 2},
+    // Description:
+    viewText: {value: 'You see a tough wooden shield, like those favored by goblin everywhere.'}
+}));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'chainmail armor'},
+    generationWeight: {value: 5, writable: true},
+    character: {value: ']'},
+    name: {value: 'ChainArmor'},
+    placement: {value: EQUIP_BODY},
+    defense: {value: 2},
+    weight: {value: 4},
+    // Description:
+    viewText: {value: "You see chainmail body armor. It's rusty, but well made."}
+}));
 
 //==============================================================================
-    return library; // Return library, close namespace.
+    // Close namespace.
 })();
 
 

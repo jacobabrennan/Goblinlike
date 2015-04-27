@@ -134,19 +134,19 @@ var companion = Object.create(person, {
         switch(randomIndex){
             case 0:
             case 1:
-                this.equip(Object.instantiate(itemLibrary.getItem('short bow')));
-                this.equip(Object.instantiate(itemLibrary.getItem('arrow')));
+                this.equip(Object.instantiate(modelLibrary.getModel('item', 'short bow')));
+                this.equip(Object.instantiate(modelLibrary.getModel('item', 'arrow5')));
                 break;
             case 2:
             case 4:
             case 5:
-                var aRock = Object.instantiate(itemLibrary.getItem('rock'));
+                var aRock = Object.instantiate(modelLibrary.getModel('item', 'rock'));
                 if(this.equip(aRock)){
-                    console.log('Rocking it')
+                    console.log('Rocking it');
                     break;
                 }
             case 3:
-                this.equip(Object.instantiate(itemLibrary.getItem('club')));
+                this.equip(Object.instantiate(modelLibrary.getModel('item', 'club')));
                 break;
         }
         
