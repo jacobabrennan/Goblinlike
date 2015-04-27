@@ -260,7 +260,7 @@ enemy.getViewTarget = function (){
     // If no enemies, return null.
     return closeTarget;
 };
-enemy.simplePursue = function (target, simpleThreshold, derp){
+enemy.simplePursue = function (target, simpleThreshold){
     if(this.sedentary){ return false;}
     var targetDist = distance(this.x, this.y, target.x, target.y);
     if(!simpleThreshold){ simpleThreshold = 3;}
@@ -314,7 +314,6 @@ var behaviorNormal = enemy.behavior = function (){
             directionTo(this.x, this.y, target.x, target.y));
         if(!success){
             path = findPath(this, target);
-            (path || []).derp = 1;
             this.targetPath = path;
         }
         return;
@@ -326,7 +325,6 @@ var behaviorNormal = enemy.behavior = function (){
         if(targetData && (!forgotten || this.checkView(targetData.target))){
             target = targetData.target;
             path = targetData.path;
-            path.derp = 2;
             this.targetId = target;
             this.targetPath = path;
         } else{
@@ -344,7 +342,7 @@ var behaviorNormal = enemy.behavior = function (){
         }
     }
     if(nextStep.x == this.x && nextStep.y == this.y){
-        console.log('Problem: '+path.derp);
+        console.log('Problem');
     }
     var direction = directionTo(this.x,this.y,nextStep.x,nextStep.y);
     this.move(direction);

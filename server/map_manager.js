@@ -203,7 +203,7 @@ var mapManager = {
         totalColors: [
           //'123456 Potion*99',
             'Red'   ,'Orange','Yellow', 'Green',
-            'Aqua'  ,'Cyan'  ,'Blue'  ,'Purple',
+            'Violet'  ,'Cyan'  ,'Blue'  ,'Purple',
             'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
             'Murky' ,'Clear' ,'Chunky','Fizzy'
         ],
