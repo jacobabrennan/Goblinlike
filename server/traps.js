@@ -1,32 +1,9 @@
-var trapLibrary = (function (){ // Open new namespace for trap library.
+(function (){ // Open new namespace for traps.
 //==============================================================================
-var library = {
-    traps: {},
-    registerTrap: function (newPrototype){
-        var prototypeName = newPrototype.name;
-        if(!prototypeName || this.traps[prototypeName]){
-            console.log('Problem: Non-unique name for trap prototype '+prototypeName);
-        }
-        this.traps[prototypeName] = newPrototype;
-    },
-    getTrap: function (trapName){
-        var trapPrototype = this.traps[trapName];
-        return trapPrototype;
-    }/*,
-    getEnemyByWeight: function (weight){
-        weight = Math.round(weight);
-        var enemyId;
-        switch (weight){
-            case  1: enemyId = 'Red Beetle'; break;
-            case  2: enemyId = 'Worm'; break;
-            case  3: enemyId = 'Tarantula'; break;
-        }
-        var enemyPrototype = this.getEnemy(enemyId);
-        return enemyPrototype;
-    }*/
-};
-library.registerTrap(Object.create(trap, {
-    name: {value: 'acid trap'},
+
+modelLibrary.registerModel('trap', Object.create(trap, {
+    generationId: {value: 'acid'},
+    name: {value: 'acid puddle'},
     background: {value: '#690'},
     character: {value: null},
     hidden: {value: false, writable: true},
@@ -49,5 +26,5 @@ library.registerTrap(Object.create(trap, {
     viewText: {value: "You see a puddle of acid. Hot vapors rise from the surface and sting your eyes."}
 }));
 //==============================================================================
-    return library; // Return library, close namespace.
+    // Close namespace.
 })();

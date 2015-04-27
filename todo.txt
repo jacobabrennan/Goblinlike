@@ -1,3 +1,5 @@
+Lauren - Postcard
+Lydia - Check out her profile, look for fields of canada.
 
 Enemy Types:
 
@@ -61,6 +63,10 @@ zZ + zombie dwarf
 Wight, Wraith,
 Vampire, Lich
 
+TO DONE: Beta2
+    Refactored all library objects into one modelLibrary.
+    Added 2nd tier armor (chainmail).
+    * Added 2nd tier bows.
 TO DONE: Beta1
     Examine System, with descriptions.
     View companions.
@@ -98,28 +104,30 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
-        (Possibly Fixed) Black screen when starting first game. Possibly because of actors spawned at start location.
         ? Goblin's unhelpful dance.
-        (Defered) Enemies move twice on first move.
+        (Possibly Fixed) Black screen when starting first game. Possibly because of actors spawned at start location.
         (Possibly Fixed) Phantom Arrows ("That item is no longer there");
         (Possibly Fixed) Enemies get stuck toggling doors.
+        (Defered) Enemies move twice on first move.
         (Defered) Problem: Goblins are attacked by roving enemies before they're ever found.
             
     Absolute Must:
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies
-        $ More Armor
+            Wraith
+            Tarantula
+        More items
+            wand
+            scrolls
+            potions
     
     Should:
         $ Goblins equip items the player throws at them.
         Spiders make webs, chase players.
         Settle Down / Win.
         Win / Score Display.
-        More items
-            wand
-            scrolls
-            potions
-            About
+        $ More Armor
+        + About
         Companions:
             ? Heal the leader if possible
             ? Persist in actions (no hard distance boundry preventing planning)
@@ -131,6 +139,7 @@ TODO(Beta):
                 Collect Items
     
     Later:
+        Generate Vaults.
         Goblin corpses
         Miasma?
         Goblins get, keep, and use consumable items.
@@ -331,19 +340,6 @@ x - swap weapon
 
 Goblin Anthropology
     A Goblin Anthropologist Explores her own past.
-
-
-
-Short Term:
-    Generate Hallways and Vaults. (?)
-
-
-Recently Completed:
-    Take View and Opacity into consideration.
-    Make proper memory structures for contents of tiles (currently hard linked).
-
-
-
 
 
 Sky Dragon

@@ -1,37 +1,13 @@
-var skillLibrary = (function (){ // Open new namespace for skill library.
+(function (){ // Open new namespace for skills.
 //==============================================================================
-var library = {
-    skills: {},
-    registerSkill: function (newPrototype){
-        var prototypeName = newPrototype.name;
-        if(!prototypeName || this.skills[prototypeName]){
-            console.log('Problem: Non-unique name for skill prototype '+prototypeName);
-        }
-        this.skills[prototypeName] = newPrototype;
-    },
-    getSkill: function (skillName){
-        var skillPrototype = this.skills[skillName];
-        return skillPrototype;
-    }/*,
-    getEnemyByWeight: function (weight){
-        weight = Math.round(weight);
-        var enemyId;
-        switch (weight){
-            case  1: enemyId = 'Red Beetle'; break;
-            case  2: enemyId = 'Worm'; break;
-            case  3: enemyId = 'Tarantula'; break;
-        }
-        var enemyPrototype = this.getEnemy(enemyId);
-        return enemyPrototype;
-    }*/
-};
 var skill = {
     name: undefined,
     range: 1,
     targetClass: TARGET_ENEMY,
     use: function (user, target){}
 };
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'attack', writable: true},
     name: {value: 'attack', writable: true},
     range: {value: 1, writable: true},
     targetClass: {value: TARGET_ENEMY, writable: true},
@@ -43,7 +19,8 @@ library.registerSkill(Object.create(skill, {
         return result;
     }, writable: true}
 }));
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'breath fire', writable: true},
     name: {value: 'breath fire', writable: true},
     range: {value: 4, writable: true},
     targetClass: {value: TARGET_ENEMY, writable: true},
@@ -54,7 +31,8 @@ library.registerSkill(Object.create(skill, {
         return damageDone;
     }, writable: true}
 }));
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'teleport', writable: true},
     name: {value: 'teleport', writable: true},
     range: {value: 10, writable: true},
     targetClass: {value: TARGET_ENEMY|TARGET_RANGE, writable: true},
@@ -81,7 +59,8 @@ library.registerSkill(Object.create(skill, {
         return false;
     }, writable: true}
 }));
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'glare', writable: true},
     name: {value: 'glare', writable: true},
     range: {value: 10, writable: true},
     targetClass: {value: TARGET_ENEMY, writable: true},
@@ -94,11 +73,12 @@ library.registerSkill(Object.create(skill, {
         return 0;
     }, writable: true}
 }));
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'breed', writable: true},
     name: {value: 'breed', writable: true},
     targetClass: {value: TARGET_SELF, writable: true},
     use: {value: function (user, target){
-        var selfType = enemyLibrary.getEnemy(user.name);
+        var selfType = modelLibrary.getmModel('enemy', user.generationId);
         if(!selfType){ return false;}
         var oldX = user.x;
         var oldY = user.y;
@@ -123,7 +103,8 @@ library.registerSkill(Object.create(skill, {
         return true;
     }, writable: true}
 }));
-library.registerSkill(Object.create(skill, {
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'acid trap', writable: true},
     name: {value: 'acid trap', writable: true},
     targetClass: {value: TARGET_SELF, writable: true},
     use: {value: function (user, target){
@@ -139,7 +120,7 @@ library.registerSkill(Object.create(skill, {
                     }
                 }
                 if(!acidFound){
-                    Object.instantiate(trapLibrary.getTrap('acid trap')).place(
+                    Object.instantiate(modelLibrary.getModel('trap', 'acid')).place(
                         user.x+posX,user.y+posY,user.levelId);
                 }
             }
@@ -148,5 +129,5 @@ library.registerSkill(Object.create(skill, {
     }, writable: true}
 }));
 //==============================================================================
-    return library; // Return library, close namespace.
+    // Close namespace.
 })();
