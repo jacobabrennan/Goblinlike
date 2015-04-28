@@ -63,6 +63,8 @@ Wight, Wraith,
 Vampire, Lich
 
 TO DONE: Beta2
+    Changed arrangement of commands to be easier and more intuitive.
+    Added Help Menu.
     Refactored all library objects into one modelLibrary.
     Added 2nd tier armor (chainmail).
     * Added 2nd tier bows.
@@ -103,6 +105,7 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
+        Fire scroll message too long.
         (Needs Testing, Reid) Suppress Backspace: event.preventDefault()
         ? Goblin's unhelpful dance.
         (Possibly Fixed) Black screen when starting first game. Possibly because of actors spawned at start location.
@@ -112,13 +115,10 @@ TODO(Beta):
         (Defered) Problem: Goblins are attacked by roving enemies before they're ever found.
             
     Absolute Must:
-        Fire command "You have no bow or wand equipped."
-        $ no more uppercase / lowercase separation
+        Check for weapon client side: Fire command "You have no bow or wand equipped."
         ? Loot at stairs
-        Implement COMMAND_ATTACK
-        Add help menu.
+        Add more content help menu.
         Change About page.
-        Change "Input Direction" menu to state how: "Use numpad or..." etc.
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies
             Wraith
@@ -161,6 +161,8 @@ TODO(Beta):
         Colorful Title Display
             
     Done:
+        + Implement COMMAND_ATTACK
+        + No more uppercase / lowercase separation.
         + Larger dungeon rooms as levels go higher.
         + Goblins try not to be too greedy about arrows.
         + Bugfix: Goblins and enemies spawned in same room.

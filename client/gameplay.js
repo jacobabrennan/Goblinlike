@@ -70,6 +70,7 @@ client.drivers.gameplay = Object.create(driver, {
         switch(command){
             case COMMAND_HELP   : this.drivers.menu.help(); break;
             case COMMAND_LEADERSHIP: this.commandLeadership(); break;
+            case COMMAND_ATTACK : this.commandAttack( ); break;
             case COMMAND_WAIT   : this.commandWait(   ); break;
             case COMMAND_GET    : this.commandGet(    ); break;
             case COMMAND_EQUIP  : this.commandEquip(  ); break;
@@ -107,6 +108,9 @@ client.drivers.gameplay = Object.create(driver, {
         var messages = turnData.messageData;
         if(messages && messages.length){
             this.drivers.menu.info(messages);
+        }
+        if(this.drivers.menu.lastDraw < this.memory.currentTime){
+            this.drivers.menu.showDefault();
         }
         this.display();
     }},
@@ -217,7 +221,7 @@ client.drivers.gameplay = Object.create(driver, {
 
 client.drivers.gameplay.commandMove = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.showDefault();
+    //this.drivers.menu.showDefault();
     if(direction === 0){
         client.networking.sendMessage(COMMAND_WAIT, {});
     } else{
@@ -226,15 +230,25 @@ client.drivers.gameplay.commandMove = function (direction){
 };
 client.drivers.gameplay.commandWait = function (direction){
     this.activeTurn = false;
-    this.drivers.menu.showDefault();
+    //this.drivers.menu.showDefault();
     client.networking.sendMessage(COMMAND_WAIT, {});
+};
+client.drivers.gameplay.commandAttack = function (){
+    /*
+        Innitiate an ATTACK action. Prompt the player for a direction.
+    */
+    this.target(TARGET_DIRECTION, undefined, function (targetData){
+        this.activeTurn = false;
+        client.networking.sendMessage(
+            COMMAND_ATTACK, {direction: targetData.direction}
+        );
+    });
 };
 client.drivers.gameplay.commandClose = function (){
     /*
         Innitiate an CLOSE action (to close a door). Prompt for direction.
         This does not return anything.
     */
-    var self = this;
     this.target(TARGET_DIRECTION, undefined, function (targetData){
         client.networking.sendMessage(COMMAND_CLOSE, {
             direction: targetData.direction
@@ -323,7 +337,6 @@ client.drivers.gameplay.commandUnequip = function (){
         }
     }
     // Create options menu callback.
-    var self = this;
     var equipCallback = function (selectedName, selectedIndex){
         // After user has selected an item:
         // Send an unequip message to the server.
@@ -343,7 +356,6 @@ client.drivers.gameplay.commandFire = function (){
         Innitiate an FIRE action (to fire a weapon). Prompt for direction.
         This does not return anything.
     */
-    var self = this;
     this.target(TARGET_DIRECTION, undefined, function (targetData){
         client.networking.sendMessage(COMMAND_FIRE, {
             direction: targetData.direction
@@ -353,7 +365,7 @@ client.drivers.gameplay.commandFire = function (){
 client.drivers.gameplay.commandGet = function (){
     /*
         Innitiate a get action. Compile and display a list of items
-            within reach of the player.
+        within reach of the player.
     */
     // Compile array of items, and array of items names for display.
     var items = [];

@@ -229,13 +229,46 @@ var hero = Object.create(person, {
          *  This command from the player directs the person to attack an enemy,
          *      as specified by id.
          **/
-        var enemy = mapManager.idManager.get(options.id);
-        if(enemy){
-            this.attack(enemy);
-        } else{
-            this.inform('Enemy target not found!');
+        if(options.id !== undefined){
+            var enemy = mapManager.idManager.get(options.id);
+            if(enemy){
+                this.attack(enemy);
+            } else{
+                this.inform('Enemy target not found!');
+            }
+            this.endTurn();
+        } else if(options.direction !== undefined){
+            var direction = options.direction || SOUTH;
+            var offsetX = 0;
+            var offsetY = 0;
+            if(direction & NORTH){ offsetY++;} else if(direction & SOUTH){ offsetY--;}
+            if(direction & EAST ){ offsetX++;} else if(direction & WEST ){ offsetX--;}
+            // Check for obstructing enemy.
+            var obstruction = mapManager.getTileContents(
+                this.x+offsetX, this.y+offsetY, this.levelId, true
+            );
+            // If enemy found, attack and end turn.
+            if(obstruction && obstruction.type == TYPE_ACTOR){
+                if(obstruction.faction & this.faction){
+                    if(!this.hostile){
+                        this.inform("The goblin is your team member,");
+                        this.inform("you shouldn't attack it.");
+                        this.endTurn();
+                    } else{
+                        this.attack(obstruction);
+                        this.endTurn();
+                    }
+                    // TODO: Implement hostility.
+                } else{
+                    this.attack(obstruction);
+                    this.endTurn();
+                }
+            } else{
+            // Else, inform player they attacked nothing.
+                this.inform("You attack the empty air.");
+                this.endTurn();
+            }
         }
-        this.endTurn();
     }, writable: true},
     commandGet: {value: function (options){
         /**

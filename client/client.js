@@ -90,7 +90,7 @@ client.preferences = {
     ".": COMMAND_STAIRS,
     "[": COMMAND_PAGEDOWN,
     "]": COMMAND_PAGEUP,
-    "space": COMMAND_ENTER,
+    "space": COMMAND_CANCEL,
     "enter": COMMAND_ENTER,
     //"return": COMMAND_ENTER
         // Don't use. Mousetrap will fire events for both enter AND return.

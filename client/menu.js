@@ -17,6 +17,7 @@ var menu = Object.create(driver, {
     displayHeight: {value: displaySize},
     defaultMenu: {value: undefined, writable: true},
     showDefault: {value: function (){
+        if(this.defaultShowing){ return;}
         if(this.focus == statusMenu || this.focus == commandsMenu){ return;}
         else{
             var defaultMenu = this.defaultMenu || commandsMenu;
@@ -56,6 +57,7 @@ var menu = Object.create(driver, {
         //return this.currentFocus.display.apply(this.currentFocus, arguments);
     }},*/
     blank: {value: function (){
+        this.lastDraw = client.drivers.gameplay.memory.currentTime;
         client.skin.fillRect(0, 0, displaySize, displaySize, '#000');
         client.skin.clearCommands();
     }},
@@ -68,7 +70,8 @@ var menu = Object.create(driver, {
         this.focus(commandsMenu);
     }},
     help: {value: function (){
-        this.commands();
+        helpMenu.display();
+        this.focus(helpMenu);
     }},
     description: {value: function (title, description){
         descriptionMenu.display(title, description);
@@ -146,7 +149,7 @@ var descriptionMenu = Object.create(driver, {
         if(description){
             client.skin.drawParagraph(1, 16, description);
         }
-        client.skin.drawCommand(1, 1, 'Esc', 'Done', COMMAND_CANCEL);
+        client.skin.drawCommand(1, 1, 'Space', 'Done', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},
@@ -160,7 +163,7 @@ var descriptionMenu = Object.create(driver, {
         }
         menu.showDefault();
         return false;
-    }},
+    }}
 });
 var commandsMenu = Object.create(driver, {
     /**
@@ -185,9 +188,9 @@ var commandsMenu = Object.create(driver, {
         var commandLink = function (x, y, key, command, name){
             client.skin.drawCommand(x, y, key, name, command);
         }.bind(this);
-        client.skin.drawString(1,19,'Arrows & NumerPad');
-        client.skin.drawString(1,18,'    Move & Attack');
-        var line = 16;
+        client.skin.drawString(1,19,'Arrows or NumberPad','#00f');
+        client.skin.drawString(1,18,'to Move and Attack','#00f');
+        var line = 17;
         commandLink(1, line--, "A", COMMAND_ATTACK, 'Attack');
         commandLink(1, line--, "C", COMMAND_CLOSE, 'Close Door');
         commandLink(1, line--, "D", COMMAND_DROP, 'Drop Item');
@@ -202,9 +205,9 @@ var commandsMenu = Object.create(driver, {
         commandLink(1, line--, "T", COMMAND_THROW, 'Throw Item');
         commandLink(1, line--, "V", COMMAND_USE, 'Use Item');
         commandLink(1, line--, "X", COMMAND_LOOK, 'Examine');
-        //commandLink(1, line--, "?", COMMAND_HELP, 'Help');
-        commandLink(1, line--, "[", COMMAND_PAGEDOWN, 'Show Messages');
-        commandLink(1, line--, "?", COMMAND_HELP, 'Status');
+        commandLink(1, line--, "?", COMMAND_HELP, 'Help');
+        commandLink(1, 3, "[", COMMAND_PAGEDOWN, 'Show Messages');
+        commandLink(1, 1, "Space", COMMAND_CANCEL, 'View Status');
         menu.focus(this);
         return true;
     }},
@@ -214,7 +217,7 @@ var commandsMenu = Object.create(driver, {
             case COMMAND_PAGEDOWN:
                 menu.info();
                 return true;
-            case COMMAND_HELP:
+            case COMMAND_CANCEL:
                 menu.defaultMenu = statusMenu;
                 menu.status();
                 return true;
@@ -273,7 +276,7 @@ var infoMenu = Object.create(driver, {
             It returns true to signify that drawing should not continue;
          **/
         menu.blank();
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
+        client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         var pageStart = this.pendingIndex-this.pageLength;
         pageStart += this.pageIndex*this.pageLength;
         var pageEnd = pageStart+this.pageLength;
@@ -361,7 +364,7 @@ var statusMenu = Object.create(driver, {
             }
             client.skin.drawString(6, 12, 'Game Over');
             client.skin.drawString(6, 10, scoreText);
-            client.skin.drawCommand(4, 7, 'Esc', ' Continue', COMMAND_CANCEL);
+            client.skin.drawCommand(4, 7, 'Space', ' Continue', COMMAND_CANCEL);
             /*resetLink.addEventListener('click', function (){
                 client.focus(client.drivers.title);
             });*/
@@ -407,7 +410,7 @@ var statusMenu = Object.create(driver, {
         if(!goblinInfo){
             client.skin.drawCommand(1, 3, "[", 'Show Messages', COMMAND_PAGEDOWN);
         }
-        client.skin.drawCommand(1, 1, '?', 'Commands', COMMAND_HELP);
+        client.skin.drawCommand(1, 1, 'Space', 'View Commands', COMMAND_HELP);
         return true;
     }},
     command: {value: function (command, options){
@@ -422,9 +425,9 @@ var statusMenu = Object.create(driver, {
             case COMMAND_PAGEDOWN:
                 infoMenu.advanceMessage(0);
                 return true;
-            case COMMAND_HELP:
+            case COMMAND_CANCEL:
                 menu.defaultMenu = commandsMenu;
-                menu.help();
+                menu.showDefault();
                 return true;
         }
         return false;
@@ -507,8 +510,8 @@ var optionsMenu = Object.create(driver, {
         } else{ // Display the "empty" message.
             client.skin.drawString(1, 15, '(empty)');
         }
-        // Add the Cancel / Escape link.
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
+        // Add the Cancel / Spape link.
+        client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},
@@ -568,10 +571,11 @@ var directionSelectMenu = Object.create(driver, {
             This function displays the infoMenu in the document.
             It returns true to signify that drawing should not continue;
          **/
-        if(callback){ this.directionCallback = callback;}
         menu.blank();
-        client.skin.drawString(1, 16, (message || 'Input a direction:'));
-        client.skin.drawCommand(1, 1, 'Esc', 'Cancel', COMMAND_CANCEL);
+        if(callback){ this.directionCallback = callback;}
+        client.skin.drawString(1, 16, (message || 'Which direction?'));
+        client.skin.drawParagraph(1, 14, 'Use the numberpad, arrows, or click the map to select a direction.', '#00f', null, null, 18);
+        client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
     }},
@@ -595,6 +599,69 @@ var directionSelectMenu = Object.create(driver, {
         this.directionCallback = undefined;
     }}
 });
+var helpMenu = Object.create(driver, {
+    setup: {value: function (){}, writable: true},
+    display: {value: function (title, description){
+        menu.blank();
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        client.skin.status('About                Jacob A Brennan, 2015');
+        var aboutText = "This is a Roguelike, a genre of games that are known for using letters as graphics. The example map on the right shows:";
+        client.skin.drawParagraph(1, 17, aboutText, undefined, undefined, undefined, 27);
+        client.skin.drawString(4, 11, "The player, a goblin.");
+        client.skin.drawCharacter(2, 11, 'g', '#0f0');
+        client.skin.drawString(4, 10, "Walls around a room.");
+        client.skin.drawCharacter(2, 10, '#', '#fff', '#111');
+        client.skin.drawString(4,  9, "The floor of the room.");
+        client.skin.drawCharacter(2,  9, '.', '#444', '#111');
+        client.skin.drawString(4,  8, "An enemy Giant Beetle.");
+        client.skin.drawCharacter(2,  8, 'b', '#888');
+        client.skin.drawString(4,  7, "Stairs to a deeper level.");
+        client.skin.drawCharacter(2,  7, '>', '#000', '#fc0');
+        client.skin.drawString(4,  6, "Doors to other rooms and halls.");
+        client.skin.drawCharacter(2,  6, '+', '#fc0', '#111');
+        client.skin.drawString(6,  5, "A Potion and a stack of Arrows.");
+        client.skin.drawCharacter(2,  5, '¡ \\', '#963');
+        var mapText = "#########";
+        mapText    += "#.......#";
+        mapText    += "#......b+";
+        mapText    += "#.\\.....#";
+        mapText    += "#¡......#";
+        mapText    += "#...g...#";
+        mapText    += "#..>....#";
+        mapText    += "#.......#";
+        mapText    += "######+##";
+        var mapWidth = 9;
+        for(var charI = 0; charI < mapText.length; charI++){
+            var indexChar = mapText.charAt(charI);
+            var xPos = charI % mapWidth;
+            var yPos = Math.floor(charI/mapWidth);
+            var charBack = '#111';
+            var charColor = '#fff';
+            switch(indexChar){
+                case '.': charColor = '#444', charBack = '#111'; break;
+                case 'b': charColor = '#888'; break;
+                case 'g': charColor = '#0f0'; break;
+                case '+': charColor = '#fc0'; charBack = '#111'; break;
+                case '#': charBack = '#111'; break;
+                case '>': charColor = '#000'; charBack = '#fc0'; break;
+                case '\\': case '¡': charColor = "#963"; break;
+            }
+            client.skin.drawCharacter(
+                30+xPos, 9+yPos, indexChar, charColor, charBack);
+        }
+        client.skin.drawCommand(1,  1, 'Space', 'Back to Game', COMMAND_ENTER);
+        menu.focus(this);
+        return true;
+    }},
+    command: {value: function (command, options){
+        // TODO: Document.
+        client.drivers.gameplay.drivers.map.display();
+        menu.showDefault();
+        return false;
+    }}
+});
+
 // ============================================================================
     return menu; // Return the menu; end the namespace.
 })();

@@ -226,12 +226,13 @@ var DAMAGE_0000000000000000 =  0;
         // Check if the user has a fireable item equipped.
         var theWeapon = this.equipment[EQUIP_MAINHAND];
         if(!theWeapon){
-            this.inform('You have no weapon equipped.');
+            this.inform('You need to Equip a bow or wand first.');
             this.endTurn();
             return;
         }
         if((typeof theWeapon.shoot) != 'function'){
-            this.inform('You failed to use the '+theWeapon.description()+' properly.');
+            this.inform('You cannot "Fire" the '+theWeapon.description()+'.');
+            this.inform('(Only Bows and Wands can be fired.)');
             this.endTurn();
             return;
         }

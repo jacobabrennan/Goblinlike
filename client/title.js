@@ -27,7 +27,7 @@ client.drivers.title = Object.create(driver, {
         if(block){
             return block;
         }
-        if(command == COMMAND_NONE){
+        if(options && options.key){
             if(options.key == 'a' || options.key == 'A'){
                 command = COMMAND_ENTER;}
             if(options.key == 'b' || options.key == 'B'){
@@ -35,6 +35,7 @@ client.drivers.title = Object.create(driver, {
         }
         switch(command){
             case COMMAND_ENTER:
+            case COMMAND_CANCEL:
                 clearInterval(this.drawInterval);
                 this.newGame();
                 return true;
@@ -117,7 +118,7 @@ client.drivers.title = Object.create(driver, {
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
             client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
-            client.skin.drawCommand(8, 10, 'B', 'About', COMMAND_HELP);
+            //client.skin.drawCommand(8, 10, 'B', 'About', COMMAND_HELP);
         };
         var maxCloud = 40;
         var cloudFalloff = 0;
@@ -282,7 +283,7 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
             client.skin.drawString(16, 7, this.name+'_');
             if(this.name.length >= 1){
                 client.skin.drawCommand(14, 5, 'Enter', 'Finished', COMMAND_ENTER);
-                client.skin.drawCommand(16, 4, 'Esc', 'Reroll', COMMAND_CANCEL);
+                client.skin.drawCommand(14, 4, 'Space', 'Reroll', COMMAND_CANCEL);
             }
         }
         return true;
@@ -294,7 +295,7 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
             return block;
         }
         if(!this.name && this.name !== ''){
-            if(command == COMMAND_NONE){
+            if(options && options.key){
                 if(options.key == 'a' || options.key == 'A'){
                     command = COMMAND_ENTER;}
                 if(options.key == 'b' || options.key == 'B'){

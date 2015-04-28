@@ -181,6 +181,7 @@ game = {
     clientCommand: function (command, options){
         if(this.hero){
             switch(command){
+                case COMMAND_ATTACK:  this.hero.commandAttack(options);  break;
                 case COMMAND_CLOSE:   this.hero.commandClose(options);   break;
                 case COMMAND_CAMP:    this.hero.commandCamp(options);    break;
                 case COMMAND_DROP:    this.hero.commandDrop(options);    break;
