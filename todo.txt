@@ -1,5 +1,4 @@
 Lauren - Postcard
-Lydia - Check out her profile, look for fields of canada.
 
 Enemy Types:
 
@@ -104,6 +103,7 @@ Haunt the House
 
 TODO(Beta):
     Bugs:
+        (Needs Testing, Reid) Suppress Backspace: event.preventDefault()
         ? Goblin's unhelpful dance.
         (Possibly Fixed) Black screen when starting first game. Possibly because of actors spawned at start location.
         (Possibly Fixed) Phantom Arrows ("That item is no longer there");
@@ -112,6 +112,13 @@ TODO(Beta):
         (Defered) Problem: Goblins are attacked by roving enemies before they're ever found.
             
     Absolute Must:
+        Fire command "You have no bow or wand equipped."
+        $ no more uppercase / lowercase separation
+        ? Loot at stairs
+        Implement COMMAND_ATTACK
+        Add help menu.
+        Change About page.
+        Change "Input Direction" menu to state how: "Use numpad or..." etc.
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies
             Wraith

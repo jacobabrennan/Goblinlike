@@ -46,9 +46,10 @@ var COMMAND_PAGEUP      = 80;
 var COMMAND_ENTER       = 81;
 var COMMAND_NONE        = 82;
 var COMMAND_CAMP        = 83;
-var COMMAND_LEADERSHIP  = 84;
-var COMMAND_LEAD_ATTACK = 85;
-var COMMAND_LEAD_RUN    = 86;
+var COMMAND_ATTACK      = 84;
+var COMMAND_LEADERSHIP  = 85;
+var COMMAND_LEAD_ATTACK = 86;
+var COMMAND_LEAD_RUN    = 87;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;

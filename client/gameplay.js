@@ -336,7 +336,7 @@ client.drivers.gameplay.commandUnequip = function (){
         });
     };
     // Send Options to player for selection.
-    this.drivers.menu.options('Take off which?', equipNames, equipCallback);
+    this.drivers.menu.options('Unequip which?', equipNames, equipCallback);
 };
 client.drivers.gameplay.commandFire = function (){
     /*
@@ -422,7 +422,7 @@ client.drivers.gameplay.commandLook = function (){
         }
     };
     // Display options to player.
-    this.drivers.menu.options('Look at what?', viewNames, optionsCallback);
+    this.drivers.menu.options('Examine what?', viewNames, optionsCallback);
 };
 client.drivers.gameplay.commandLead = function (options){
     this.activeTurn = false;

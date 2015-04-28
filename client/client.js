@@ -43,6 +43,7 @@ client.preferences = {
        space, pageup, pagedown, end, home, left, up, right, down, ins, del,
        plus.*/
     // COMMAND_NONE needed to register alphabet keypresses with Mousetrap.
+    // Uppercase aliases generated automatically by the client.
     "up": NORTH,
 	"down": SOUTH,
 	"left": WEST,
@@ -52,14 +53,24 @@ client.preferences = {
     "pageup": NORTHEAST,
     "pagedown": SOUTHEAST,
     //"Unidentified": WAIT, // See setup for special case.
+    
     "escape": COMMAND_CANCEL,
-    "a": COMMAND_NONE,
+    "a": COMMAND_ATTACK,
     "b": COMMAND_NONE,
     "c": COMMAND_CLOSE,
     "d": COMMAND_DROP,
     "e": COMMAND_EQUIP,
     "f": COMMAND_FIRE,
     "g": COMMAND_GET,
+    "q": COMMAND_LEADERSHIP,
+    "r": COMMAND_CAMP,
+    "s": COMMAND_STAIRS,
+    "t": COMMAND_THROW,
+    "v": COMMAND_USE,
+    "w": COMMAND_UNEQUIP,
+    "x": COMMAND_LOOK, // eXamine
+    "z": COMMAND_NONE,
+    
     "h": COMMAND_NONE,
     "i": COMMAND_USE,
     "j": COMMAND_NONE,
@@ -69,18 +80,8 @@ client.preferences = {
     "n": COMMAND_NONE,
     "o": COMMAND_NONE,
     "p": COMMAND_NONE,
-    "q": COMMAND_USE, // Alias for those who 'quaff' potions.
-    "r": COMMAND_CAMP,
-    "s": COMMAND_STAIRS,
-    "t": COMMAND_UNEQUIP,
     "u": COMMAND_USE,
-    "v": COMMAND_NONE,
-    "w": COMMAND_NONE,
-    "x": COMMAND_NONE,
     "y": COMMAND_NONE,
-    "z": COMMAND_NONE,
-    "F": COMMAND_THROW,
-    "L": COMMAND_LEADERSHIP,
     
     "?": COMMAND_HELP,
     "<": COMMAND_STAIRS,
@@ -94,15 +95,7 @@ client.preferences = {
     //"return": COMMAND_ENTER
         // Don't use. Mousetrap will fire events for both enter AND return.
     "backspace": COMMAND_NONE,
-    "del": COMMAND_NONE,
-    
-    "A": COMMAND_NONE, "B": COMMAND_NONE, "C": COMMAND_CLOSE, "D": COMMAND_DROP,
-    "E": COMMAND_EQUIP, "G": COMMAND_GET, "H": COMMAND_NONE, "I": COMMAND_USE,
-    "J": COMMAND_NONE, "K": COMMAND_NONE, "M": COMMAND_NONE, "N": COMMAND_NONE,
-    "O": COMMAND_NONE, "P": COMMAND_NONE, "Q": COMMAND_USE, "R": COMMAND_CAMP,
-    "S": COMMAND_STAIRS, "T": COMMAND_UNEQUIP, "U": COMMAND_USE, "V":
-    COMMAND_NONE, "W": COMMAND_NONE, "X": COMMAND_NONE, "Y": COMMAND_NONE, "Z":
-    COMMAND_NONE
+    "del": COMMAND_NONE
 };
 
 // TODO: Document.
@@ -117,8 +110,9 @@ client.keyCapture = {
             }
         });
         var trapCreator = function (key, command){
-            return function(){
+            return function(event){
                 client.command(command, {'key': key});
+                event.preventDefault();
             };
         };
         //this.mousetrap = Mousetrap(client.skin.container);
@@ -127,6 +121,10 @@ client.keyCapture = {
             if(client.preferences.hasOwnProperty(key)){
                 var command = client.preferences[key];
                 this.mousetrap.bind(key, trapCreator(key, command));
+                var upperKey = key.toUpperCase();
+                if(upperKey !== key){
+                    this.mousetrap.bind(upperKey, trapCreator(upperKey, command));
+                }
             }
         }
 	}
