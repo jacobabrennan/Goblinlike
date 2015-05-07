@@ -195,7 +195,18 @@ enemy.trySkill = function (target){
             if(!indexedSkill.targetClass & TARGET_RANGE){
                 if(this.checkView(target)){ continue;}
             }
-            indexedSkill.use(this, target);
+            if(indexedSkill.targetClass & TARGET_ALL){
+                var viewContents = this.getViewContents();
+                for(var cI = 0; cI < viewContents.length; cI++){
+                    var indexC = viewContents[cI];
+                    if(
+                        indexC && indexC.type == TYPE_ACTOR &&
+                       !(this.faction & indexC.faction)
+                    ){ indexedSkill.use(this, indexC);}
+                }
+            } else{
+                indexedSkill.use(this, target);
+            }
             return true;
         }
     }

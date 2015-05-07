@@ -53,13 +53,13 @@ sS - snake, skull, scorpion, +skeleton
 tT - turtle, Tarantula
 uU - 
 vV - Vampire
-wW - +worm, Wight, Wraith
+wW - +worm, Wight, +Wraith
 xX - 
 yY - 
 zZ + zombie dwarf
 
 + skeleton, + zombie dwarf, Mummy,
-Wight, Wraith,
+Wight, +Wraith,
 Vampire, Lich
 
 TO DONE: Beta2

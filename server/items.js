@@ -179,6 +179,46 @@ modelLibrary.registerModel('item', Object.create(potion, {
     // Description:
     viewText: {value: 'You see an acid potion. Most organic materials will corrode when covered in this liquid.'}
 }));
+modelLibrary.registerModel('item', Object.create(potion, {
+    generationId: {value: 'cowardice potion'},
+    generationWeight: {value: 4, writable: true},
+    potency: {value: 40, writable: true},
+    lore: {value: 45, writable: true},
+    name: {value: 'Cowardice Pot'},
+    effect: {value: function(user, targetData){
+        if(user.type == TYPE_ACTOR){
+            if(user.inform){
+                user.inform("You quaff the potion. You're terrified!");
+            }
+            user.adjustMoral(
+                -Math.max(this.potency/2, gaussRandom(this.potency,1))
+            );
+        }
+        potion.effect.apply(this, arguments);
+    }},
+    // Description:
+    viewText: {value: 'You see a cowardice potion. Drinking this potion will lower your moral.'}
+}));
+modelLibrary.registerModel('item', Object.create(potion, {
+    generationId: {value: 'courage potion'},
+    generationWeight: {value: 5, writable: true},
+    potency: {value: 100, writable: true},
+    lore: {value: 45, writable: true},
+    name: {value: 'Courage Pot'},
+    effect: {value: function(user, targetData){
+        if(user.type == TYPE_ACTOR){
+            if(user.inform){
+                user.inform("You quaff the potion. You're feel couragous!");
+            }
+            user.adjustMoral(
+                Math.max(this.potency/2, gaussRandom(this.potency,1))
+            );
+        }
+        potion.effect.apply(this, arguments);
+    }},
+    // Description:
+    viewText: {value: 'You see a courage potion. Drinking this potion will raise your moral.'}
+}));
 modelLibrary.registerModel('item', Object.create(wand, {// Test Wand
     // Id:
     generationId: {value: 'fire wand'},

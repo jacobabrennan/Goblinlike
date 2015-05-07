@@ -74,6 +74,20 @@ modelLibrary.registerModel('skill', Object.create(skill, {
     }, writable: true}
 }));
 modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'wail', writable: true},
+    name: {value: 'wail', writable: true},
+    range: {value: 10, writable: true},
+    targetClass: {value: TARGET_ENEMY|TARGET_ALL, writable: true},
+    use: {value: function (user, target){
+        target.hear('wail', 10, user, 'The '+user.name+' lets out a terrible wail.');
+        if(target.adjustMoral){
+            var damageDone = target.adjustMoral(-10); // TODO: Stats
+            return damageDone;
+        }
+        return 0;
+    }, writable: true}
+}));
+modelLibrary.registerModel('skill', Object.create(skill, {
     generationId: {value: 'breed', writable: true},
     name: {value: 'breed', writable: true},
     targetClass: {value: TARGET_SELF, writable: true},
