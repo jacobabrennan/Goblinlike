@@ -1,3 +1,14 @@
+Milestone: 1.0
+More Enemies
+More Items
+Final Boss
+Score Display (view old attempts)
+About Screen
+Save/Load
+Full Help Menu
+Advanced Goblin Moral + Leadership Menu
+New Title Screen
+
 Lauren - Postcard
 
 Enemy Types:
@@ -117,7 +128,7 @@ TODO(Beta):
     Absolute Must:
         Check for weapon client side: Fire command "You have no bow or wand equipped."
         ? Loot at stairs
-        Add more content help menu.
+        Add more content to help menu.
         Change About page.
         ? Advanced Goblin Moral (Seek out when moral is high)
         $ More Enemies

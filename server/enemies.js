@@ -989,6 +989,24 @@ modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
     // Description:
     viewText: {value: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."}
 }));
+modelLibrary.registerModel('enemy', Object.create(enemy, {
+    // Id:
+    generationId: {value: 'bloodshot eye', writable: true},
+    generationWeight: {value: 80, writable: true},
+    name: {value: 'Bloodshot Eye', writable: true},
+    // Display:
+    character: {value: "e", writable: true},
+    // Stats:
+    rewardExperience: {value: 80, writable: true},
+    vigilance: {value: 0},
+    erratic: {value: 0},
+    baseHp: {value: 20},
+    // Behavior:
+    sedentary: {value: true, writable: true},
+    skills: {value: ["glare", "sap", "attack"], writable: true},
+    // Description:
+    viewText: {value: "You see a large bloodshot eyeball. It's ceaseless gaze chills you to the bone." }
+}));
 
 //==============================================================================
     // Close namespace.

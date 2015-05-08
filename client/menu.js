@@ -605,7 +605,6 @@ var helpMenu = Object.create(driver, {
         menu.blank();
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
-        client.skin.status('About                Jacob A Brennan, 2015');
         var aboutText = "This is a Roguelike, a genre of games that are known for using letters as graphics. The example map on the right shows:";
         client.skin.drawParagraph(1, 17, aboutText, undefined, undefined, undefined, 27);
         client.skin.drawString(4, 11, "The player, a goblin.");

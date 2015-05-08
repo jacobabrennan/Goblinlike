@@ -142,6 +142,18 @@ modelLibrary.registerModel('skill', Object.create(skill, {
         return true;
     }, writable: true}
 }));
+modelLibrary.registerModel('skill', Object.create(skill, {
+    generationId: {value: 'sap', writable: true},
+    name: {value: 'sap', writable: true},
+    range: {value: 10, writable: true},
+    targetClass: {value: TARGET_ENEMY, writable: true},
+    use: {value: function (user, target){
+        target.hear('sap', 10, user, 'The '+user.name+' saps your health!');
+        var damageDone = target.hurt(5, DAMAGE_MAGIC, user); // TODO: Stats
+        var healingDone = user.adjustHp(damageDone);
+        return healingDone;
+    }, writable: true}
+}));
 //==============================================================================
     // Close namespace.
 })();

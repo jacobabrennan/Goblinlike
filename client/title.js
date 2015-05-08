@@ -118,7 +118,7 @@ client.drivers.title = Object.create(driver, {
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
             client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
-            //client.skin.drawCommand(8, 10, 'B', 'About', COMMAND_HELP);
+            client.skin.drawCommand(8,  9, 'B', 'About', COMMAND_HELP);
         };
         var maxCloud = 40;
         var cloudFalloff = 0;
@@ -375,51 +375,10 @@ client.drivers.title.drivers.about = Object.create(driver, {
     display: {value: function (){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
-        client.skin.status('About                Jacob A Brennan, 2015');
-        var aboutText = "This is a Roguelike, a genre of games that are known for using letters as graphics. The example map on the right shows:";
-        client.skin.drawParagraph(1, 17, aboutText, undefined, undefined, undefined, 27);
-        client.skin.drawString(4, 11, "The player, a goblin.");
-        client.skin.drawCharacter(2, 11, 'g', '#0f0');
-        client.skin.drawString(4, 10, "Walls around a room.");
-        client.skin.drawCharacter(2, 10, '#', '#fff', '#111');
-        client.skin.drawString(4,  9, "The floor of the room.");
-        client.skin.drawCharacter(2,  9, '.', '#444', '#111');
-        client.skin.drawString(4,  8, "An enemy Giant Beetle.");
-        client.skin.drawCharacter(2,  8, 'b', '#888');
-        client.skin.drawString(4,  7, "Stairs to a deeper level.");
-        client.skin.drawCharacter(2,  7, '>', '#000', '#fc0');
-        client.skin.drawString(4,  6, "Doors to other rooms and halls.");
-        client.skin.drawCharacter(2,  6, '+', '#fc0', '#111');
-        client.skin.drawString(6,  5, "A Potion and a stack of Arrows.");
-        client.skin.drawCharacter(2,  5, '¡ \\', '#963');
-        var mapText = "#########";
-        mapText    += "#.......#";
-        mapText    += "#......b+";
-        mapText    += "#.\\.....#";
-        mapText    += "#¡......#";
-        mapText    += "#...g...#";
-        mapText    += "#..>....#";
-        mapText    += "#.......#";
-        mapText    += "######+##";
-        var mapWidth = 9;
-        for(var charI = 0; charI < mapText.length; charI++){
-            var indexChar = mapText.charAt(charI);
-            var xPos = charI % mapWidth;
-            var yPos = Math.floor(charI/mapWidth);
-            var charBack = '#111';
-            var charColor = '#fff';
-            switch(indexChar){
-                case '.': charColor = '#444', charBack = '#111'; break;
-                case 'b': charColor = '#888'; break;
-                case 'g': charColor = '#0f0'; break;
-                case '+': charColor = '#fc0'; charBack = '#111'; break;
-                case '#': charBack = '#111'; break;
-                case '>': charColor = '#000'; charBack = '#fc0'; break;
-                case '\\': case '¡': charColor = "#963"; break;
-            }
-            client.skin.drawCharacter(
-                30+xPos, 9+yPos, indexChar, charColor, charBack);
-        }
+        client.skin.status('About');
+        client.skin.drawString(15, 14, "Goblin-Like");
+        client.skin.drawString(13, 12, "Version  "+VERSION);
+        client.skin.drawString(9, 10, "By Jacob A Brennan, 2015");
         client.skin.drawCommand(1,  1, 'Enter', 'Back to Title Screen', COMMAND_ENTER);
         return true;
     }},
