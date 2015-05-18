@@ -346,7 +346,7 @@ modelLibrary.registerModel('item', Object.create(bow, { // Crossbow
     // Display:
     name: {value: 'Crossbow', writable: true},
     // Stats:
-    weight: {value: 7, writable: true},
+    weight: {value: 5, writable: true},
     range: {value: 5, writable: true},
     damageScale: {value: 2, writable: true},
     ammoType: {value: 'arrow', writable: true},

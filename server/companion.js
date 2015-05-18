@@ -1,4 +1,5 @@
 (function (base){
+    base.leadershipMode = LEADERSHIP_FOLLOW;
     base.constructor = (function (parentFunction){
         return function (){
             this.companions = [];
@@ -51,12 +52,12 @@
             return parentFunction.apply(this, arguments);
         };
     })(base.hear);
+    base.endTurn = (function (p){
+        return function (){
+            window.setTimeout(function (){p.call(this);}.bind(this), 10);
+        };
+    })(base.endTurn);
 })(hero);
-hero.endTurn = (function (p){
-    return function (){
-        window.setTimeout(function (){p.call(this)}.bind(this), 10);
-    };
-})(hero.endTurn);
 (function (base){
     base.moral = 0;
     base.terrified = false;
@@ -231,6 +232,7 @@ var companion = Object.create(person, {
         var result = false;
         if(this.terrified){
             result = this.pursueSafety();
+            if(!result){ result = this.desperation();}
         }
         if(!result){ result = this.pursueHero( );}
         if(!result){ result = this.pursueEnemy();}
@@ -363,7 +365,33 @@ var companion = Object.create(person, {
             }
             success = this.move(primaryDir) || this.move(secondaryDir);
         }
-        return true;
+        return success;
+    }, writable: true},
+    desperation: {value: function (){
+        /**
+            Attack any nearby enemy.
+        **/
+        var nearbyContents = mapManager.getRangeContents(
+            this.x, this.y, this.levelId, 1);
+        var target;
+        for(var contentI = 0; contentI < nearbyContents.length; contentI++){
+            var indexedContent = nearbyContents[contentI];
+            if(
+                indexedContent.type == TYPE_ACTOR &&
+                !(indexedContent.faction & this.faction)
+            ){
+                if(!target){ target = indexedContent;}
+                else if(indexedContent.hp < target.hp){
+                    target = indexedContent;
+                }
+            }
+        }
+        if(target){
+            this.attack(target);
+            return true;
+        } else{
+            return false;
+        }
     }, writable: true},
     pursueLoot: {value: function (){
         var viewContents = this.getViewContents();

@@ -1007,6 +1007,27 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see a large bloodshot eyeball. It's ceaseless gaze chills you to the bone." }
 }));
+modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
+    // Id:
+    generationId: {value: 'worm', writable: true},
+    generationWeight: {value: 90, writable: true},
+    name: {value: 'Giant Worm', writable: true},
+    // Display:
+    character: {value: 'w', writable: true},
+    color: {value: '#963', writable: true},
+    bodyCharacter: {value: 'o', writable: true},
+    //bodyColor: {value: '#a53', writable: true},
+    bodyBackground: {value: undefined, writable: true},
+    // Stats:
+    rewardExperience: {value: 90, writable: true},
+    turnDelay: {value: 2, writable: true},
+    baseHp: {value: 100, writable: true},
+    //erratic: {value: 1, writable: true},
+    // Behavior:
+    bodyLength: {value: 7, writable: true},
+    // Description:
+    viewText: {value: "You see a giant worm. It's massive bulk blocks the halls completely."}
+}));
 
 //==============================================================================
     // Close namespace.

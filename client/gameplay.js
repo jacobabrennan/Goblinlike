@@ -83,8 +83,9 @@ client.drivers.gameplay = Object.create(driver, {
             case COMMAND_LOOK   : this.commandLook(   ); break;
             case COMMAND_CLOSE  : this.commandClose(  ); break;
             case COMMAND_CAMP   : this.commandCamp(   ); break;
-            case COMMAND_LEAD_RUN: this.commandLead({order: COMMAND_LEAD_RUN}); break;
-            case COMMAND_LEAD_ATTACK: this.commandLead({order: COMMAND_LEAD_ATTACK}); break;
+            case LEADERSHIP_RUN: this.commandLead({order: LEADERSHIP_RUN}); break;
+            case LEADERSHIP_FOLLOW: this.commandLead({order: LEADERSHIP_FOLLOW}); break;
+            case LEADERSHIP_ATTACK: this.commandLead({order: LEADERSHIP_ATTACK}); break;
         }
         return false;
     }},
@@ -442,8 +443,16 @@ client.drivers.gameplay.commandLead = function (options){
 };
 client.drivers.gameplay.commandLeadership = function (options){
     // Compile a list of names to be passed to the options menu.
-    var leadershipNames    = ['Attack!'          , 'Run!'          ];
-    var leadershipCommands = [COMMAND_LEAD_ATTACK, COMMAND_LEAD_RUN];
+    var leadershipNames    = [
+        'Attack!',
+        'Follow Me!',
+        'Run away!'
+    ];
+    var leadershipCommands = [
+        LEADERSHIP_ATTACK,
+        LEADERSHIP_FOLLOW,
+        LEADERSHIP_RUN
+    ];
     // Create a function to be called when player has selected an option.
     var self = this;
     var leadershipCallback = function (selectedName, selectedIndex){

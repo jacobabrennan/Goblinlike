@@ -48,12 +48,14 @@ var COMMAND_NONE        = 82;
 var COMMAND_CAMP        = 83;
 var COMMAND_ATTACK      = 84;
 var COMMAND_LEADERSHIP  = 85;
-var COMMAND_LEAD_ATTACK = 86;
-var COMMAND_LEAD_RUN    = 87;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;
 var COMMAND_GAMEOVER= 102;
+    // Leadership Tactics:
+var LEADERSHIP_FOLLOW = 1;
+var LEADERSHIP_ATTACK = 2;
+var LEADERSHIP_RUN    = 3;
     // Targeting system:
 var TARGET_SELF = 1; // Allow the self to be targetted. Will skip selection if this is the only flag set.
 var TARGET_FRIEND = 2; // Allow targeting of friendly actors.

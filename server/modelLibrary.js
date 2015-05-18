@@ -1,3 +1,4 @@
+// TODO: Document.
 var modelLibrary = {
     models: {},
     modelWeights: {},

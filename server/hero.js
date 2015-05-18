@@ -336,18 +336,29 @@ var hero = Object.create(person, {
         **/
         var order = options.order;
         if(this.terrified){
-            this.inform("You're to terrified!");
+            this.inform("You're too terrified!");
             this.endTurn();
             return;
         }
         switch(order){
-            case COMMAND_LEAD_RUN: this.companions.forEach(function(aGob){
-                    this.inform('You yell "Run away!"');
-                    aGob.adjustMoral(-this.influence());
+            case LEADERSHIP_RUN:
+                this.inform('You yell "Run away!"');
+                this.leadershipMode = LEADERSHIP_RUN;
+                this.companions.forEach(function(aGob){
+                    aGob.adjustMoral(-1);
                 }, this);
                 break;
-            case COMMAND_LEAD_ATTACK: this.companions.forEach(function(aGob){
-                    this.inform('You yell "Attack now!"');
+            case LEADERSHIP_ATTACK:
+                this.inform('You yell "Attack now!"');
+                this.leadershipMode = LEADERSHIP_ATTACK;
+                this.companions.forEach(function(aGob){
+                    aGob.adjustMoral(this.influence());
+                }, this);
+                break;
+            case LEADERSHIP_FOLLOW:
+                this.inform('You yell "Follow me!"');
+                this.leadershipMode = LEADERSHIP_FOLLOW;
+                this.companions.forEach(function(aGob){
                     aGob.adjustMoral(this.influence());
                 }, this);
                 break;
