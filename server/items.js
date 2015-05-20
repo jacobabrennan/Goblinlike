@@ -354,6 +354,21 @@ modelLibrary.registerModel('item', Object.create(bow, { // Crossbow
     // Description:
     viewText: {value: "You see a dwarven crossbow. It's heavy, and looks more complicated than it needs to be."}
 }));
+modelLibrary.registerModel('item', Object.create(bow, { // Short Bow
+    // Id:
+    generationId: {value: 'long bow'},
+    generationWeight: {value: 6, writable: true},
+    // Display:
+    name: {value: 'LongBow', writable: true},
+    // Stats:
+    weight: {value: 2, writable: true},
+    range: {value: 10, writable: true},
+    damageScale: {value: 2, writable: true},
+    ammoType: {value: 'arrow', writable: true},
+    // Behavior:
+    // Description:
+    viewText: {value: 'You see a long bow.'}
+}));
 modelLibrary.registerModel('item', Object.create(projectile, { // arrow
     // Id:
     generationId: {value: 'arrow1'},
@@ -386,6 +401,42 @@ modelLibrary.registerModel('item', Object.create(
     modelLibrary.getModel('item', 'arrow1'),
     {
         generationId: {value: 'arrow10'},
+        generationWeight: {value: 15, writable: true},
+        stackCount: {value: 10, writable: true}
+    }
+));
+modelLibrary.registerModel('item', Object.create(projectile, { // arrow
+    // Id:
+    generationId: {value: 'arrowBarbed1'},
+    generationWeight: {value: 4, writable: true},
+    // Display:
+    name: {value: 'BarbedArrow', writable: true},
+    character: {value: '\\', writable: true},
+    // Stats:
+    weight: {value: 1/2, writable: true},
+    baseDamage: {value: 4, writable: true},
+    damageSigma: {value: 0, writable: true},
+    stackCount: {value: 1, writable: true},
+    // Behavior:
+    ammoType : {value: 'arrow', writable:true},
+    placement: {value: EQUIP_OFFHAND, writable:true},
+    stackable: {value: true, writable: true},
+    ephemeral: {value: false, writable: true},
+    // Description:
+    viewText: {value: 'You see an arrow. Its tip is covered in vicious hooks.'}
+}));
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'arrowBarbed1'),
+    {
+        generationId: {value: 'arrowBarbed5'},
+        generationWeight: {value: 15, writable: true},
+        stackCount: {value: 5, writable: true}
+    }
+));
+modelLibrary.registerModel('item', Object.create(
+    modelLibrary.getModel('item', 'arrowBarbed1'),
+    {
+        generationId: {value: 'arrowBarbed10'},
         generationWeight: {value: 20, writable: true},
         stackCount: {value: 10, writable: true}
     }
