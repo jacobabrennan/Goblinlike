@@ -234,9 +234,19 @@ var companion = Object.create(person, {
             result = this.pursueSafety();
             if(!result){ result = this.desperation();}
         }
-        if(!result){ result = this.pursueHero( );}
-        if(!result){ result = this.pursueEnemy();}
-        if(!result){ result = this.pursueLoot( );}
+        if(!result && this.goal){ result = this.pursueGoal();}
+        if(!result){
+            this.pursueHero( );
+            result = this.pursueGoal();
+        }
+        if(!result){
+            this.pursueEnemy();
+            result = this.pursueGoal();
+        }
+        if(!result){
+            this.pursueLoot();
+            result = this.pursueGoal();
+        }
         return;
     }, writable: true},
     move: {value: function (direction){
@@ -252,79 +262,10 @@ var companion = Object.create(person, {
         return person.move.apply(this, arguments);
     }, writable: true},
     pursueHero: {value: function (){
-        var target = gameManager.currentGame.hero;
-        var pursueRange = Math.min(3, target.companions.length);
-        if(!target || (
-            (target.levelId == this.levelId) &&
-            distance(this.x, this.y, target.x, target.y) <= pursueRange
-        )){
-            return false;
-        }
-        var pathArray = findPath(this, target, 1);
-        if(!(pathArray && pathArray.length)){
-            return false;
-        }
-        if(pathArray[0].x == this.x && pathArray[0].y == this.y && pathArray[0].levelId == this.levelId){
-            pathArray.shift();
-        }
-        var nextCoord = pathArray.shift();
-        if(!nextCoord){
-            return false;
-        }
-        if(nextCoord.levelId != this.levelId){
-            this.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
-            return true;
-        }
-        var direction = directionTo(this.x,this.y,nextCoord.x,nextCoord.y);
-        // Check for Door.
-        var destination = mapManager.getTile(
-            nextCoord.x, nextCoord.y, this.levelId
-        );
-        if(destination.dense && destination.toggleDoor){
-            return destination.toggleDoor(nextCoord.x, nextCoord.y, this);
-        }
-        // Else, move.
-        return this.move(direction);
+        this.setGoal(goalHero);
     }, writable: true},
     pursueEnemy: {value: function (){
-        // Find a target, and the path to that target. If no target, deactivate.
-        var target;
-        var path;
-        var targetData = findTarget(this, this.faction);
-        if(targetData && this.checkView(targetData.target)){
-            target = targetData.target;
-            path = targetData.path;
-        } else{
-            return false;
-        }
-        // Determine if target is in range of equipped weapon. Attack.
-        var range = distance(this.x, this.y, target.x, target.y);
-        var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
-        if(weapon && weapon.shoot && weapon.range){
-            if(weapon.range >= range){
-                var success = weapon.shoot(
-                    this,
-                    directionTo(this.x, this.y, target.x, target.y),
-                    target
-                );
-                if(success || success === 0){
-                    return true;
-                }
-            }
-        // Else, attack with your hands.
-        }
-        if(range <= 1){
-            this.attack(target);
-            return true;
-        }
-        // If a skill was not used, move toward the target.
-        var pathArray = path;
-        var nextCoord = pathArray.shift();
-        if(!nextCoord){
-            return false;
-        }
-        var direction = directionTo(this.x, this.y, nextCoord.x, nextCoord.y);
-        return this.move(direction);
+        this.setGoal(goalEnemy);
     }, writable: true},
     pursueSafety: {value: function (){
         /**
@@ -413,16 +354,7 @@ var companion = Object.create(person, {
             }
         }
         if(!targetLoot){ return false;}
-        if(targetDistance <= 1){
-            this.getItem(targetLoot);
-            if(this.inventory.indexOf(targetLoot) != -1){
-                this.equip(targetLoot);
-            }
-            return true;
-        }
-        var direction = directionTo(this.x, this.y, targetLoot.x, targetLoot.y);
-        // Else, move.
-        return this.move(direction);
+        this.setGoal(goalLoot, targetLoot);
     }, writable: true},
     itemDesire: {value: function (theItem){
         var desire = 0;
@@ -493,5 +425,129 @@ var companion = Object.create(person, {
         }
         // Return desire.
         return desire * desireMultiplier;
+    }, writable: true},
+    setGoal: {value: function (goalType, goalTarget){
+        if(!goalType){
+            this.goal = null;
+            return;
+        }
+        this.goal = Object.create(goalType);
+        goalType.constructor.call(this.goal, goalTarget);
+    }, writable: true},
+    pursueGoal: {value: function(){
+        if(!this.goal){ return false;}
+        var success = this.goal.behavior(this);
+        if(!success){ this.setGoal();}
+        return success;
+    }, writable: true}
+});
+var goal = {
+    target: undefined,
+    constructor: function (){ return this;},
+    behavior: function (controllee){ return false;}
+};
+var goalLoot = Object.create(goal, {
+    constructor: {value: function (goalTarget){
+        this.target = goalTarget;
+        return this;
+    }, writable: true},
+    behavior: {value: function (controllee){
+        if(
+            !this.target ||
+            this.target.x === undefined || this.target.y === undefined
+        ){ return false;}
+        var targetDistance = distance(
+            this.target.x, this.target.y, controllee.x, controllee.y
+        );
+        if(targetDistance <= 1){
+            controllee.getItem(this.target);
+            if(controllee.inventory.indexOf(this.target) != -1){
+                controllee.equip(this.target);
+            }
+            return true;
+        }
+        var direction = directionTo(
+            controllee.x, controllee.y, this.target.x, this.target.y);
+        // Else, move.
+        return controllee.move(direction);
+    }, writable: true}
+});
+var goalEnemy = Object.create(goal, {
+    behavior: {value: function (controllee){
+        // Find a target, and the path to that target. If no target, deactivate.
+        var target;
+        var path;
+        var targetData = findTarget(controllee, controllee.faction);
+        if(targetData && controllee.checkView(targetData.target)){
+            target = targetData.target;
+            path = targetData.path;
+        } else{
+            return false;
+        }
+        // Determine if target is in range of equipped weapon. Attack.
+        var range = distance(controllee.x, controllee.y, target.x, target.y);
+        var weapon = controllee.equipment? controllee.equipment[EQUIP_MAINHAND] : undefined;
+        if(weapon && weapon.shoot && weapon.range){
+            if(weapon.range >= range){
+                var success = weapon.shoot(
+                    controllee,
+                    directionTo(controllee.x, controllee.y, target.x, target.y),
+                    target
+                );
+                if(success || success === 0){
+                    return true;
+                }
+            }
+        // Else, attack with your hands.
+        }
+        if(range <= 1){
+            controllee.attack(target);
+            return true;
+        }
+        // If a skill was not used, move toward the target.
+        var pathArray = path;
+        var nextCoord = pathArray.shift();
+        if(!nextCoord){
+            return false;
+        }
+        var direction = directionTo(controllee.x, controllee.y, nextCoord.x, nextCoord.y);
+        return controllee.move(direction);
+    }, writable: true}
+});
+var goalHero = Object.create(goal, {
+    behavior: {value: function (controllee){
+        var target = gameManager.currentGame.hero;
+        var pursueRange = Math.min(3, target.companions.length);
+        if(!target || (
+            (target.levelId == controllee.levelId) &&
+            distance(controllee.x, controllee.y, target.x, target.y) <= pursueRange
+        )){
+            return false;
+        }
+        var pathArray = findPath(controllee, target, 1);
+        if(!(pathArray && pathArray.length)){
+            return false;
+        }
+        if(pathArray[0].x == controllee.x && pathArray[0].y == controllee.y && pathArray[0].levelId == controllee.levelId){
+            pathArray.shift();
+        }
+        var nextCoord = pathArray.shift();
+        if(!nextCoord){
+            return false;
+        }
+        if(nextCoord.levelId != controllee.levelId){
+            controllee.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
+            return true;
+        }
+        var direction = directionTo(controllee.x,controllee.y,nextCoord.x,nextCoord.y);
+        // Check for Door.
+        var destination = mapManager.getTile(
+            nextCoord.x, nextCoord.y, controllee.levelId
+        );
+        if(destination.dense && destination.toggleDoor){
+            return destination.toggleDoor(nextCoord.x, nextCoord.y, controllee);
+        }
+        // Else, move.
+        return controllee.move(direction);
     }, writable: true}
 });

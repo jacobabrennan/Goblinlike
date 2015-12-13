@@ -155,6 +155,9 @@ TODO(Beta):
                 * Run!
                 * Attack!
                 Collect Items
+        Goblins Communicate
+            To identify items
+            To find player (optomize pathing)
     
     Later:
         Generate Vaults.

@@ -154,7 +154,25 @@ var trap = Object.create(containable, {
          **/
         if(this.triggered){ return;}
         this.triggered = true;
-    }, writable: true}
+    }, writable: true},
+    place: {value: function (x, y, levelId){
+        if(isNaN(x) || isNaN(y) || (x == this.x && y == this.y && levelId == this.levelId)){
+            return false;
+        }
+        var tileContent = mapManager.getTileContents(x, y, levelId);
+        var doubleTrap = false;
+        if(tileContent){
+            tileContent.forEach(function (contentElement){
+                if(contentElement.type === TYPE_TRAP){
+                    doubleTrap = true;
+                }
+            });
+        }
+        if(doubleTrap){
+            return false;
+        }
+        return containable.place.apply(this, arguments);
+    }, writable: true},
 });
 var movable = Object.create(containable, {
     // TODO: Document.

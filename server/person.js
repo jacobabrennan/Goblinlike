@@ -227,8 +227,7 @@ var person = Object.create(actor, {
                 inventory. It is a general house keeping function, perhaps
                 a candidate to be refactored into some other function.
             It returns true if the item was added to inventory, false if it
-                could not be added. Currently always true, but could be false
-                in the future if inventory limits are implemented.
+                could not be added.
          **/
         // TODO: Implement inventory limits, perhaps in a plugin.
         // Check current inventory + equipment weight.

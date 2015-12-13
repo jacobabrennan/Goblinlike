@@ -1148,11 +1148,11 @@ Unknown         : a Ant, q quasit, A Ant Lion
 1 (Training Enemies):
     *rat, *Ant1, *ruttle, bat, snake, giant centipede
 2 (Can kill you if you are not careful):
-    Ant2, skull, *eyeball, scorpion, skeleton, skuzzy
+    *Ant2, skull, *eyeball, scorpion, *skeleton, *skuzzy
 3 (Approach with Caution):
-    centipede2, worm, mold, spider1, imp, mummy, ghost, bombshell, antLion
+    centipede2, *worm, *mold, spider1, *imp, mummy, ghost, bombshell, antLion
 4 (Avoid. Requires a plan):
-    spider2, wight, firewall, wraith, blob
+    spider2, wight, firewall, wraith, *blob
 5 (Run. Just run):
     Vampire, Lich, spider3, demon
 

@@ -352,14 +352,15 @@ var hero = Object.create(person, {
                 this.inform('You yell "Attack now!"');
                 this.leadershipMode = LEADERSHIP_ATTACK;
                 this.companions.forEach(function(aGob){
-                    aGob.adjustMoral(this.influence());
+                    aGob.pursueEnemy();
                 }, this);
                 break;
             case LEADERSHIP_FOLLOW:
                 this.inform('You yell "Follow me!"');
                 this.leadershipMode = LEADERSHIP_FOLLOW;
                 this.companions.forEach(function(aGob){
-                    aGob.adjustMoral(this.influence());
+                    //aGob.adjustMoral(this.influence());
+                    aGob.pursueHero();
                 }, this);
                 break;
         }
