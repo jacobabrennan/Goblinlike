@@ -54,7 +54,6 @@ modelLibrary.registerModel('skill', Object.create(skill, {
             if(user.place(testDest.x, testDest.y, target.levelId)){
                 return true;
             }
-            console.log(possibles.length);
         }
         return false;
     }, writable: true}

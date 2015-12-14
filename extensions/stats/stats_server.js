@@ -20,6 +20,11 @@
         var subTotal = (base + this.level + Math.ceil(base*this.level * 0.85));
         return subTotal;
     };
+    base.meanMoral = function (){
+        var base = this.charisma;
+        var subTotal = (base + this.level + Math.ceil(base*(this.level-1) * 0.50));
+        return subTotal;
+    };
     base.carryCapacity = function (){
         return this.strength * (1+this.level/2);
     };

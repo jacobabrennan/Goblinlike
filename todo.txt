@@ -107,6 +107,13 @@ zZ + zombie dwarf
 Wight, +Wraith,
 Vampire, Lich
 
+TO DONE: Beta3
+    Persistence in goblin companion behavior.
+    Options Select now has map indicators.
+    New items. (tier3 weapons and armor)
+    Better leadership options. (Unfinished)
+    //
+    Only one Wraith at a time.
 TO DONE: Beta2
     Changed arrangement of commands to be easier and more intuitive.
     Added Help Menu.

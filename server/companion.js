@@ -71,10 +71,6 @@
     base.adjustMoral = function (amount){
         this.moral += amount;
         var terrify = false;
-        if(this.hp <= 1){
-            terrify = true;
-            this.moral = Math.min(this.moral, -1);
-        }
         if(this.moral < 0){ terrify = true;}
         if(terrify && !this.terrified){
             this.terrified = true;
@@ -92,8 +88,9 @@
     };
     base.takeTurn = (function (parentFunction){
         return function (){
-            var mean = this.charisma;
-            var moralTweak = -(this.moral-mean)/20;
+            var mean = this.meanMoral();
+            var moralTweak = -(this.moral-mean)/(25-this.charisma);
+            moralTweak *= this.hp/this.maxHp();
             var tweakRound = false;
             if(Math.abs(moralTweak) < 0.1){
                 tweakRound = true;
@@ -109,7 +106,11 @@
     base.adjustHp = (function (parentFunction){
         return function (){
             var adjustment = parentFunction.apply(this,arguments);
-            this.adjustMoral(adjustment);
+            if(adjustment < 0 && this.hp <= 11-this.charisma){
+                this.adjustMoral(-(this.moral+this.charisma));
+            } else{
+                this.adjustMoral(adjustment*2);
+            }
             return adjustment;
         };
     })(base.adjustHp);
