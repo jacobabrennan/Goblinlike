@@ -11,6 +11,40 @@ New Title Screen
 
 Lauren - Postcard
 
+Level Plan:
+
+1: White Rat, Giant Ant, Cave Beetle,
+    Rock,
+2: Centipede, Floating Eye, Ksuzzy,
+    WkH Pot, Fire Scroll,
+    Club, Short Bow, Arrow, l.Shield, L.Cap,
+3: Yellow Mold, Minor Imp,
+    Acid Pot,
+    L.Armor, Barbed Arrow, 
+4: Skeletal Dwarf,
+    Coward Pot, Fire Wand,
+    Cleaver, Crossbow, C.Cowl, W.Shield, Arrow5
+5: Zombie Dwarf, Black Rat, Red Beetle, Yellow Blob
+    H Pot, Courage Pot,
+    Spear, C.Armor,
+6: Imp, Blue Mold,
+    
+    Long Bow, D.Helmet, Arrow10
+7: Wraith,
+    
+    Sword, D.Shield, B.Arrow5,
+8: Blue Blob, Bloodshot Eye,
+    
+    Axe,
+9: Worm
+    StH Pot,
+    Hammer, D.Armor,
+10: Final Boss
+
+    B.Arrow10,
+
+
+
 Enemy Types:
 
 * Standard:

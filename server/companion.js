@@ -130,6 +130,7 @@ var companion = Object.create(person, {
         this.name = sWerd.name()+' (g)';
         var theHero = gameManager.currentGame.hero;
         if(theHero){ this.setLevel(theHero.level);}
+        this.adjustHp(this.maxHp());
         var randomIndex = randomInterval(0, 5);
         if(!theHero){ randomIndex = 0;}
         switch(randomIndex){
@@ -378,7 +379,7 @@ var companion = Object.create(person, {
                 } else if(ownWeapon.baseDamage && theItem.baseDamage){
                     // Check Weapon.
                     desire += theItem.baseDamage - ownWeapon.baseDamage;
-                    desire -= (theItem.weight - ownWeapon.weight);
+                    desire -= (theItem.weight - ownWeapon.weight)/3;
                 }
             }
         } else if(thePlace){

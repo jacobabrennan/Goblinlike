@@ -268,8 +268,8 @@ modelLibrary.registerModel('item', Object.create(weapon, { // Rock
     character: {value: ':', writable: true},
     color: {value: '#444', writable: true},
     // Stats:
-    weight: {value: 6, writable: true},
-    baseDamage: {value: 2, writable: true},
+    weight: {value: 4, writable: true},
+    baseDamage: {value: 1, writable: true},
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
     throwable: {value: true, writable: true},
@@ -324,6 +324,52 @@ modelLibrary.registerModel('item', Object.create(weapon, { // Spear
     // Description:
     viewText: {value: 'You see a spear, a favorite weapon of goblin when hunting. It is equally effected when thrown.'}
 }));
+modelLibrary.registerModel('item', Object.create(weapon, { // Sword
+    // Id:
+    generationId: {value: 'sword'},
+    generationWeight: {value: 7, writable: true},
+    // Display:
+    name: {value: 'Sword', writable: true},
+    character: {value: '|', writable: true},
+    // Stats:
+    weight: {value: 3, writable: true},
+    baseDamage: {value: 7, writable: true},
+    damageSigma: {value: 2, writable: true},
+    // Behavior:
+    // Description:
+    viewText: {value: 'You see a sword. Goblins are less familiar than humans with this weapon, but no less deadly.'}
+}));
+modelLibrary.registerModel('item', Object.create(weapon, { // Hand Axe
+    // Id:
+    generationId: {value: 'hand axe'},
+    generationWeight: {value: 8, writable: true},
+    // Display:
+    name: {value: 'Hand Axe', writable: true},
+    character: {value: '|', writable: true},
+    // Stats:
+    weight: {value: 6, writable: true},
+    baseDamage: {value: 10, writable: true},
+    damageSigma: {value: 2, writable: true},
+    // Behavior:
+    // Description:
+    viewText: {value: 'You see a dwarven hand axe - heavier than a sword, but alse more savage.'}
+}));
+modelLibrary.registerModel('item', Object.create(weapon, { // Hammer
+    // Id:
+    generationId: {value: 'hammer'},
+    generationWeight: {value: 9, writable: true},
+    // Display:
+    name: {value: 'Hammer', writable: true},
+    character: {value: '/', writable: true},
+    // Stats:
+    weight: {value: 8, writable: true},
+    baseDamage: {value: 15, writable: true},
+    damageSigma: {value: 1, writable: true},
+    // Behavior:
+    twoHanded: {value: true, writable: true},
+    // Description:
+    viewText: {value: 'You see a dwarven hammer. This finely crafted stone weapon is what dwarven warcraft is all about. You doubt you could weild it.'}
+}));
 modelLibrary.registerModel('item', Object.create(bow, { // Short Bow
     // Id:
     generationId: {value: 'short bow'},
@@ -372,7 +418,8 @@ modelLibrary.registerModel('item', Object.create(bow, { // Short Bow
 modelLibrary.registerModel('item', Object.create(projectile, { // arrow
     // Id:
     generationId: {value: 'arrow1'},
-    generationWeight: {value: 2, writable: true},
+    generationWeight: {value: 200, writable: true},
+            // Do not generate alone.
     // Display:
     name: {value: 'Arrow', writable: true},
     character: {value: '\\', writable: true},
@@ -393,7 +440,7 @@ modelLibrary.registerModel('item', Object.create(
     modelLibrary.getModel('item', 'arrow1'),
     {
         generationId: {value: 'arrow5'},
-        generationWeight: {value: 10, writable: true},
+        generationWeight: {value: 4, writable: true},
         stackCount: {value: 5, writable: true}
     }
 ));
@@ -401,14 +448,15 @@ modelLibrary.registerModel('item', Object.create(
     modelLibrary.getModel('item', 'arrow1'),
     {
         generationId: {value: 'arrow10'},
-        generationWeight: {value: 15, writable: true},
+        generationWeight: {value: 6, writable: true},
         stackCount: {value: 10, writable: true}
     }
 ));
 modelLibrary.registerModel('item', Object.create(projectile, { // arrow
     // Id:
     generationId: {value: 'arrowBarbed1'},
-    generationWeight: {value: 4, writable: true},
+    generationWeight: {value: 300, writable: true},
+            // Do not generate alone!
     // Display:
     name: {value: 'BarbedArrow', writable: true},
     character: {value: '\\', writable: true},
@@ -429,7 +477,7 @@ modelLibrary.registerModel('item', Object.create(
     modelLibrary.getModel('item', 'arrowBarbed1'),
     {
         generationId: {value: 'arrowBarbed5'},
-        generationWeight: {value: 15, writable: true},
+        generationWeight: {value: 7, writable: true},
         stackCount: {value: 5, writable: true}
     }
 ));
@@ -437,7 +485,7 @@ modelLibrary.registerModel('item', Object.create(
     modelLibrary.getModel('item', 'arrowBarbed1'),
     {
         generationId: {value: 'arrowBarbed10'},
-        generationWeight: {value: 20, writable: true},
+        generationWeight: {value: 10, writable: true},
         stackCount: {value: 10, writable: true}
     }
 ));
@@ -511,6 +559,39 @@ modelLibrary.registerModel('item', Object.create(item, {
     // Description:
     viewText: {value: "You see chainmail body armor. It's rusty, but well made."}
 }));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'dwarven helmet'},
+    generationWeight: {value: 6, writable: true},
+    character: {value: '^'},
+    name: {value: 'DwarfHelmet'},
+    placement: {value: EQUIP_HEAD},
+    defense: {value: 2},
+    weight: {value: 3},
+    // Description:
+    viewText: {value: "You see a Dwarven Helmet. The thick plates of metal make you feel very safe."}
+}));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'dwarven shield'},
+    generationWeight: {value: 7, writable: true},
+    character: {value: '('},
+    name: {value: 'DwarfShield'},
+    placement: {value: EQUIP_OFFHAND},
+    evade: {value: 1/6},
+    weight: {value: 4},
+    // Description:
+    viewText: {value: 'You see a Dwarven Shield. The thick plates of metal make you feel very safe.'}
+}));
+modelLibrary.registerModel('item', Object.create(item, {
+    generationId: {value: 'dwarven armor'},
+    generationWeight: {value: 9, writable: true},
+    character: {value: ']'},
+    name: {value: 'DwarfArmor'},
+    placement: {value: EQUIP_BODY},
+    defense: {value: 4},
+    weight: {value: 6},
+    // Description:
+    viewText: {value: 'You see Dwarven Armor. The thick plates of metal make you feel very safe.'}
+}));
 
 //==============================================================================
     // Close namespace.
@@ -552,7 +633,7 @@ ItemTypes:
             {   Short Bow
             {   Long Bow
             Dwarf:
-            }   Cross Bow
+            {   Cross Bow
         
         
         Damage, Range, Weight
@@ -566,7 +647,7 @@ ItemTypes:
  Avg.  | Weak     | Average  | High
 -------+----------+----------+----------
  Short | Club     | Spear    | Axe/Sword
- Mid   |          | Spear    |
+ Mid   |          |          |
  Long  | LongBow  |          |
 ========================================
  Light | Weak     | Average  | High
