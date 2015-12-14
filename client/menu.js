@@ -96,7 +96,7 @@ var menu = Object.create(driver, {
         statusMenu.display(goblinInfo);
         this.focus(statusMenu);
     }},
-    options: {value: function (title, options, callback){
+    options: {value: function (title, options, details, callback){
         /**
             This function displays a menu of options the player can select from.
             The optionsMenu has focus once this function ends.
@@ -105,6 +105,7 @@ var menu = Object.create(driver, {
         optionsMenu.display({
             title: title,
             options: options,
+            details: details,
             callback: callback,
             page: 0
         });
@@ -463,6 +464,7 @@ var optionsMenu = Object.create(driver, {
         this.actionTitle    = options.title || this.actionTitle;
         this.actionOptions  = options.options || this.actionOptions;
         this.actionCallback = options.callback || this.actionCallback;
+        this.actionDetails  = options.details;
         if(options.page !== undefined){
             this.optionsPage = options.page;
         } else{
@@ -495,12 +497,28 @@ var optionsMenu = Object.create(driver, {
                 var indexedOption = this.actionOptions[displayIndex+pagedOffset];
                 var alphabet = 'abcdefghijklmnopqrstuvwxyz';
                 var indexCharacter = alphabet.charAt(displayIndex);
+                var selectFunction = optionLinkFunction(indexCharacter);
                 client.skin.drawCommand(
                     1, 16-displayIndex,
                     indexCharacter.toUpperCase(),
                     indexedOption,
-                    optionLinkFunction(indexCharacter)
+                    selectFunction
                 );
+                if(this.actionDetails){
+                    indexedDetail = this.actionDetails[displayIndex];
+                    if(!indexedDetail || indexedDetail.id === undefined){ continue;}
+                    var identifiedDetail = mapManager.idManager.get(indexedDetail.id);
+                    if(!identifiedDetail){ continue;}
+                    var ix = identifiedDetail.x - client.drivers.gameplay.memory.character.x;
+                    var iy = identifiedDetail.y - client.drivers.gameplay.memory.character.y;
+                    var ds = displaySize;
+                    client.skin.drawCommand(
+                        (ds+((ds-1)/2))+ix, ((ds-1)/2)+iy, // TODO: MAGIC NUMBERS!
+                        indexCharacter.toUpperCase(),
+                        null,
+                        selectFunction
+                    );
+                }
             }
             // Add the Page Down Link if needed.
             var maxPage = Math.floor((this.actionOptions.length-1)/this.optionsDisplayMax);

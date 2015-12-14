@@ -202,11 +202,12 @@ client.drivers.gameplay = Object.create(driver, {
         // If targeting requires a user choice, then display targeting options.
         if(!autoSelect){
             var candidateNames = [];
+            var candidateDetails = [];
             for(var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex++){
                 var indexedCandidate = candidates[candidateIndex];
                 candidateNames[candidateIndex] = indexedCandidate.name;
             }
-            this.drivers.menu.options('Select Target', candidateNames, function (targetName, targetIndex){
+            this.drivers.menu.options('Select Target', candidateNames, candidates, function (targetName, targetIndex){
                 targetData.target = candidates[targetIndex];
                 callback(targetData);
             });
@@ -282,7 +283,7 @@ client.drivers.gameplay.commandDrop = function (){
         });
     };
     // Display options to player.
-    this.drivers.menu.options('Drop Item', itemNames, optionsCallback);
+    this.drivers.menu.options('Drop Item', itemNames, null, optionsCallback);
 };
 client.drivers.gameplay.commandEquip = function (){
     /*
@@ -313,7 +314,7 @@ client.drivers.gameplay.commandEquip = function (){
         });
     };
     // Display Options to player.
-    this.drivers.menu.options('Equip which?', invNames, invCallback);
+    this.drivers.menu.options('Equip which?', invNames, null, invCallback);
 };
 client.drivers.gameplay.commandUnequip = function (){
     /*
@@ -350,7 +351,7 @@ client.drivers.gameplay.commandUnequip = function (){
         });
     };
     // Send Options to player for selection.
-    this.drivers.menu.options('Unequip which?', equipNames, equipCallback);
+    this.drivers.menu.options('Unequip which?', equipNames, null, equipCallback);
 };
 client.drivers.gameplay.commandFire = function (){
     /*
@@ -394,7 +395,7 @@ client.drivers.gameplay.commandGet = function (){
         });
     };
     // Display Options to player.
-    this.drivers.menu.options('Get Item', itemNames, optionsCallback);
+    this.drivers.menu.options('Get Item', itemNames, items, optionsCallback);
 };
 client.drivers.gameplay.commandLook = function (){
     /*
@@ -435,7 +436,7 @@ client.drivers.gameplay.commandLook = function (){
         }
     };
     // Display options to player.
-    this.drivers.menu.options('Examine what?', viewNames, optionsCallback);
+    this.drivers.menu.options('Examine what?', viewNames, viewEntities, optionsCallback);
 };
 client.drivers.gameplay.commandLead = function (options){
     this.activeTurn = false;
@@ -465,6 +466,7 @@ client.drivers.gameplay.commandLeadership = function (options){
     this.drivers.menu.options(
         'Lead the Tribe',
         leadershipNames,
+        null,
         leadershipCallback
     );
 };
@@ -521,7 +523,7 @@ client.drivers.gameplay.commandThrow = function (){
         self.target(TARGET_DIRECTION, undefined, directionCallback);
     };
     // Send the item options to the player.
-    this.drivers.menu.options('Throw Item', inventoryNames, inventoryCallback);
+    this.drivers.menu.options('Throw Item', inventoryNames, null, inventoryCallback);
 };
 client.drivers.gameplay.commandUse = function (){
     /*
@@ -568,5 +570,5 @@ client.drivers.gameplay.commandUse = function (){
         self.target(theItem.targetClass, theItem.targetRange, targetCallback);
     };
     // Display options to player.
-    this.drivers.menu.options('Use Item', inventoryNames, inventoryCallback);
+    this.drivers.menu.options('Use Item', inventoryNames, null, inventoryCallback);
 };
