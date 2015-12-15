@@ -619,6 +619,26 @@ var snakePrototype = (function (){
     });
 })();
 
+
+/*var spiderPrototype = (function (){
+    return Object.create(enemy, {
+        name: {value: 'spider', writable: true},
+        character: {value: 'T', writable: true},
+        color: {value: '#963', writable: true}
+    });
+})();
+modelLibrary.registerModel('enemy', Object.create(spiderPrototype, {
+    // Id:
+    name: {value: 'Tarantula', writable: true},
+    // Display:
+    color: {value: '#963', writable: true},
+    // Stats:
+    rewardExperience: {value: 30, writable: true},
+    turnDelay: {value: 7/8, writable: true},
+    baseHp: {value: 4}
+    // Behavior:
+}));*/
+
 //==============================================================================
 
 modelLibrary.registerModel('enemy', Object.create(enemy, {
@@ -697,24 +717,6 @@ modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
     // Description:
     viewText: {value: 'You see a long centipede, large enough to block the narrow halls of the dwarven city.'}
 }));
-/*var spiderPrototype = (function (){
-    return Object.create(enemy, {
-        name: {value: 'Tarantula', writable: true},
-        character: {value: 'T', writable: true},
-        color: {value: '#963', writable: true}
-    });
-})();
-modelLibrary.registerModel('enemy', Object.create(spiderPrototype, {
-    // Id:
-    name: {value: 'Tarantula', writable: true},
-    // Display:
-    color: {value: '#963', writable: true},
-    // Stats:
-    rewardExperience: {value: 30, writable: true},
-    turnDelay: {value: 7/8, writable: true},
-    baseHp: {value: 4}
-    // Behavior:
-}));*/
 modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Id:
     generationId: {value: 'floating eye', writable: true},

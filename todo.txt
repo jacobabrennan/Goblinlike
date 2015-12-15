@@ -112,6 +112,7 @@ TO DONE: Beta3
     Options Select now has map indicators.
     New items. (tier3 weapons and armor)
     Better leadership options. (Unfinished)
+    Changed how moral increases with time and levels.
     //
     Only one Wraith at a time.
 TO DONE: Beta2
