@@ -1018,7 +1018,7 @@ modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
     character: {value: 'w', writable: true},
     color: {value: '#963', writable: true},
     bodyCharacter: {value: 'o', writable: true},
-    //bodyColor: {value: '#a53', writable: true},
+    bodyColor: {value: '#963', writable: true},
     bodyBackground: {value: undefined, writable: true},
     // Stats:
     rewardExperience: {value: 90, writable: true},
