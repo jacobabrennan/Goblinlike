@@ -476,6 +476,20 @@ var goalLoot = Object.create(goal, {
 });
 var goalEnemy = Object.create(goal, {
     behavior: {value: function (controllee){
+        // Check if any targets in view.
+        var viewContents = controllee.getViewContents();
+        var noEnemies = true;
+        for(var vI = 0; vI < viewContents.length; vI++){
+            var indexedC = viewContents[vI];
+            if(indexedC.type === TYPE_ACTOR && !(indexedC.faction&controllee.faction)){
+                noEnemies = false;
+                break;
+            }
+        }
+        if(noEnemies){
+            console.log('No Enemies');
+            return false;
+        }
         // Find a target, and the path to that target. If no target, deactivate.
         var target;
         var path;
