@@ -199,7 +199,6 @@ var commandsMenu = Object.create(driver, {
         commandLink(1, line--, "W", COMMAND_UNEQUIP, 'Unequip Item');
         commandLink(1, line--, "F", COMMAND_FIRE, 'Fire Bow/Wand');
         commandLink(1, line--, "G", COMMAND_GET, 'Get Item');
-        commandLink(1, line--, "Q", COMMAND_LEADERSHIP, 'Leadership');
         commandLink(1, line--, "R", COMMAND_CAMP, 'Rest (Heal)');
         commandLink(1, line--, "S", COMMAND_STAIRS, 'Use Stairs');
         client.skin.drawString(14, line+1, '>', '#000', '#fc0');
@@ -402,7 +401,7 @@ var statusMenu = Object.create(driver, {
         client.skin.drawString(1, line--, ('Vitality: '+((vitality < 10)? ' ' : '')+vitality));
         client.skin.drawString(1, line--, ('Strength: '+((strength < 10)? ' ' : '')+strength));
         client.skin.drawString(1, line--, ('Wisdom  : '+((wisdom   < 10)? ' ' : '')+wisdom  ));
-        client.skin.drawString(1, line--, ('Charisma: '+((charisma < 10)? ' ' : '')+charisma));
+        client.skin.drawString(1, line--, ('Courage : '+((charisma < 10)? ' ' : '')+charisma));
         line--;
         client.skin.drawString(1,  line--, (eWeapon? ('Hand: '+eWeapon.name) : ''));
         client.skin.drawString(1,  line--, (eShield? ('Hand: '+eShield.name) : ''));

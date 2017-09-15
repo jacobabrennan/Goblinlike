@@ -330,49 +330,15 @@ var hero = Object.create(person, {
         // End turn.
         this.endTurn();
     }, writable: true},
-    commandLead: {value: function (options){
-        /**
-            TODO: Document.
-        **/
-        var order = options.order;
-        if(this.terrified){
-            this.inform("You're too terrified!");
-            this.endTurn();
-            return;
-        }
-        switch(order){
-            case LEADERSHIP_RUN:
-                this.inform('You yell "Run away!"');
-                this.leadershipMode = LEADERSHIP_RUN;
-                this.companions.forEach(function(aGob){
-                    aGob.adjustMoral(-1);
-                }, this);
-                break;
-            case LEADERSHIP_ATTACK:
-                this.inform('You yell "Attack now!"');
-                this.leadershipMode = LEADERSHIP_ATTACK;
-                this.companions.forEach(function(aGob){
-                    aGob.pursueEnemy();
-                }, this);
-                break;
-            case LEADERSHIP_FOLLOW:
-                this.inform('You yell "Follow me!"');
-                this.leadershipMode = LEADERSHIP_FOLLOW;
-                this.companions.forEach(function(aGob){
-                    //aGob.adjustMoral(this.influence());
-                    aGob.pursueHero();
-                }, this);
-                break;
-        }
-        // End turn.
-        this.endTurn();
-    }, writable: true},
     commandCamp: {value: function (options){
         /**
             This command from the player directs the hero to rest here until all
             goblins are healed and in good moral.
         **/
         this.camp(true);
+        this.companions.forEach(function(aGob){
+            aGob.pursueHero();
+        }, this);
         // End turn.
         this.endTurn();
     }, writable: true},

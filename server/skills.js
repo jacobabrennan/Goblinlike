@@ -117,31 +117,6 @@ modelLibrary.registerModel('skill', Object.create(skill, {
     }, writable: true}
 }));
 modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'acid trap', writable: true},
-    name: {value: 'acid trap', writable: true},
-    targetClass: {value: TARGET_SELF, writable: true},
-    use: {value: function (user, target){
-        for(var posX = -1; posX < 2; posX++){
-            for(var posY = -1; posY < 2; posY++){
-                var acidFound = false;
-                var placeContents = mapManager.getTileContents(
-                    user.x+posX,user.y+posY,user.levelId);
-                for(var aI = 0; aI < placeContents.length; aI++){
-                    var testContent = placeContents[aI];
-                    if(testContent.name == 'acid trap'){
-                        acidFound = true;
-                    }
-                }
-                if(!acidFound){
-                    Object.instantiate(modelLibrary.getModel('trap', 'acid')).place(
-                        user.x+posX,user.y+posY,user.levelId);
-                }
-            }
-        }
-        return true;
-    }, writable: true}
-}));
-modelLibrary.registerModel('skill', Object.create(skill, {
     generationId: {value: 'sap', writable: true},
     name: {value: 'sap', writable: true},
     range: {value: 10, writable: true},

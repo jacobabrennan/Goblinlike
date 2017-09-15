@@ -62,7 +62,6 @@ client.preferences = {
     "e": COMMAND_EQUIP,
     "f": COMMAND_FIRE,
     "g": COMMAND_GET,
-    "q": COMMAND_LEADERSHIP,
     "r": COMMAND_CAMP,
     "s": COMMAND_STAIRS,
     "t": COMMAND_THROW,

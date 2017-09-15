@@ -1,14 +1,6 @@
 
 
 /*===========================================================================
- *
- *  !!!!!!!!!!!! Incorrect (copy/pasted) documentation) !!!!!!!!!!!!!!!!!!!!!
- *  TODO: Document.
- *  The gameplay driver is single point of contact between the game and
- *      the player once the game is running. It collects all input from the
- *      player, via keyboard, touch, and mouse, and displays the game state
- *      via a map and a menuing system.
- *  It is not a prototype, and should not be instanced.
  *      
   ===========================================================================*/
 
@@ -274,7 +266,7 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
         client.skin.drawString(16, 14, 'Vitality: '+this.vitality);
         client.skin.drawString(16, 13, 'Strength: '+this.strength);
         client.skin.drawString(16, 12, 'Wisdom  : '+this.wisdom  );
-        client.skin.drawString(16, 11, 'Charisma: '+this.charisma);
+        client.skin.drawString(16, 11, 'Courage : '+this.charisma);
         if(!this.name && this.name !== ''){
             client.skin.drawCommand(14,  9, 'A', 'Accept Stats', COMMAND_ENTER);
             client.skin.drawCommand(14,  8, 'B', 'Reroll Stats', COMMAND_CANCEL);

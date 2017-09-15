@@ -35,7 +35,13 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
         isOpaque: function(x, y){
             var testTile = mapManager.getTile(x, y, this.levelId);
             if(!testTile){ return true;}
-            return testTile.opaque;
+            if(testTile.opaque){ return true;}
+            var testContents = mapManager.getTileContents(x, y, this.levelId);
+            for(var cI = 0; cI < testContents.length; cI++){
+                var indexedC = testContents[cI];
+                if(indexedC && indexedC.opaque){ return true;}
+            }
+            return false;
         }
     };
     var computeQuadrant = function (view, xPos, yPos, maxRadius, dx, dy){

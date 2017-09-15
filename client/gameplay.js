@@ -69,7 +69,6 @@ client.drivers.gameplay = Object.create(driver, {
         }
         switch(command){
             case COMMAND_HELP   : this.drivers.menu.help(); break;
-            case COMMAND_LEADERSHIP: this.commandLeadership(); break;
             case COMMAND_ATTACK : this.commandAttack( ); break;
             case COMMAND_WAIT   : this.commandWait(   ); break;
             case COMMAND_GET    : this.commandGet(    ); break;
@@ -83,9 +82,6 @@ client.drivers.gameplay = Object.create(driver, {
             case COMMAND_LOOK   : this.commandLook(   ); break;
             case COMMAND_CLOSE  : this.commandClose(  ); break;
             case COMMAND_CAMP   : this.commandCamp(   ); break;
-            case LEADERSHIP_RUN: this.commandLead({order: LEADERSHIP_RUN}); break;
-            case LEADERSHIP_FOLLOW: this.commandLead({order: LEADERSHIP_FOLLOW}); break;
-            case LEADERSHIP_ATTACK: this.commandLead({order: LEADERSHIP_ATTACK}); break;
         }
         return false;
     }},
@@ -437,38 +433,6 @@ client.drivers.gameplay.commandLook = function (){
     };
     // Display options to player.
     this.drivers.menu.options('Examine what?', viewNames, viewEntities, optionsCallback);
-};
-client.drivers.gameplay.commandLead = function (options){
-    this.activeTurn = false;
-    client.networking.sendMessage(COMMAND_LEADERSHIP, options);
-};
-client.drivers.gameplay.commandLeadership = function (options){
-    // Compile a list of names to be passed to the options menu.
-    var leadershipNames    = [
-        'Attack!',
-        'Follow Me!',
-        'Run away!'
-    ];
-    var leadershipCommands = [
-        LEADERSHIP_ATTACK,
-        LEADERSHIP_FOLLOW,
-        LEADERSHIP_RUN
-    ];
-    // Create a function to be called when player has selected an option.
-    var self = this;
-    var leadershipCallback = function (selectedName, selectedIndex){
-        // Once the player has selected:
-        self.activeTurn = false;
-        var theCommand = leadershipCommands[selectedIndex];
-        client.networking.sendMessage(COMMAND_LEADERSHIP, {order: theCommand});
-    };
-    // Send the item options to the player.
-    this.drivers.menu.options(
-        'Lead the Tribe',
-        leadershipNames,
-        null,
-        leadershipCallback
-    );
 };
 client.drivers.gameplay.commandCamp = function (){
     /*

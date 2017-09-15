@@ -185,14 +185,6 @@ var level = {
                 lastContent.nextContent = content;
             }
         }
-        // If containable is an actor, trigger any traps at this location.
-        if((content.type==TYPE_ACTOR) && (content.faction&FACTION_PLAYER)){
-            contents.forEach(function (testContent, index){
-                if(testContent.type == TYPE_TRAP){
-                    testContent.trigger(content);
-                }
-            });
-        }
         return true;
     },
     unplaceContainable: function (content){
@@ -294,78 +286,6 @@ var level = {
             }
         }
         return line;
-    },*/
-    /*
-    getView: function (x, y, range){
-        / **
-            This function constructs a grid (an array with indexes ordered by
-                width and height) where each coordinate index references
-                either a tile in view at that position, or null. The grid
-                includes all coordinates within the supplied range, including
-                the center, giving dimensions of (range+1+range)^2.
-            An algorithm using getLine determines if any given tile is in view.
-                TODO: Optomize the view algorithm to test tiles smartly.
-                CUrrently, it doesn't reuse the results of previous visibility
-                tests in determining if other tiles are visible.
-            It returns said grid.
-         * /
-        // Check each tile within range for visibilty.
-        var rangeGrid = [];
-        var rangeWidth = range*2+1;
-        var rangeHeight = rangeWidth;
-        rangeGrid.length = rangeWidth*rangeHeight;
-        for(var rangeIndex = 0; rangeIndex <= range; rangeIndex++){
-            for(var posY = y-rangeIndex; posY <= y+rangeIndex; posY++){
-                for(var posX = x-rangeIndex; posX <= x+rangeIndex; posX++){
-                    var rangeX = posX-x + range;
-                    var rangeY = posY-y + range;
-                    var rangeCompoundIndex = rangeY*rangeWidth + rangeX;
-                    var alreadyChecked = rangeGrid[rangeCompoundIndex];
-                    if(alreadyChecked !== undefined){ continue;}
-                    // Check if the line between tiles is totally obstructed.
-                    // A line is obstructed if both its top and bottom paths are obstructed.
-                    var line = this.getLine(posX, posY, x, y);
-                    var closed1 = false;
-                    var closed2 = false;
-                    for(var lineIndex = line.length-1; lineIndex >= 0; lineIndex--){
-                        var indexedStep = line[lineIndex];
-                        if(!indexedStep){
-                            ('No Step('+lineIndex+'): '+line)
-                            continue
-                        }
-                        for(var stepIndex = 0; stepIndex < indexedStep.length; stepIndex++){
-                            var stepCoords = indexedStep[stepIndex];
-                            if(
-                                stepCoords.x == x    && stepCoords.y == y    ||
-                                stepCoords.x == posX && stepCoords.y == posY
-                            ){
-                                continue;
-                            }
-                            var stepTile = this.getTile(stepCoords.x,stepCoords.y);
-                            if(!stepTile || stepTile.opaque){
-                                if(stepIndex == 0){ closed1 = true;}
-                                if(stepIndex == indexedStep.length-1){ closed2 = true;}
-                            }
-                            if(closed1 && closed2){
-                                break;
-                            }
-                        }
-                        if(closed1 && closed2){
-                            break;
-                        }
-                    }
-                    // If the line is not obstructed, index it in the grid.
-                    // Otherwise, index null.
-                    if(closed1 && closed2){
-                        rangeGrid[rangeCompoundIndex] = null;
-                        continue;
-                    }
-                    rangeGrid[rangeCompoundIndex] = this.getTile(posX, posY);
-                }
-            }
-        }
-        // Return the finished view grid.
-        return rangeGrid;
     },*/
     /*
     getRange: Does not exits!

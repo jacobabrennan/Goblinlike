@@ -11,6 +11,7 @@ var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
 var HIGHLIGHT = 'highlight';
 var TILE_SIZE = 16;
+var FINAL_DEPTH = 7;
 var INTRO_TITLE = 'You descend into darkness';
 var INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
     // Directions:
@@ -47,15 +48,10 @@ var COMMAND_ENTER       = 81;
 var COMMAND_NONE        = 82;
 var COMMAND_CAMP        = 83;
 var COMMAND_ATTACK      = 84;
-var COMMAND_LEADERSHIP  = 85;
     // Commands from server.
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;
 var COMMAND_GAMEOVER= 102;
-    // Leadership Tactics:
-var LEADERSHIP_FOLLOW = 1;
-var LEADERSHIP_ATTACK = 2;
-var LEADERSHIP_RUN    = 3;
     // Targeting system:
 var TARGET_SELF = 1; // Allow the self to be targetted. Will skip selection if this is the only flag set.
 var TARGET_FRIEND = 2; // Allow targeting of friendly actors.
@@ -88,7 +84,7 @@ var MODE_SCAVENGE = 4;
   ===========================================================================*/
 
 if(Object.instantiate){
-    console.log('Cannot attach method "_new" to Object.');
+    console.log('Cannot attach method "instantiate" to Object.');
 } else{
     Object.instantiate = function (aPrototype){
         if(aPrototype.constructor){
@@ -106,6 +102,51 @@ if(Object.instantiate){
         return Object.create(aPrototype);
     };
 }
+/*
+if(Object.instantiate){
+    console.log('Cannot attach method "instantiate" to Object.');
+} else{
+    Object.instantiate = function (aPrototype){
+        if(!aPrototype){ return null;}
+        if(aPrototype._new){
+            // Create arguments, minus prototype, to pass to _new.
+            var cleanArguments = [];
+            for(var argI = 1; argI < arguments.length; argI++){
+                cleanArguments.push(arguments[argI]);
+            }
+            // Call _new, return new object.
+            var newObject = Object.create(aPrototype);
+            aPrototype._new.apply(
+                newObject,
+                cleanArguments
+            );
+            return newObject;
+        }
+        return Object.create(aPrototype);
+    };
+}*/
+if(Object.extend){
+    console.log('Cannot attach method "extend" to Object.');
+} else{
+    Object.extend = function (aPrototype, extention){
+        var valueConfiguration = {};
+        for(var key in extention){
+            if(!extention.hasOwnProperty(key)){ continue;}
+            var keyValue = extention[key];
+            if(keyValue && keyValue.value){
+                valueConfiguration[key] = keyValue;
+                continue;
+            }
+            valueConfiguration[key] = {
+                value: extention[key],
+                configurable: true,
+                enumerable: true,
+                writable: true
+            }
+        }
+        return Object.create(aPrototype, valueConfiguration);
+    };
+};
 
 
 /*===========================================================================

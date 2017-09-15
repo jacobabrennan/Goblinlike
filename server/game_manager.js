@@ -189,7 +189,6 @@ game = {
                 case COMMAND_UNEQUIP: this.hero.commandUnequip(options); break;
                 case COMMAND_FIRE:    this.hero.commandFire(options);    break;
                 case COMMAND_GET:     this.hero.commandGet(options);     break;
-                case COMMAND_LEADERSHIP: this.hero.commandLead(options); break;
                 case COMMAND_LOOK:    this.hero.commandLook(options);    break;
                 case COMMAND_MOVE:    this.hero.commandMove(options);    break;
                 case COMMAND_STAIRS:  this.hero.commandStairs(options);  break;

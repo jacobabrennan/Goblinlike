@@ -137,43 +137,6 @@ var containable = Object.create(mappable, {
         return sensoryData;
     }, writable: true}
 });
-var trap = Object.create(containable, {
-    /**
-        Traps are objects which sit on a single tile and perform an action when
-        the user triggers them by entering the tile. A trap need not be a trap
-        in a traditional sense. For instance, it could be a spider web, or a
-        healing spring.
-     **/
-    type: {value: TYPE_TRAP, writable: true},
-    hidden: {value: true, writable: false},
-    triggered: {value: false, writable: true},
-    trigger: {value: function (actor){
-        /**
-            Called when an actor enters the traps containing tile.
-            It does not return anything.
-         **/
-        if(this.triggered){ return;}
-        this.triggered = true;
-    }, writable: true},
-    place: {value: function (x, y, levelId){
-        if(isNaN(x) || isNaN(y) || (x == this.x && y == this.y && levelId == this.levelId)){
-            return false;
-        }
-        var tileContent = mapManager.getTileContents(x, y, levelId);
-        var doubleTrap = false;
-        if(tileContent){
-            tileContent.forEach(function (contentElement){
-                if(contentElement.type === TYPE_TRAP){
-                    doubleTrap = true;
-                }
-            });
-        }
-        if(doubleTrap){
-            return false;
-        }
-        return containable.place.apply(this, arguments);
-    }, writable: true},
-});
 var movable = Object.create(containable, {
     // TODO: Document.
     dense: {value: true, writable: true},

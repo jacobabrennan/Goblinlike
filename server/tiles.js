@@ -23,11 +23,9 @@ var tile = Object.create(mappable, {
          *      is not.
          **/
         // Fail if tile is dense.
-        if(this.dense){ // TODO: Bug - too much recursion.
-            if(!content.incorporeal){
-                return false;
+        if(this.dense){
+            return false;
             }
-        }
         // Movement is allowed, return true.
         return true;
     }, writable: true},

@@ -1,5 +1,4 @@
 (function (base){
-    base.leadershipMode = LEADERSHIP_FOLLOW;
     base.constructor = (function (parentFunction){
         return function (){
             this.companions = [];
@@ -145,7 +144,6 @@ var companion = Object.create(person, {
             case 5:
                 var aRock = Object.instantiate(modelLibrary.getModel('item', 'rock'));
                 if(this.equip(aRock)){
-                    console.log('Rocking it');
                     break;
                 }
             case 3:
@@ -241,27 +239,15 @@ var companion = Object.create(person, {
             this.pursueHero( );
             result = this.pursueGoal();
         }
-        if(!result){
+        if(!result && !this.terrified){
             this.pursueEnemy();
             result = this.pursueGoal();
         }
-        if(!result){
+        if(!result && !this.terrified){
             this.pursueLoot();
             result = this.pursueGoal();
         }
         return;
-    }, writable: true},
-    move: {value: function (direction){
-        var dest = getStepCoords(this.x, this.y, direction);
-        var contents = mapManager.getTileContents(dest.x, dest.y, this.levelId);
-        var trapFound;
-        contents.forEach(function (content){
-            if((content.type == TYPE_TRAP) && (!content.hidden)){
-                trapFound = true;
-            }
-        });
-        if(trapFound){ return false;}
-        return person.move.apply(this, arguments);
     }, writable: true},
     pursueHero: {value: function (){
         this.setGoal(goalHero);
@@ -355,7 +341,7 @@ var companion = Object.create(person, {
                 continue;
             }
         }
-        if(!targetLoot){ return false;}
+        if(!targetLoot){ return;}
         this.setGoal(goalLoot, targetLoot);
     }, writable: true},
     itemDesire: {value: function (theItem){
@@ -487,7 +473,6 @@ var goalEnemy = Object.create(goal, {
             }
         }
         if(noEnemies){
-            console.log('No Enemies');
             return false;
         }
         // Find a target, and the path to that target. If no target, deactivate.

@@ -25,6 +25,7 @@ var item = Object.create(movable, {
     loreLevel: {value: 0, writable: true},
     weight: {value: 1, writable: true},
     effect: {value: function (user, targetData){}},
+    effectFlags: {value: 0, writable: true},
     use: {value: function(user, targetData){
         /**
             Structure of targetData:

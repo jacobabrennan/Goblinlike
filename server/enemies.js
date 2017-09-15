@@ -619,31 +619,11 @@ var snakePrototype = (function (){
     });
 })();
 
-
-/*var spiderPrototype = (function (){
-    return Object.create(enemy, {
-        name: {value: 'spider', writable: true},
-        character: {value: 'T', writable: true},
-        color: {value: '#963', writable: true}
-    });
-})();
-modelLibrary.registerModel('enemy', Object.create(spiderPrototype, {
-    // Id:
-    name: {value: 'Tarantula', writable: true},
-    // Display:
-    color: {value: '#963', writable: true},
-    // Stats:
-    rewardExperience: {value: 30, writable: true},
-    turnDelay: {value: 7/8, writable: true},
-    baseHp: {value: 4}
-    // Behavior:
-}));*/
-
 //==============================================================================
 
 modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Id:
-    generationId: {value: 'white rate', writable: true},
+    generationId: {value: 'white rat', writable: true},
     generationWeight: {value: 5, writable: true},
     name: {value: 'White Rat', writable: true},
     // Display:
@@ -751,7 +731,6 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     sedentary: {value: true, writable: true},
     behavior: {value: function (){
         behaviorErratic.call(this);
-        modelLibrary.getModel('skill', 'acid trap').use(this);
     }, writable: true},
     // Description:
     viewText: {value: "You see a small blob with many small eyes on stalks rising from it's body. It squirms slowly through a puddle of acid."}
@@ -880,7 +859,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
 modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
     // Id:
     generationId: {value: 'yellow blob', writable: true},
-    generationWeight: {value: 50, writable: true},
+    generationWeight: {value: 40, writable: true},
     name: {value: 'Yellow Blob', writable: true},
     // Display:
     color: {value: "#990", writable: true},
@@ -937,11 +916,6 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Behavior:
     breedRate: {value: 1/10, writable: true},
     skills: {value: ["attack"], writable: true},
-    die: {value: function (){
-        var acidTrap = modelLibrary.getModel('trap', 'acid');
-        Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
-        return enemy.die.apply(this, arguments);
-    }},
     // Description:
     viewText: {value: "You see a mass of blue mold. Acid drips from all parts of it, and it seems to be growing at an alarming rate."}
 }));
@@ -953,7 +927,6 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Display:
     character: {value: "W", writable: true},
     // Stats:
-    incorporeal: {value: true, writable: true},
     rewardExperience: {value: 65, writable: true},
     vigilance: {value: 10},
     erratic: {value: 2/3, writable: true},
@@ -983,11 +956,6 @@ modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
     forgetful: {value: 5, writable: true},
     // Behavior:
     bodyMass: {value: 16, writable: true},
-    dieExtension: {value: function (){
-        var acidTrap = modelLibrary.getModel('trap', 'acid');
-        Object.instantiate(acidTrap).place(this.x, this.y, this.levelId);
-        return enemy.die.apply(this, arguments);
-    }, writable: true},
     // Description:
     viewText: {value: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."}
 }));

@@ -8,6 +8,10 @@ Save/Load
 Full Help Menu
 Advanced Goblin Moral + Leadership Menu
 New Title Screen
+Tweaks:
+    Wraiths in walls -
+        companions cannot target correctly
+    No halls on lower levels, only rooms (and vaults?)
 
 Lauren - Postcard
 

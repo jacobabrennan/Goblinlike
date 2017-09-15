@@ -2,6 +2,8 @@
 
 /*==============================================================================
   
+    TODO: Correct this documentation. This seems to be old and incorrect.
+    
     The level generator is a scaffold to create new proceedurally generated
     levels. It is private to the mapManager, and is only accessed through the
     method mapManager.generateLevel. Further, the only method of the generator
@@ -294,41 +296,6 @@ var protoLevel = {
         var Cs = 1;
         for(var cI = 0; cI < Cs; cI++){
             createC(cI);
-        }
-        var tPrototype = Object.create(trap, {
-            color: {value: 'black', writable:true},
-            background: {value: 'white', writable:true},
-            hidden: {value: false, writable: true},
-            character: {value: 'x', writable: true},
-            trigger: {value: function (trogger){
-                if(this.triggered){
-                    return;
-                }
-                if(trogger.faction != FACTION_GOBLIN){
-                    return;
-                }
-                this.triggered = true;
-                //this.character = 'X';
-                trogger.inform("Thou hast troggered!");
-            }}
-        });
-        var createT = function (index){
-            var T = tPrototype.constructor.call(Object.create(tPrototype));
-            var tries = Infinity;
-            for(var tI = 0; tI < tries; tI++){
-                var randX = randomInterval(0, this.width);
-                var randY = randomInterval(0, this.height);
-                var tileContents = mapManager.getTileContents(randX, randY, newLevel.id);
-                if(tileContents.length){ continue;}
-                var success = T.place(randX, randY, newLevel.id);
-                if(success){
-                    return;
-                }
-            }
-        };
-        var Ts = 0;
-        for(var I = 0; I < Ts; I++){
-            createT.call(this, I);
         }
         // --
         // Close all doors near goblins
