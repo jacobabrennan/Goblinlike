@@ -91,7 +91,8 @@ modelLibrary.registerModel('skill', Object.create(skill, {
     name: {value: 'breed', writable: true},
     targetClass: {value: TARGET_SELF, writable: true},
     use: {value: function (user, target){
-        var selfType = modelLibrary.getmModel('enemy', user.generationId);
+        return user.breed();
+        /*var selfType = modelLibrary.getModel('enemy', user.generationId);
         if(!selfType){ return false;}
         var oldX = user.x;
         var oldY = user.y;
@@ -113,7 +114,7 @@ modelLibrary.registerModel('skill', Object.create(skill, {
             return false;
         }
         progeny.activate();
-        return true;
+        return true;*/
     }, writable: true}
 }));
 modelLibrary.registerModel('skill', Object.create(skill, {

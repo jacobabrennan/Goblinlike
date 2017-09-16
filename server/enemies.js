@@ -27,6 +27,10 @@ var enemy = Object.create(actor, {
         // The percentage of movements that will be random.
     breedRate: {value: 0, writable: true},
         // The percentage chance that the enemy will clone itself on a turn.
+    breedRateDecay: {value: 1, writable: true},
+        // Each time the enemy breeds, enemy.breedRate *= breedRateDecay
+    breedId: {value: undefined, writable: true},
+        // The kind of model to breed. Defaults to this.generationId.
     sedentary: {value: false, writable: true},
         // True if the enemy does not move.
     // Redefined methods:
@@ -136,7 +140,8 @@ var enemy = Object.create(actor, {
         this.active = false;
     }, writable: true},
     breed: {value: function (){
-        var selfType = modelLibrary.getModel('enemy', this.generationId);
+        var breedId = this.breedId || this.generationId;
+        var selfType = modelLibrary.getModel('enemy', breedId);
         if(!selfType){ return false;}
         var oldX = this.x;
         var oldY = this.y;
@@ -158,6 +163,8 @@ var enemy = Object.create(actor, {
             return false;
         }
         progeny.activate();
+        this.breedRate *= this.breedRateDecay;
+        progeny.breedRate = Math.min(this.breedRate, progeny.breedRate);
         return true;
     }, writable: true}
 });
@@ -621,7 +628,7 @@ var snakePrototype = (function (){
 
 //==============================================================================
 
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // white rat
     // Id:
     generationId: {value: 'white rat', writable: true},
     generationWeight: {value: 5, writable: true},
@@ -639,7 +646,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a small white rodent.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // giant ant
     // Id:
     generationId: {value: 'giant ant', writable: true},
     generationWeight: {value: 10, writable: true},
@@ -655,7 +662,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a giant ant about the size of a wolf.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // cave beetle
     // Id:
     generationId: {value: 'cave beetle', writable: true},
     generationWeight: {value: 10, writable: true},
@@ -676,7 +683,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a large armored beetle about the size of a bear. It menaces with sharp pincers.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
+modelLibrary.registerModel('enemy', Object.create(snakePrototype, { // centepede
     // Id:
     generationId: {value: 'centipede', writable: true},
     generationWeight: {value: 20, writable: true},
@@ -697,7 +704,7 @@ modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
     // Description:
     viewText: {value: 'You see a long centipede, large enough to block the narrow halls of the dwarven city.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // floating eye
     // Id:
     generationId: {value: 'floating eye', writable: true},
     generationWeight: {value: 18, writable: true},
@@ -715,7 +722,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a large eyeball. It bobs up and down slowly.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // ksuzzy
     // Id:
     generationId: {value: 'ksuzzy', writable: true},
     generationWeight: {value: 18, writable: true},
@@ -735,7 +742,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see a small blob with many small eyes on stalks rising from it's body. It squirms slowly through a puddle of acid."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // yellow mold
     // Id:
     generationId: {value: 'yellow mold', writable: true},
     generationWeight: {value: 30, writable: true},
@@ -756,7 +763,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a mass of dense yellow mold covering the walls and floor. It seems to be growing at an alarming rate.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // minor imp
     // Id:
     generationId: {value: 'minor imp', writable: true},
     generationWeight: {value: 30, writable: true},
@@ -776,7 +783,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a minor imp, one of the lowest of demons. This dwarven city must have once housed a wizard or two.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // skeletal dwarf
     // Id:
     generationId: {value: 'skeletal dwarf', writable: true},
     generationWeight: {value: 40, writable: true},
@@ -794,7 +801,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see a skeletal dwarf, one of the citizens of this city raised from the dead. It's vacant eye sockets seem to be fixed directly on you."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // zombie dwarf
     // Id:
     generationId: {value: 'zombie dwarf', writable: true},
     generationWeight: {value: 45, writable: true},
@@ -813,7 +820,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a zombie dwarf, a mighty warrior of this city raised from the dead.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // black rat
     // Id:
     generationId: {value: 'black rat', writable: true},
     generationWeight: {value: 50, writable: true},
@@ -829,11 +836,19 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     baseHp: {value: 8},
     // Behavior:
     breedRate: {value: 1/4, writable: true},
+    breedRateDecay: {value: 0.8, writable: true},
     skills: {value: ["attack"], writable: true},
+    breed: {value: function (){
+        var result = enemy.breed.apply(this, arguments);
+        if(result){
+            this.breedRate *= 0.8;
+        }
+        return result;
+    }, writable: true},
     // Description:
     viewText: {value: 'You see a large black rat.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // red beetle
     // Id:
     generationId: {value: 'red beetle', writable: true},
     generationWeight: {value: 50, writable: true},
@@ -856,7 +871,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see a large armored red beetle. Tendrils of smoke escape from the corners of it's crooked mouth."}
 }));
-modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
+modelLibrary.registerModel('enemy', Object.create(blobPrototype, { // yellow blob
     // Id:
     generationId: {value: 'yellow blob', writable: true},
     generationWeight: {value: 40, writable: true},
@@ -878,7 +893,7 @@ modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
     // Description:
     viewText: {value: "You see a large yellow blob. It is gelatinous and jiggles and convulses constantly."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // imp
     // Id:
     generationId: {value: 'imp', writable: true},
     generationWeight: {value: 55, writable: true},
@@ -898,7 +913,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see an imp. These artificial creatures of magic are filled with malice."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // blue mold
     // Id:
     generationId: {value: 'blue mold', writable: true},
     generationWeight: {value: 60, writable: true},
@@ -915,17 +930,18 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     baseHp: {value: 10},
     // Behavior:
     breedRate: {value: 1/10, writable: true},
+    breedRateDecay: {value: 0.95, writable: true},
     skills: {value: ["attack"], writable: true},
     // Description:
     viewText: {value: "You see a mass of blue mold. Acid drips from all parts of it, and it seems to be growing at an alarming rate."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // phantom
     // Id:
-    generationId: {value: 'wraith', writable: true},
+    generationId: {value: 'phantom', writable: true},
     generationWeight: {value: 65, writable: true},
-    name: {value: 'Wraith', writable: true},
+    name: {value: 'Phantom', writable: true},
     // Display:
-    character: {value: "W", writable: true},
+    character: {value: "p", writable: true},
     // Stats:
     rewardExperience: {value: 65, writable: true},
     vigilance: {value: 10},
@@ -938,7 +954,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: 'You see a shadowy figure shifting through the air. The hairs on your neck stand on end as you think you hear a shrill voice inches away from your ear.'}
 }));
-modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
+modelLibrary.registerModel('enemy', Object.create(blobPrototype, { // blue blob
     // Id:
     generationId: {value: 'blue blob', writable: true},
     generationWeight: {value: 80, writable: true},
@@ -959,7 +975,7 @@ modelLibrary.registerModel('enemy', Object.create(blobPrototype, {
     // Description:
     viewText: {value: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."}
 }));
-modelLibrary.registerModel('enemy', Object.create(enemy, {
+modelLibrary.registerModel('enemy', Object.create(enemy, { // bloodshot eye
     // Id:
     generationId: {value: 'bloodshot eye', writable: true},
     generationWeight: {value: 80, writable: true},
@@ -977,7 +993,7 @@ modelLibrary.registerModel('enemy', Object.create(enemy, {
     // Description:
     viewText: {value: "You see a large bloodshot eyeball. It's ceaseless gaze chills you to the bone." }
 }));
-modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
+modelLibrary.registerModel('enemy', Object.create(snakePrototype, { // worm
     // Id:
     generationId: {value: 'worm', writable: true},
     generationWeight: {value: 90, writable: true},
@@ -992,13 +1008,43 @@ modelLibrary.registerModel('enemy', Object.create(snakePrototype, {
     rewardExperience: {value: 90, writable: true},
     turnDelay: {value: 2, writable: true},
     baseHp: {value: 100, writable: true},
+    rewardExperience: {value: 55, writable: true},
+    baseAttack: {value: 10, writable: true},
     //erratic: {value: 1, writable: true},
     // Behavior:
     bodyLength: {value: 7, writable: true},
     // Description:
     viewText: {value: "You see a giant worm. It's massive bulk blocks the halls completely."}
 }));
-
+modelLibrary.registerModel('special', Object.create(enemy, { // emperor wight
+    // Id:
+    generationId: {value: 'emperor wight', writable: true},
+    name: {value: 'Emperor Wight', writable: true},
+    // Display:
+    character: {value: "W", writable: true},
+    color: {value: "#fd9", writable: true},
+    // Stats:
+    baseAttack: {value: 8, writable: true},
+    rewardExperience: {value: 40, writable: true},
+    forgetful: {value: 15, writable: true},
+    baseHp: {value: 150, writable: true},
+    // Behavior:
+    breedRate: {value: 8, writable: true},
+    breedRateDecay: {value: 1/2, writable: true},
+    opensDoors: {value: 1, writable: true},
+    erratic: {value: 3/4, writable: true},
+    turnDelay: {value: 1/2, writable: true},
+    vigilance: {value: 10, writable: true},
+    skills: {value: ['attack', 'attack', 'attack', 'wail', 'wail', 'breed']},
+    // Description:
+    viewText: {value: "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage."},
+    breed: {value: function (){
+        this.breedId = pick('skeletal dwarf', 'zombie dwarf');
+        var result = enemy.breed.apply(this, arguments);
+        console.log('Breed Rate', this.breedRate)
+        return result
+    }, writable: true},
+}));
 //==============================================================================
     // Close namespace.
 })();

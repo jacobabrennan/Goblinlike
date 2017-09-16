@@ -79,7 +79,29 @@ var mapManager = {
             if(disposeDepth){
                 disposeDepth.dispose();
             }
-            depthLevel = this.generateLevel(depth);
+            var levelOptions;
+            if(depth == FINAL_DEPTH){
+                levelOptions = {
+                    hallLengthMax: 1,
+                    hallLengthMin: 0,
+                    // placeStairsDown: false
+                    // Keep the stairs down, replace with boss
+                };
+            }
+            depthLevel = this.generateLevel(depth, levelOptions);
+            if(depth == FINAL_DEPTH){
+                depthLevel.placeTile(
+                    depthLevel.stairsDownCoords.x,
+                    depthLevel.stairsDownCoords.y,
+                    depthLevel.tileTypes['.']
+                );
+                var boss = Object.instantiate(modelLibrary.getModel('special', 'emperor wight'));
+                boss.place(
+                    depthLevel.stairsDownCoords.x,
+                    depthLevel.stairsDownCoords.y,
+                    depthLevel.id
+                );
+            }
             this.depths[depth] = depthLevel;
         }
         return depthLevel;

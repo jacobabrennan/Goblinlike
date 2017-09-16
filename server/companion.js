@@ -150,7 +150,6 @@ var companion = Object.create(person, {
                 this.equip(Object.instantiate(modelLibrary.getModel('item', 'club')));
                 break;
         }
-        
         return this;
     }, writable: true},
     adjustExperience: {value: function (amount){

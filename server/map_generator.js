@@ -47,18 +47,16 @@ var accessFunction = function (depth, options){
     var prototypeOptions = {};
     if(options){
         prototypeOptions = options;
-    } else{
-        prototypeOptions.depth = depth;
-        prototypeOptions.roomSideMax = Math.min(10, (5+depth));
-        prototypeOptions.roomSideMin = Math.min(6, (2+depth));
-        prototypeOptions.hallLengthMax = 20;
-        prototypeOptions.hallLengthMin = 7;
-        prototypeOptions.width = Math.min(64, displaySize+(depth-1)*15);
-        prototypeOptions.height = Math.min(64, displaySize+(depth-1)*15);
-        if(depth == 1){
-            prototypeOptions.placeStairsUp = false;
-        }
+    } else if(depth == 1){
+        prototypeOptions.placeStairsUp = false;
     }
+    prototypeOptions.depth = prototypeOptions.depth || depth; 
+    prototypeOptions.roomSideMax = prototypeOptions.roomSideMax || Math.min(10, (5+depth));
+    prototypeOptions.roomSideMin = prototypeOptions.roomSideMin || Math.min(6, (2+depth));
+    prototypeOptions.hallLengthMax = prototypeOptions.hallLengthMax || 20;
+    prototypeOptions.hallLengthMin = prototypeOptions.hallLengthMin || 7;
+    prototypeOptions.width = prototypeOptions.width || Math.min(64, displaySize+(depth-1)*15);
+    prototypeOptions.height = prototypeOptions.height || Math.min(64, displaySize+(depth-1)*15);
     var generator = Object.create(protoLevel);
     var newLevel = generator.generate(prototypeOptions);
     return newLevel;
@@ -277,7 +275,7 @@ var protoLevel = {
                 iPlaced = randomItem.place(iXPos, iYPos, newLevel.id);
             }
         }
-        // TODO: Temp code, remove.
+        // Place one companion per level, except on final level (none).
         var createC = function (index){
             var cPrototype = companion;
             var C = cPrototype.constructor.call(Object.create(cPrototype));
@@ -293,7 +291,7 @@ var protoLevel = {
                 while(!C.place(randomInterval(0,31),randomInterval(0,31),newLevel.id)){}
             }
         };
-        var Cs = 1;
+        var Cs = (this.depth === FINAL_DEPTH)? 0 : 1;
         for(var cI = 0; cI < Cs; cI++){
             createC(cI);
         }
