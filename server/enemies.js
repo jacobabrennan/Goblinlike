@@ -1025,7 +1025,7 @@ modelLibrary.registerModel('special', Object.create(enemy, { // emperor wight
     color: {value: "#fd9", writable: true},
     // Stats:
     baseAttack: {value: 8, writable: true},
-    rewardExperience: {value: 40, writable: true},
+    rewardExperience: {value: 400, writable: true},
     forgetful: {value: 15, writable: true},
     baseHp: {value: 150, writable: true},
     // Behavior:
@@ -1041,8 +1041,13 @@ modelLibrary.registerModel('special', Object.create(enemy, { // emperor wight
     breed: {value: function (){
         this.breedId = pick('skeletal dwarf', 'zombie dwarf');
         var result = enemy.breed.apply(this, arguments);
-        console.log('Breed Rate', this.breedRate)
-        return result
+        return result;
+    }, writable: true},
+    die: {value: function (){
+        //var crown = modelLibrary.getModel('special', 'crown');
+        //crown.place(this.x, this.y);
+        gameManager.currentGame.win();
+        return enemy.die.apply(this, arguments);
     }, writable: true},
 }));
 //==============================================================================
