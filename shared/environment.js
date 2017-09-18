@@ -52,6 +52,7 @@ var COMMAND_ATTACK      = 84;
 var COMMAND_SENSE   = 100;
 var COMMAND_TURN    = 101;
 var COMMAND_GAMEOVER= 102;
+var COMMAND_WIN     = 103;
     // Targeting system:
 var TARGET_SELF = 1; // Allow the self to be targetted. Will skip selection if this is the only flag set.
 var TARGET_FRIEND = 2; // Allow targeting of friendly actors.

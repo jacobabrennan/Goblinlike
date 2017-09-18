@@ -16,6 +16,35 @@ var manager = {
         mapManager.reset();
         this.currentGame = undefined;
     },
+    win: function (){
+        var lastLevel = mapManager.getDepth(FINAL_DEPTH);
+        if(!lastLevel){ // Wrapping for testing
+            lastLevel = l();
+        }
+        // Destroy all enemies
+        var disposeOrder = function (oldContent){
+            if(oldContent.type !== TYPE_ACTOR || oldContent.faction === FACTION_GOBLIN){ return;}
+            oldContent.dispose();
+        };
+        for(var posY = 0; posY < lastLevel.height; posY++){
+            for(var posX = 0; posX < lastLevel.width; posX++){
+                var tileContents = lastLevel.getTileContents(posX, posY);
+                tileContents.forEach(disposeOrder);
+            }
+        }
+        // Remove upward stairs
+        lastLevel.placeTile(
+            lastLevel.stairsUpCoords.x, lastLevel.stairsUpCoords.y,
+            lastLevel.tileTypes['.']
+        );
+        // Cleanup
+        var oldGame = this.currentGame;
+        this.currentGame = null;
+        oldGame.win();
+        timeManager.reset();
+        mapManager.reset();
+        this.currentGame = undefined;
+    },
     // Time Management passthrough functions:
     currentTime: function (){
         /**
@@ -139,6 +168,9 @@ game = {
             },
             gameOver: function (deathData){
                 this.sendMessage(COMMAND_GAMEOVER, deathData);
+            },
+            win: function (winData){
+                this.sendMessage(COMMAND_WIN, winData);
             }
         };
         //--
@@ -176,6 +208,38 @@ game = {
             messageData: newMessages
         };
         this.hero.intelligence.gameOver(deathData);
+        this.dispose();
+    },
+    win: function (){
+        this.hero.inform('The undead have been defeated.');
+        this.hero.inform('You have won the game!');
+        // Compile data from final turn to display to player.
+        // Compile data about the hero's view.
+        var currentLevel = mapManager.getLevel(this.hero.levelId);
+        var viewData;
+        if(currentLevel){
+            viewData = currentLevel.packageView(
+                this.hero.x, this.hero.y, this.hero.viewRange
+            );
+        }
+        // Compile data about recent changes to the hero.
+        var selfData = this.hero.packageUpdates();
+        // Compile package of new messages.
+        var newMessages;
+        if(this.hero.messages && this.hero.messages.length){
+            newMessages = this.hero.messages;
+        }
+        // Compile info about each goblin.
+        var goblinsData = [] // TODO
+        // Create final package and send it to the player.
+        var winData = {
+            characterData: selfData,
+            companionData: goblinsData,
+            sensoryData: viewData,
+            messageData: newMessages
+        };
+        this.hero.intelligence.win(winData);
+        console.log(this.hero.intelligence);
         this.dispose();
     },
     clientCommand: function (command, options){

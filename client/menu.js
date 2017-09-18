@@ -349,6 +349,12 @@ var statusMenu = Object.create(driver, {
             
             It returns true to signify that drawing should not continue;
         **/
+        if(client.drivers.gameplay.won){
+            menu.blank();
+            client.focus(client.drivers.ending);
+            client.display();
+            return true;
+        }
         if(client.drivers.gameplay.dead){
             menu.blank();
             var score = ''+Math.floor(client.drivers.gameplay.memory.character.experience);

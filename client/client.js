@@ -26,6 +26,9 @@ client.networking = {
             case COMMAND_GAMEOVER:
                 client.drivers.gameplay.gameOver(options);
                 break;
+            case COMMAND_WIN:
+                client.drivers.gameplay.win(options);
+                break;
             case COMMAND_SENSE:
                 client.drivers.gameplay.memory.sense(options);
                 //if(client.drivers.gameplay.memory.statusUpdate){

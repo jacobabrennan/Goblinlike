@@ -34,18 +34,23 @@ client.drivers.gameplay = Object.create(driver, {
     }},
     newGame: {value: function (gameData){
         this.dead = false;
+        this.won = false;
         this.memory.sense(gameData);
     }},
     gameOver: {value: function (deathData){
         this.dead = true;
         this.takeTurn(deathData);
     }},
+    win: {value: function (winData){
+        this.won = true;
+        this.takeTurn(winData)
+    }},
     handleClick: {value: function (x, y, options){
         var block = driver.handleClick.apply(this, arguments);
         if(block){
             return block;
         }
-        if(this.dead){
+        if(this.dead || this.won){
             return true;
         }
         return this.drivers.map.handleClick(x, y, options);
@@ -56,7 +61,7 @@ client.drivers.gameplay = Object.create(driver, {
         if(block){
             return block;
         }
-        if(this.dead){
+        if(this.dead || this.won){
             return true;
         }
         if(!this.activeTurn){
@@ -95,7 +100,7 @@ client.drivers.gameplay = Object.create(driver, {
     }},
     takeTurn: {value: function (turnData){
         // TODO: Document.
-        if(!this.dead){
+        if(!this.dead && !this.won){
             this.activeTurn = true;
         }
         var characterData = turnData.characterData;

@@ -97,18 +97,12 @@ var priorityQueue = {
 	},
 	removeItem: function (aThing){
         // Removes aThing from the queue.
-        // Does not remove anthing.
+        // Does not return anthing.
 		var index = this.leaves.indexOf(aThing);
-		if(index != -1){
-			this.remove(index);
-		}
+		if(index !== -1){ this.remove(index);}
 	},
     contains: function (aThing){
         // Returns true if aThing is enqueued. False if it is not.
-        if(this.leaves.indexOf(aThing) != -1){
-            return true;
-        } else{
-            return false;
-        }
+        return (this.leaves.indexOf(aThing) !== -1);
     }
 };

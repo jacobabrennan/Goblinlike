@@ -28,43 +28,6 @@ client.drivers.gameOver = Object.create(driver, {
         this.displayPane2 = document.createElement('div');
         this.displayPane2.setAttribute('id', 'gameOverMap');
         this.displayPane2.setAttribute('class', 'pane');
-        /*var titleElement = document.createElement('span');
-        var versionElement = document.createElement('span');
-        var linkNewGame = document.createElement('a');
-        var linkAbout = document.createElement('a');
-        titleElement.textContent = 'Goblin-like';
-        versionElement.textContent = 'Beta';
-        linkNewGame.textContent = 'Space- New Game';
-        linkAbout.textContent = 'Esc- About';
-        linkNewGame.setAttribute('class', 'control');
-        linkAbout.setAttribute('class', 'control');
-        linkNewGame.addEventListener('click', this.newGame.bind(this));
-        //
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(titleElement);
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(versionElement);
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(linkNewGame);
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(linkAbout);
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));
-        this.displayPane.appendChild(document.createElement('br'));*/
     }},
     acceptDeath: {value: function (characterData){
         this.characterData = characterData;
