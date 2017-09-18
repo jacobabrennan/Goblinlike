@@ -21,11 +21,17 @@ client.skin = Object.create(driver, {
         ownCanvas.height = (displaySize+1)*TILE_SIZE; // One Panel High, plus status bar.
         ownCanvas.addEventListener('click', this.clickHandler);
         this.context = ownCanvas.getContext('2d');
-        this.context.font = '16px '+this.font;
+        this.context.imageSmoothingEnabled = false;
+        this.context.font = ''+FONT_SIZE+'px '+this.font;
         this.container = document.getElementById(configuration.containerId);
         this.container.tabIndex = 1;
         this.container.focus();
         this.container.appendChild(ownCanvas);
+        // Respond to resizes
+        window.addEventListener("resize", function (e){
+            client.skin.resize();
+        }, false);
+        this.resize();
     }},
     clickHandler: {value: function (clickEvent){
         // Extract coordinates of click from DOM mouse event.
@@ -41,21 +47,40 @@ client.skin = Object.create(driver, {
         if(!client.skin.triggerCommand(Math.floor(x), Math.floor(y))){
             client.handleClick(x, y);
         }
-    }, writable: true},/*
-    registerPanel: {value: function (newDriver, whichPanel){
-        if(!whichPanel){
-            this.panelPrimary = newDriver;
-        } else{
-            this.panelSecondary = newDriver;
-        }
+    }, writable: true},
+
+//-- Full Screen / Resizing ----------------------------------------------------
+    viewportSize: {value: function (){
+        var e  = document.documentElement;
+        var g  = document.getElementsByTagName('body')[0];
+        var _x = window.innerWidth  || e.clientWidth  || g.clientWidth;
+        var _y = window.innerHeight || e.clientHeight || g.clientHeight;
+        return {width: _x, height: _y};
     }},
-    cancelPanel: {value: function (newElement, whichPanel){
-        if(!whichPanel){
-            this.panelPrimary = null;
+    resize: {value: function (){
+        var size = this.viewportSize();
+        var monitorAspectRatio = size.width / size.height;
+        var gameAspectRatio = (displaySize*2) / (displaySize+1);
+        var modifiedWidth;
+        var modifiedHeight;
+        if(monitorAspectRatio >= gameAspectRatio){
+            // Center Horizontally
+            modifiedHeight = size.height;
+            modifiedWidth = gameAspectRatio * modifiedHeight;
+            this.container.style.top = "0px";
+            this.container.style.left = ""+Math.floor((size.width-modifiedWidth)/2)+"px";
         } else{
-            this.panelSecondary = null;
+            // Center Vertically
+            modifiedWidth = size.width;
+            modifiedHeight = modifiedWidth / gameAspectRatio;
+            this.container.style.top = ""+Math.floor((size.height-modifiedHeight)/2)+"px";
+            this.container.style.left = "0px";
         }
-    }},*/
+        this.container.style.width  = modifiedWidth +"px";
+        this.container.style.height = modifiedHeight+"px";
+    }},
+
+//-- Draw Functions ------------------------------------------------------------
     fillRect: {value: function (x, y, width, height, color){
         this.context.fillStyle = color || '#000';
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
@@ -74,15 +99,16 @@ client.skin = Object.create(driver, {
         y = (displaySize) - y;
         // Display Background
         this.context.fillStyle = background || '#000';
-        var fillY = ((y-1)*TILE_SIZE)+2; // TODO: MAGIC NUMBERS!
+        var fontScaleError = FONT_SIZE/8;
+        var fillY = ((y-1)*TILE_SIZE)+fontScaleError;
             /* This is an off-by-one error positioning the font, which becomes
                off-by-two as the font is scaled to double height at 16px. */
         this.context.fillRect(x*TILE_SIZE, fillY, TILE_SIZE, TILE_SIZE);
         // Display character
-        if(font){ this.context.font = '16px '+font;}
+        if(font){ this.context.font = ''+FONT_SIZE+'px '+font;}
         this.context.fillStyle = color || '#fff';
         this.context.fillText(character, x*TILE_SIZE, y*TILE_SIZE);
-        if(font){ this.context.font = '16px '+this.font;}
+        if(font){ this.context.font = ''+FONT_SIZE+'px '+this.font;}
     }, writable: true},
     drawString: {value: function (x, y, newText, color, background, font){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
@@ -91,7 +117,8 @@ client.skin = Object.create(driver, {
         y = (displaySize) - y;
         // Display Background
         this.context.fillStyle = background || '#000';
-        var fillY = ((y-1)*TILE_SIZE)+2; // TODO: MAGIC NUMBERS!
+        var fontScaleError = FONT_SIZE/8;
+        var fillY = ((y-1)*TILE_SIZE)+fontScaleError;
             /* This is an off-by-one error positioning the font, which becomes
                off-by-two as the font is scaled to double height at 16px. */
         var textWidth = newText.length;
@@ -102,10 +129,10 @@ client.skin = Object.create(driver, {
             TILE_SIZE
         );
         // Display character
-        if(font){ this.context.font = '16px '+font;}
+        if(font){ this.context.font = ''+FONT_SIZE+'px '+font;}
         this.context.fillStyle = color || '#fff';
         this.context.fillText(newText, x*TILE_SIZE, y*TILE_SIZE);
-        if(font){ this.context.font = '16px '+this.font;}
+        if(font){ this.context.font = ''+FONT_SIZE+'px '+this.font;}
     }, writable: true},
     drawParagraph: {value: function (x, y, newText, color, background, font, width){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
@@ -150,6 +177,8 @@ client.skin = Object.create(driver, {
             this.registerCommand(x+posX, y, command);
         }
     }},
+
+//-- Command Handling ----------------------------------------------------------
     clearCommands: {value: function (){
         this.commandCoords = [];
     }},

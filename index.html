@@ -75,42 +75,26 @@ body{
     cursor: pointer;
     background: #000;
     display: inline-block;
-    border: double 16px #104;
+    /*border: double 16px #104;*/
     outline: 0px;
 }
-#link_wrapper{
-    font-family: "press_start_kregular", monospace !important;
-    display: inline-block;
-    text-align: right;
-    color: #008;
-}
-a:link, a:visited{
-    color: inherit;
-}
-#link_wrapper > a:link{
-    margin-right: 1em;
-    text-decoration: none;
-    /* Chrome adds an extra -1em margin to this element, for some reason. */
-}
-#link_wrapper > a:hover{
-    color: #fc0;
+#game_area canvas{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixels;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -o-crisp-edges;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
 }
         </style>
     </head>
     <body>
         <div class="central">
-            <div id='link_wrapper'>
-                <div id="game_area"></div>
-                <br>
-                <a href="https://www.patreon.com/jacobabrennan"> -- Support this Game</a>
-            </div>
-            <script>
-                // TODO: Remove
-                var d = {
-                    h: function(){ return gameManager.currentGame.hero;},
-                    l: function(){ return mapManager.getLevel(this.h().levelId);}
-                };
-            </script>
+            <div id="game_area"></div>
         </div>
         <script>
 var configuration = {
