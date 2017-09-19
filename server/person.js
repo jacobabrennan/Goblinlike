@@ -19,6 +19,7 @@ var person = Object.create(actor, {
     name: {value: 'person', writable: true},
     color: {value: '#0f0', writable: true},
     // New properties
+    gender: {value: undefined, writable: true},
     updates: {value: undefined, writable: true},
     messages: {value: undefined, writable: true},
     inventory: {value: undefined, writable: true},
@@ -34,6 +35,13 @@ var person = Object.create(actor, {
          **/
         actor.constructor.apply(this, arguments);
         this.name = sWerd.name();
+        // Select Gender
+        if(Math.random()*100 < 49){ // 0-47
+            this.gender = GENDER_FEMALE;
+        } else if(Math.random()*51 < 49){
+            this.gender = GENDER_MALE;
+        } else{ this.gender = GENDER_NONBINARY;}
+        this.update('gender');
         this.update('id');
         this.update('name');
         this.update('viewRange');

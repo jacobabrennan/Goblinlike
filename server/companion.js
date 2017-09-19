@@ -127,7 +127,7 @@ var companion = Object.create(person, {
         var colorB = randomInterval(0,64);
         this.colorNatural = 'rgb('+colorR+','+colorG+','+colorB+')';
         this.color = this.colorNatural;
-        this.name = sWerd.name()+' (g)';
+        this.name = sWerd.name();//+' (g)';
         var theHero = gameManager.currentGame.hero;
         if(theHero){ this.setLevel(theHero.level);}
         this.adjustHp(this.maxHp());
@@ -150,6 +150,7 @@ var companion = Object.create(person, {
                 this.equip(Object.instantiate(modelLibrary.getModel('item', 'club')));
                 break;
         }
+        gameManager.currentGame.companionInfo.push(this);
         return this;
     }, writable: true},
     adjustExperience: {value: function (amount){
@@ -197,6 +198,9 @@ var companion = Object.create(person, {
         return person.hear.apply(this, arguments);
     }, writable: true},
     dispose: {value: function (){
+        if(!this.dead){
+            this.lost = true;
+        }
         if(gameManager.currentGame){
             var companionI = gameManager.currentGame.hero.companions.indexOf(this);
             if(companionI != -1){

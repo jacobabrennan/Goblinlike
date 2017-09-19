@@ -350,8 +350,11 @@ var statusMenu = Object.create(driver, {
             It returns true to signify that drawing should not continue;
         **/
         if(client.drivers.gameplay.won){
+            var storage = client.drivers.gameplay.won;
             menu.blank();
             client.focus(client.drivers.ending);
+            client.drivers.ending.winData = storage;
+            console.log(storage);
             client.display();
             return true;
         }
@@ -395,7 +398,7 @@ var statusMenu = Object.create(driver, {
         var eHelmet = character.equipment[EQUIP_HEAD    ];
         var eArmor  = character.equipment[EQUIP_BODY    ];
         var line = 17;
-        client.skin.drawString(1, line--, 'Name : '+name);
+        client.skin.drawString(1, line--, 'Name : '+name+' ('+character.gender+')');
         client.skin.drawString(1, line--, 'Class: Goblin');
         if(goblinInfo){
             client.skin.drawString(1, line--, ('Level: '+level));

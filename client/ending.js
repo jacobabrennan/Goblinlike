@@ -1,24 +1,87 @@
 client.drivers.ending = Object.create(driver, {
+    endLines: {value: 10, writable: true}, // Set in display. Any number > ~2 will do for initial setting.
     focused: {value: function (){
-        this.offsetY = 0
+        //this.winInfo = client.drivers.gameplay.won; // Set separately by menu
+        this.offsetY = 0;
         this.interval = setInterval(function (){
             client.display()
         }, 100);
     }},
     blurred: {value: function (){
+        this.winInfo = null;
         clearInterval(this.interval);
     }},
     display: {value: function (){
-        this.offsetY++;
-        client.skin.context.setTransform(1, 0, 0, 1, 0, -this.offsetY);
-        for(var posY = 0; posY < displaySize; posY++){
-            for(var posX = 0; posX < displaySize*2; posX++){
-                client.skin.drawCharacter(
-                    posX, posY,
-                    pick('#','.','+',"'",'g'),
-                    pick('#a40', '#4a0', '#00f')
-                )
-            }
+        var scrollStop = (this.offsetY/FONT_SIZE > this.endLines+displaySize/2)? true : false;
+        if(!scrollStop){
+            this.offsetY++;
         }
-    }},
+        var timeStop = false;
+        client.skin.fillRect(0, 0, displaySize*2, displaySize+2, '#000');
+        client.skin.context.setTransform(1, 0, 0, 1, 0, -this.offsetY*(FONT_SIZE/8));
+        // TODO: Document.
+        var I = 21;
+        client.skin.drawString(0,--I,'                                          ','#008');
+        client.skin.drawString(0,--I,'                                          ','#008');
+        client.skin.drawString(0,--I,'                                          ','#008');
+        client.skin.drawString(0,--I,'                                    /\\    ','#008');
+        client.skin.drawString(0,--I,'                                   /D \\ _ ','#008');
+        client.skin.drawString(0,--I,'                     ____-----  __/   \\\\  ','#008');
+        client.skin.drawString(0,--I,'                      _ ____     /     \\\\ ','#008');
+        client.skin.drawString(0,--I,'                              /\\/        \\','#008');
+        client.skin.drawString(0,--I,'                             /   \\     \\\\ ','#008');
+        client.skin.drawString(0,--I,'                            /   \\\\      \\ ','#008');
+        client.skin.drawString(0,--I,'                          _/     \\ \\  /   ','#008');
+        client.skin.drawString(0,--I,'                         / \\      \\  /   \\','#008');
+        client.skin.drawString(0,--I,'\\                 _    |/|\\ \\     \\\\/     ','#008');
+        client.skin.drawString(0,--I,' \\              _/ \\ ||/|  | |  |  /      ','#008');
+        client.skin.drawString(0,--I,' \\\\___         /  \\ |T\\|T|| \\ |  |/     | ','#008');
+        client.skin.drawString(0,--I,'\\ \\   \\_      /   |/T||/T\\T ||  |    | /T\\','#008');
+        client.skin.drawString(0,--I,':\\|  \\ \\\\__|_/|  /T\\T/T|T/T\\ : |  | |.|/T\\','#008');
+        client.skin.drawString(0,--I,'|:.\\|_\\__\\/T\\|_|_/T|\\//T\\/T\\~~~:.: . /T\\T|','#008');
+        client.skin.drawString(0,--I,':.:.:. . ./T\\ /T\\//T\\|/T:|:~-  ~~~: ./T\\/T','#008');
+        client.skin.drawString(0,--I,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
+        client.skin.drawString(0,--I,': .   .  .::.:/T\\:::/T\\:: -  - -  ~ :. .::','#008');
+        I--;
+        I--;
+        I--;
+        var lines = client.skin.drawParagraph(1,--I, "Now that there is the Tec-9, a crappy spray gun from South Miami. This gun is advertised as the most popular gun in American crime. Do you believe that shit? It actually says that in the little book that comes with it: the most popular gun in American crime. Like they're actually proud of that shit.");
+        I -= lines;
+        client.skin.drawString(1, --I, 'The Goblins:');
+        I--;
+        var C = this.winData.characterData;
+        client.skin.drawString(2, --I, C.name, '#0f0');
+        client.skin.drawString(3+C.name.length, I, ': Level '+C.level+' goblin ('+C.gender+')');
+        var goblinCount = 0;
+        for(var gI = 0; gI < FINAL_DEPTH-1; gI++){
+            var indexG = this.winData.companionData[gI];
+            if(!indexG){
+                --I;
+                continue;
+            }
+            client.skin.drawString(2, --I, indexG.name, indexG.color)
+            var status = '';
+            if(indexG.dead){ status = '(dead)';}
+            else if(indexG.lost){ status = '(lost)';}
+            else{ goblinCount++;}
+            client.skin.drawString(3+indexG.name.length, I, status+': Level '+C.level+' goblin ('+C.gender+')');
+        }
+        --I;
+        client.skin.drawString(1, --I, 'Goblins: '+(goblinCount+1)+'/7');
+        client.skin.drawString(1, --I, 'Goblin Bonus: '+goblinCount*GOBLIN_SCORE);
+        --I;
+        --I;
+        --I;
+        --I;
+        --I;
+        --I;
+        --I;
+        --I;
+        --I;
+        client.skin.drawString(displaySize-4, --I, 'THE END');
+        --I;
+        client.skin.drawString(displaySize-9, --I, 'Final Score: '+(C.experience+(goblinCount*GOBLIN_SCORE)));
+        client.skin.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.endLines = -I;
+    }}
 });

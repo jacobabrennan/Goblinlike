@@ -65,28 +65,6 @@ client.drivers.title = Object.create(driver, {
         var block = driver.display.apply(this, arguments);
         if(block){ return block;}
         client.skin.clearCommands();
-        /*var picture = '';
-        picture += '                     '+'\n';
-        picture += '                     '+'\n';
-        picture += '                     '+'\n';
-        picture += '               /\\   '+'\n';
-        picture += '              /D \\ _ '+'\n';
-        picture += '____-----  __/   \\\\  '+'\n';
-        picture += ' _ ____     /     \\\\ '+'\n';
-        picture += '         /\\/        \\'+'\n';
-        picture += '        /   \\     \\\\ '+'\n';
-        picture += '       /   \\\\      \\'+'\n';
-        picture += '     _/     \\ \\  /   '+'\n';
-        picture += '    / \\      \\  /   \\'+'\n';
-        picture += '  |/|\\ \\     \\\\/     '+'\n';
-        picture += '||/|  | |  |  /      '+'\n';
-        picture += 'T\\|T|| \\ |  |/     | '+'\n';
-        picture += '||/T\\T ||  |    | /T\\'+'\n';
-        picture += '/T|T/T\\ : |  | |.|/T\\'+'\n';
-        picture += '//T\\/T\\~~~:.: . /T\\T|'+'\n';
-        picture += '|/T:|:~-  ~~~: ./T\\/T'+'\n';
-        picture += 'T\\:::~ -   - ~:  .:/T'+'\n';
-        picture += 'T\\|: -  - -  ~ :. .::';*/
         var drawMountain = function (){
             client.skin.drawString(0,20,'                                          ','#008');
             client.skin.drawString(0,19,'                                          ','#008');

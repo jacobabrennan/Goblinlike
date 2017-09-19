@@ -110,6 +110,7 @@ game = {
     hero: undefined,
     currentTime: 0,
     constructor: function (){
+        this.companionInfo = [];
         return this;
     },
     start: function (options){
@@ -231,6 +232,17 @@ game = {
         }
         // Compile info about each goblin.
         var goblinsData = [] // TODO
+        for(var gI = 0; gI < this.companionInfo.length; gI++){
+            var indexG = this.companionInfo[gI];
+            goblinsData.push({
+                name: indexG.name,
+                dead: indexG.dead,
+                lost: indexG.lost,
+                gender: indexG.gender,
+                color: indexG.colorNatural,
+                level: indexG.level,
+            });
+        }
         // Create final package and send it to the player.
         var winData = {
             characterData: selfData,

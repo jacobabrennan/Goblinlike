@@ -15,6 +15,7 @@ var FONT_SIZE = 8;
 var FINAL_DEPTH = 7;
 var INTRO_TITLE = 'You descend into darkness';
 var INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
+var GOBLIN_SCORE = 100;
     // Directions:
 var WAIT      = 0;
 var NORTH     = 1;
@@ -79,6 +80,10 @@ var MODE_FOLLOW = 1;
 var MODE_ATTACK = 2;
 var MODE_RETREAT = 3;
 var MODE_SCAVENGE = 4;
+    // Genders:
+var GENDER_MALE = 'm';
+var GENDER_FEMALE = 'f';
+var GENDER_NONBINARY = 'nb';
 
 
 /*===========================================================================

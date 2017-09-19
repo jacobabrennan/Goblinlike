@@ -42,8 +42,9 @@ client.drivers.gameplay = Object.create(driver, {
         this.takeTurn(deathData);
     }},
     win: {value: function (winData){
-        this.won = true;
-        this.takeTurn(winData)
+        this.won = winData;
+        this.won.characterData = this.memory.character;
+        this.takeTurn(winData);
     }},
     handleClick: {value: function (x, y, options){
         var block = driver.handleClick.apply(this, arguments);

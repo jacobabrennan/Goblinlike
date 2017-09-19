@@ -34,17 +34,18 @@ client.skin = Object.create(driver, {
         this.resize();
     }},
     clickHandler: {value: function (clickEvent){
-        // Extract coordinates of click from DOM mouse event.
-        var correctedX = clickEvent.pageX - clickEvent.target.offsetLeft;
-        var correctedY = clickEvent.pageY - clickEvent.target.offsetTop;
+        // Determine Game-Pixel Location of click
+        var displayCanvas = client.skin.context.canvas;
+        var rectangle = displayCanvas.getBoundingClientRect();
+        var displayScale = rectangle.width / (displaySize*2);
+        var canvasX = (clickEvent.clientX-rectangle.left)/displayScale;
+        var canvasY = (clickEvent.clientY-rectangle.top )/displayScale;
         // Correct Y coordinate for difference of coordinate systems.
-        correctedY = ((displaySize+1)*TILE_SIZE)-correctedY;
+        canvasY = (displaySize+1) - canvasY;
             // +1 for status bar.
-        var x = correctedX/TILE_SIZE;
-        var y = correctedY/TILE_SIZE;
-        //var centerX = Math.floor(mapDisplay.displayWidth/2);
-        //var centerY = Math.floor(mapDisplay.displayHeight/2);
-        if(!client.skin.triggerCommand(Math.floor(x), Math.floor(y))){
+        var x = Math.floor(canvasX);
+        var y = Math.floor(canvasY);
+        if(!client.skin.triggerCommand(x, y)){
             client.handleClick(x, y);
         }
     }, writable: true},
@@ -135,6 +136,8 @@ client.skin = Object.create(driver, {
         if(font){ this.context.font = ''+FONT_SIZE+'px '+this.font;}
     }, writable: true},
     drawParagraph: {value: function (x, y, newText, color, background, font, width){
+        // Returns the number of lines it took to display the message.
+        var lines = 1;
         if(color == HIGHLIGHT){ color = this.highlightColor;}
         // Display Background
         this.context.fillStyle = background || '#000';
@@ -148,6 +151,7 @@ client.skin = Object.create(driver, {
             if(nextWord.length + 1 + runningLength > maxWidth){ // 1 for ' '.
                 this.drawString(
                     x, y-currentLine, currentString, color, background, font);
+                lines++;
                 currentLine++;
                 currentString = '';
                 runningLength = 0;
@@ -160,6 +164,8 @@ client.skin = Object.create(driver, {
         }
         this.drawString(
             x, y-currentLine, currentString, color, background, font);
+        lines++;
+        return lines;
     }, writable: true},
     status: {value: function (statusText, color){
         //this.statusBar.textContent = statusText;

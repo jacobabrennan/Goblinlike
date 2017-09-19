@@ -68,6 +68,7 @@ var DAMAGE_0000000000000000 =  0;
             Etc.
          **/
         // TODO: Find a way to inform the attacker, even if they can't hear.
+        this.dead = true;
         this.dispose();
     };
     actor.hurt = function (damage, damageType, attacker, proxy){
