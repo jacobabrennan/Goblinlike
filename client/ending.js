@@ -45,8 +45,7 @@ client.drivers.ending = Object.create(driver, {
         I--;
         I--;
         I--;
-        var lines = client.skin.drawParagraph(1,--I, "Now that there is the Tec-9, a crappy spray gun from South Miami. This gun is advertised as the most popular gun in American crime. Do you believe that shit? It actually says that in the little book that comes with it: the most popular gun in American crime. Like they're actually proud of that shit.");
-        I -= lines;
+        I -= client.skin.drawParagraph(1,--I, "Deep underground in caverns hewn by dwarven hands, and inhaited by the undead, the goblins bravely fought, eradicating the enemy and wining a home for themselves...");
         client.skin.drawString(1, --I, 'The Goblins:');
         I--;
         var C = this.winData.characterData;
@@ -64,7 +63,7 @@ client.drivers.ending = Object.create(driver, {
             if(indexG.dead){ status = '(dead)';}
             else if(indexG.lost){ status = '(lost)';}
             else{ goblinCount++;}
-            client.skin.drawString(3+indexG.name.length, I, status+': Level '+C.level+' goblin ('+C.gender+')');
+            client.skin.drawString(3+indexG.name.length, I, status+': Level '+indexG.level+' goblin ('+indexG.gender+')');
         }
         --I;
         client.skin.drawString(1, --I, 'Goblins: '+(goblinCount+1)+'/7');
@@ -80,7 +79,7 @@ client.drivers.ending = Object.create(driver, {
         --I;
         client.skin.drawString(displaySize-4, --I, 'THE END');
         --I;
-        client.skin.drawString(displaySize-9, --I, 'Final Score: '+(C.experience+(goblinCount*GOBLIN_SCORE)));
+        client.skin.drawString(displaySize-9, --I, 'Final Score: '+Math.floor(C.experience+(goblinCount*GOBLIN_SCORE)));
         client.skin.context.setTransform(1, 0, 0, 1, 0, 0);
         this.endLines = -I;
     }}

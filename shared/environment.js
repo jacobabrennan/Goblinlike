@@ -6,7 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = 'Beta.2';
+var VERSION = '1.0.0';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
 var HIGHLIGHT = 'highlight';
