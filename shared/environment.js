@@ -6,7 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = '1.0.0';
+var VERSION = '1.0.1';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
 var HIGHLIGHT = 'highlight';
@@ -16,6 +16,7 @@ var FINAL_DEPTH = 7;
 var INTRO_TITLE = 'You descend into darkness';
 var INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
 var GOBLIN_SCORE = 100;
+var URL_SCORE_REPORT = 'http://jacobabrennan.com:7231/scores';
     // Directions:
 var WAIT      = 0;
 var NORTH     = 1;
@@ -109,29 +110,6 @@ if(Object.instantiate){
         return Object.create(aPrototype);
     };
 }
-/*
-if(Object.instantiate){
-    console.log('Cannot attach method "instantiate" to Object.');
-} else{
-    Object.instantiate = function (aPrototype){
-        if(!aPrototype){ return null;}
-        if(aPrototype._new){
-            // Create arguments, minus prototype, to pass to _new.
-            var cleanArguments = [];
-            for(var argI = 1; argI < arguments.length; argI++){
-                cleanArguments.push(arguments[argI]);
-            }
-            // Call _new, return new object.
-            var newObject = Object.create(aPrototype);
-            aPrototype._new.apply(
-                newObject,
-                cleanArguments
-            );
-            return newObject;
-        }
-        return Object.create(aPrototype);
-    };
-}*/
 if(Object.extend){
     console.log('Cannot attach method "extend" to Object.');
 } else{

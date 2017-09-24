@@ -9,6 +9,7 @@ var manager = {
         return this.currentGame;
     },
     gameOver: function (){
+        client.reportScores()
         var oldGame = this.currentGame;
         this.currentGame = null;
         oldGame.gameOver();
@@ -251,8 +252,36 @@ game = {
             messageData: newMessages
         };
         this.hero.intelligence.win(winData);
-        console.log(this.hero.intelligence);
+        client.reportScores(true);
         this.dispose();
+    },
+    compileScores: function (win){
+        var scores = {
+            name: this.hero.name,
+            score: this.hero.experience,
+            experience: this.hero.experience,
+            level: this.hero.level,
+            depth: mapManager.getLevel(this.hero.levelId).depth,
+            goblins: [],
+        };
+        if(win){
+            scores.score += GOBLIN_SCORE * this.hero.companions.length;
+            scores.win = true;
+        }
+        var goblins = this.companionInfo.slice();
+        goblins.unshift(this.hero);
+        for(var gIndex = 0; gIndex < goblins.length; gIndex++){
+            var indexG = goblins[gIndex];
+            var gInfo = {
+                name: indexG.name,
+                gender: indexG.gender,
+                level: indexG.level
+            };
+            if(indexG.lost){ gInfo.lost = true;}
+            if(indexG.dead){ gInfo.dead = true;}
+            scores.goblins.push(gInfo);
+        }
+        return scores;
     },
     clientCommand: function (command, options){
         if(this.hero){

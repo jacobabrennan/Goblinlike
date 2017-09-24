@@ -251,9 +251,6 @@ enemy.simplePursue = function (target, simpleThreshold){
     if(!(path && path.length)){ return false;}
     var nextStep = path.shift();
     stepDir = directionTo(this.x, this.y, nextStep.x, nextStep.y);
-    if(nextStep.x == this.x && nextStep.y == this.y){
-        console.log('Problem');
-    }
     return this.move(stepDir);
 };
 var behaviorNormal = enemy.behavior = function (){
@@ -316,9 +313,6 @@ var behaviorNormal = enemy.behavior = function (){
             this.targetPath = null;
             return;
         }
-    }
-    if(nextStep.x == this.x && nextStep.y == this.y){
-        console.log('Problem');
     }
     var direction = directionTo(this.x,this.y,nextStep.x,nextStep.y);
     this.move(direction);

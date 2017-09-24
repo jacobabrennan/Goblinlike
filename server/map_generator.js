@@ -213,7 +213,6 @@ var protoLevel = {
             var S = this.mapText.substring(I*this.width, (I+1)*this.width);
             mapString += S+'\n';
         }
-        //console.log(mapString);
         // Fill Level with Enemies:
         var enemyPoints = (this.width * this.height * this.depth) / 128; // TODO: MAGIC NUMBERS! Enemy Density.
         enemyPoints *= 10; // TODO: MAGIC NUMBERS! 100 to go up a level, 10 points per enemy per level.

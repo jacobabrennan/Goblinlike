@@ -95,7 +95,6 @@ var level = {
         if(onlyFirst){ return firstContent;}
         while(firstContent){
             if(firstContent == firstContent.nextContent){
-                console.log('Cycle detected in contents linked list');
                 break;
             }
             contents.push(firstContent);

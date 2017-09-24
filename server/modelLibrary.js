@@ -14,9 +14,6 @@ var modelLibrary = {
             typeWeights = [];
             this.modelWeights[modelType] = typeWeights;
         }
-        if(!generationId || typeModels[generationId]){
-            console.log('Problem: Non-unique name for item prototype '+generationId);
-        }
         var generationWeight = newPrototype.generationWeight;
         if(generationWeight){
             var weightClass = typeWeights[generationWeight];

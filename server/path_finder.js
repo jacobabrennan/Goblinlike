@@ -491,7 +491,6 @@ var aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, m
                 }
             }
             // Add each adjacent node to the heap.
-            //console.log(d.distinction+' Open Length: '+open.leaves.length)
             open.enqueue(new pathNode(
                 d, cur, runningCost, dist.call(d, end), cur.nodesTraversed+1
             ));

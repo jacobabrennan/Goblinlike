@@ -1,8 +1,5 @@
 actor.sound = function (tamber, amplitude, source, message){
-    if(!this.x || !this.y|| !this.levelId){
-        console.log('Problem: '+tamber+' / '+message);
-        return;
-    }
+    if(!this.x || !this.y|| !this.levelId){ return;}
     //var hearers = getDijkstraContents(this, amplitude);
     var hearers = mapManager.getRangeContents(
         this.x, this.y, this.levelId, amplitude);

@@ -59,16 +59,9 @@ client.drivers.gameplay = Object.create(driver, {
     command: {value: function (command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
-        if(block){
-            return block;
-        }
-        if(this.dead || this.won){
-            return true;
-        }
-        if(!this.activeTurn){
-            console.log('No can do: '+this.activeTurn);
-            return true;
-        }
+        if(block){ return block;}
+        if(this.dead || this.won){ return true;}
+        if(!this.activeTurn){ return true;}
         if(command >= 0 && command <= 16){
             this.commandMove(command);
             return true;

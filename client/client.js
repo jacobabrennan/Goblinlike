@@ -7,6 +7,24 @@ var client = Object.create(driver, {
         this.drivers.title.setup(configuration);
         this.drivers.gameplay.setup(configuration);
         this.focus(this.drivers.title);
+    }},
+    reportScores: {value: function (win){
+        var scores = gameManager.currentGame.compileScores(win);
+        var request = new XMLHttpRequest();
+        request.open("POST", URL_SCORE_REPORT, true);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.onreadystatechange = function (){
+            if(request.readyState == XMLHttpRequest.DONE){
+                if(request.status == 200){
+                    // Won't ever happen, cross domain problems.
+                    console.log('Finished: 200');
+                } else{
+                    // You'll get this instead.
+                }
+            }
+        }
+        var rBody = JSON.stringify(scores);
+        request.send('score='+rBody);
     }}
 });
 driver.handleClick = function (x, y, options){

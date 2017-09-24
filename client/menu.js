@@ -354,7 +354,6 @@ var statusMenu = Object.create(driver, {
             menu.blank();
             client.focus(client.drivers.ending);
             client.drivers.ending.winData = storage;
-            console.log(storage);
             client.display();
             return true;
         }
