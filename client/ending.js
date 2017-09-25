@@ -45,7 +45,7 @@ client.drivers.ending = Object.create(driver, {
         I--;
         I--;
         I--;
-        I -= client.skin.drawParagraph(1,--I, "Deep underground in caverns hewn by dwarven hands, and inhaited by the undead, the goblins bravely fought, eradicating the enemy and wining a home for themselves...");
+        I -= client.skin.drawParagraph(1,--I, "Deep underground in caverns hewn by dwarven hands, and inhabited by the undead, the goblins bravely fought, eradicating the enemy and wining a home for themselves...");
         client.skin.drawString(1, --I, 'The Goblins:');
         I--;
         var C = this.winData.characterData;
