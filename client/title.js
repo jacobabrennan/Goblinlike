@@ -88,7 +88,7 @@ client.drivers.title = Object.create(driver, {
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
             client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
-            client.skin.drawCommand(8,  9, 'B', 'About', COMMAND_HELP);
+            //client.skin.drawCommand(8,  9, 'B', 'About', COMMAND_HELP);
         };
         var maxCloud = 40;
         var cloudFalloff = 0;
