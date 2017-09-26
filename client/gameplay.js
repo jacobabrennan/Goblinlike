@@ -390,7 +390,7 @@ client.drivers.gameplay.commandGet = function (){
         });
     };
     // Display Options to player.
-    this.drivers.menu.options('Get Item', itemNames, items, optionsCallback);
+    this.drivers.menu.options('Get Which Item?', itemNames, items, optionsCallback);
 };
 client.drivers.gameplay.commandLook = function (){
     /*
@@ -435,7 +435,7 @@ client.drivers.gameplay.commandLook = function (){
 };
 client.drivers.gameplay.commandCamp = function (){
     /*
-        Innitiate a CAMP stairs action. Directs the hero to rest and heal.
+        Innitiate a CAMP action. Directs the hero to rest and heal.
         This does not return anything.
     */
     self.activeTurn = false;

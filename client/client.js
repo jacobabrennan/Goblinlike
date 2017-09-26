@@ -104,6 +104,7 @@ client.preferences = {
     "y": COMMAND_NONE,
     
     "?": COMMAND_HELP,
+    "/": COMMAND_HELP,
     "<": COMMAND_STAIRS,
     ">": COMMAND_STAIRS,
     ",": COMMAND_STAIRS,

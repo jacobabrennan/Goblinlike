@@ -6,10 +6,11 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = '1.0.1';
+var VERSION = '1.1.3';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
 var HIGHLIGHT = 'highlight';
+var COLOR_INSTRUCTION = '#00f';
 var TILE_SIZE = 8;
 var FONT_SIZE = 8;
 var FINAL_DEPTH = 7;

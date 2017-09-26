@@ -189,10 +189,11 @@ var commandsMenu = Object.create(driver, {
         var commandLink = function (x, y, key, command, name){
             client.skin.drawCommand(x, y, key, name, command);
         }.bind(this);
-        client.skin.drawString(1,19,'Arrows or NumberPad','#00f');
-        client.skin.drawString(1,18,'to Move and Attack','#00f');
-        var line = 17;
-        commandLink(1, line--, "A", COMMAND_ATTACK, 'Attack');
+        client.skin.drawString(1,19,'Arrows or NumberPad', COLOR_INSTRUCTION);
+        client.skin.drawString(1,18,'to Move and Attack', COLOR_INSTRUCTION);
+        var line = 16;
+        commandLink(1, line--, "?", COMMAND_HELP, 'Help');
+        //commandLink(1, line--, "A", COMMAND_ATTACK, 'Attack');
         commandLink(1, line--, "C", COMMAND_CLOSE, 'Close Door');
         commandLink(1, line--, "D", COMMAND_DROP, 'Drop Item');
         commandLink(1, line--, "E", COMMAND_EQUIP, 'Equip Item');
@@ -205,7 +206,6 @@ var commandsMenu = Object.create(driver, {
         commandLink(1, line--, "T", COMMAND_THROW, 'Throw Item');
         commandLink(1, line--, "V", COMMAND_USE, 'Use Item');
         commandLink(1, line--, "X", COMMAND_LOOK, 'Examine');
-        commandLink(1, line--, "?", COMMAND_HELP, 'Help');
         commandLink(1, 3, "[", COMMAND_PAGEDOWN, 'Show Messages');
         commandLink(1, 1, "Space", COMMAND_CANCEL, 'View Status');
         menu.focus(this);
@@ -486,6 +486,7 @@ var optionsMenu = Object.create(driver, {
             Add the cancel / escape link in either case.
         */
         if(this.actionOptions && this.actionOptions.length){ // Populate.
+            client.skin.drawString(1, 18, 'Select One', COLOR_INSTRUCTION);
             var pagedOffset = this.optionsPage*this.optionsDisplayMax;
             var pagedLength = this.actionOptions.length - pagedOffset;
             var displayMax = Math.min(this.optionsDisplayMax, pagedLength);
@@ -599,7 +600,7 @@ var directionSelectMenu = Object.create(driver, {
         menu.blank();
         if(callback){ this.directionCallback = callback;}
         client.skin.drawString(1, 16, (message || 'Which direction?'));
-        client.skin.drawParagraph(1, 14, 'Use the numberpad, arrows, or click the map to select a direction.', '#00f', null, null, 18);
+        client.skin.drawParagraph(1, 14, 'Use the numberpad, arrows, or click the map to select a direction.', COLOR_INSTRUCTION, null, null, 18);
         client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
@@ -625,6 +626,187 @@ var directionSelectMenu = Object.create(driver, {
     }}
 });
 var helpMenu = Object.create(driver, {
+    setup: {value: function (){}, writable: true},
+    display: {value: function (which){
+        menu.blank();
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        switch(which){
+            default:
+                var drawTopic = function (x, y, key, title, id){
+                    client.skin.drawCommand(x, y, key, title, function (){
+                        helpMenu.display(id);
+                    });
+                };
+                client.skin.drawString(1, 18, 'Help topics:');
+                
+                client.skin.drawString(1, 15, 'The Basics');
+                drawTopic(2, 13, 'A', 'Moving', 'moving');
+                drawTopic(2, 12, 'B', 'Combat', 'combat');
+                
+                client.skin.drawString(1, 10, 'Items & Equipment')
+                drawTopic(2,  8, 'C', 'Get Item', 'item_get');
+                drawTopic(2,  7, 'D', 'Equip Item', 'item_equip');
+                drawTopic(2,  6, 'E', 'Use Item', 'item_use');
+                drawTopic(2,  5, 'F', 'Identify item', 'item_id');
+                
+                client.skin.drawString(20, 15, 'Strategy');
+                drawTopic(21, 13, 'G', 'Survive Level One', 'start');
+                drawTopic(21, 12, 'H', 'Dealing with Death', 'death');
+                drawTopic(21, 11, 'I', 'Winning', 'win');
+                break;
+            case 'moving':
+                var aboutText = 'Goblin-Like uses text instead of graphics. An example map on the right shows a typical room. You play as the green "g", a goblin.';
+                var lines = client.skin.drawParagraph(1, 18, aboutText, undefined, undefined, undefined, 28);
+                aboutText = "Move your goblin around the map using the arrow keys, the number pad, or by clicking the map. Movement takes place one step at a time. Every step you take makes the enemies move, too.";
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                aboutText = 'Use (S) or (>) to move up or down stairs (stairs are the ">" near the goblin).';
+                client.skin.drawParagraph(1,18-(lines), aboutText);
+                var mapText = "########";
+                mapText    += "#.....b+";
+                mapText    += "#.\\....#";
+                mapText    += "#¡.....#";
+                mapText    += "#...g..#";
+                mapText    += "#..>...#";
+                mapText    += "#......#";
+                mapText    += "#####+##";
+                var mapWidth = 8;
+                for(var charI = 0; charI < mapText.length; charI++){
+                    var indexChar = mapText.charAt(charI);
+                    var xPos = charI % mapWidth;
+                    var yPos = Math.floor(charI/mapWidth);
+                    var charBack = '#111';
+                    var charColor = '#fff';
+                    switch(indexChar){
+                        case '.': charColor = '#444', charBack = '#111'; break;
+                        case 'b': charColor = '#888'; break;
+                        case 'g': charColor = '#0f0'; break;
+                        case '+': charColor = '#fc0'; charBack = '#111'; break;
+                        case '#': charBack = '#111'; break;
+                        case '>': charColor = '#000'; charBack = '#fc0'; break;
+                        case '\\': case '¡': charColor = "#963"; break;
+                    }
+                    client.skin.drawCharacter(
+                        30+xPos, 13+yPos, indexChar, charColor, charBack);
+                }
+                break;
+            case 'combat':
+                var aboutText = 'The goblin world is filled with things trying to kill you. The top of the game shows your current health and maximum health. If your current health reaches zero, the game is over. Use the rest(R) command to restore your health.';
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = 'Enemies follow you and will attack if they get close. To attack, move your goblin in the direction of the enemy. You will attack with your equipped weapon each time you bump into an enemy.';
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                aboutText = 'You can also attack by throwing items, reading magic scrolls, or firing wands.';
+                client.skin.drawParagraph(1,18-(lines), aboutText);
+                break;
+            case 'item_get':
+                var aboutText = 'Each level of the dungeon is filled with random items. The map to the right shows various items around a goblin. All items are the same brown color.';
+                var lines = client.skin.drawParagraph(1, 18, aboutText, undefined, undefined, undefined, 28);
+                aboutText = 'The get(G) command displays a list of items that are close enough for you to pick up. Select the item you want from the list, and it will be added to your inventory.';
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                aboutText = 'The amount of weight you can carry is limited, so you\'ll need to drop(D) items often.';
+                client.skin.drawParagraph(1,18-(lines), aboutText);
+                var mapText = "########";
+                mapText    += "#....].+";
+                mapText    += "#.\\....#";
+                mapText    += "#¡.....#";
+                mapText    += "#...g..#";
+                mapText    += "#......#";
+                mapText    += "#.....$#";
+                mapText    += "###+####";
+                var mapWidth = 8;
+                for(var charI = 0; charI < mapText.length; charI++){
+                    var indexChar = mapText.charAt(charI);
+                    var xPos = charI % mapWidth;
+                    var yPos = Math.floor(charI/mapWidth);
+                    var charBack = '#111';
+                    var charColor = '#fff';
+                    switch(indexChar){
+                        case '.': charColor = '#444', charBack = '#111'; break;
+                        case 'b': charColor = '#888'; break;
+                        case 'g': charColor = '#0f0'; break;
+                        case '+': charColor = '#fc0'; charBack = '#111'; break;
+                        case '#': charBack = '#111'; break;
+                        case '>': charColor = '#000'; charBack = '#fc0'; break;
+                        case '\\': case '¡': case ']': case '$': charColor = "#963"; break;
+                    }
+                    client.skin.drawCharacter(
+                        30+xPos, 13+yPos, indexChar, charColor, charBack);
+                }
+                break;
+            case 'item_equip':
+                var aboutText = 'Weapons and armor must be equipped before you can use them. Use the equip(E) command to display a list of items you can equip.';
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = 'Use the unequip(W) command to unequip an item. You should drop(D) weapons and armor you don\'t need.';
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                aboutText = "Your companion goblins also need weapons and armor - and a lot of arrows. If no enemies are nearby and they feel safe (they are close to you) they'll seek out nearby items automatically. Not every goblin can equip every item.";
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                break;
+            case 'item_use':
+                var aboutText = "The use(V) command lets you use the varied items you'll find. Potions can be quaffed - or thrown(T) - and have many effects. Wands can be fired at enemies. Magic scrolls can be read.";
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = "Knowing what items to keep and what items to drop(D) is key to survival. When all hope is lost, run away and throw(T) everything at the enemy.";
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                break;
+            case 'item_id':
+                var aboutText = "Many items in the dungeon are unknown to the goblins, and will appear with random names. The real name of the item will appear once you've leveled up enough. Goblins with higher wisdom stats can identify items at lower levels.";
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = 'Each time you play the game the item names will be shuffled. A healing potion might be a "Red Pot" one game, and a "Fizzy Pot" the next, so be careful what you drink!';
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                break;
+            case 'death':
+                var aboutText = "In the world of goblins, life is short and death is permanent. Expect to die most times you play, this is normal.";
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = "If you want to survive you'll need to be careful, walk slowly, fight one enemy at a time, and always be prepared for what's on the other side of the door. Each map is random, and sometimes all the enemies attack together.";
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                aboutText = "Sometimes the only way to survive is to abandon your companions and run away. Sometimes you need to stay and fight. Learning the difference is the most important skill in the game.";
+                lines += client.skin.drawParagraph(1,18-(lines), aboutText);
+                break;
+            case 'start':
+                var aboutText = "Level One is small, so go explore until you find a green goblin or an enemy.";
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = "Enemies on level one are either rats, ants, or cave beetles. Ants and rats can be killed easily if there's only one - cave beetles are tougher. Equip(E) or throw(T) rocks if you have to. Run away and rest(R) when your health is low. You can close(C) doors to trap an enemy."
+                lines += client.skin.drawParagraph(1, 18-lines, aboutText);
+                aboutText = "Each level has a goblin that will join you. The level one goblin has arrows and will shoot the enemies for you. Once you've found them, go to the downward stairs and explore the next level.";
+                lines += client.skin.drawParagraph(1, 18-lines, aboutText);
+                break;
+            case 'win':
+                var aboutText = "You won't win the first several times you play, and that's OK. The game is about making hard choices and surviving as long as possible.";
+                var lines = client.skin.drawParagraph(1, 18, aboutText);
+                aboutText = "Over time you're going to get better. Better at dancing around enemies, better at managing your items, and better at leading your goblin tribe."
+                lines += client.skin.drawParagraph(1, 18-lines, aboutText);
+                aboutText = "Pretty soon you'll find yourself at the bottom of the dungeon, facing down the final enemy. When you do, let us know what happens!";
+                lines += client.skin.drawParagraph(1, 18-lines, aboutText);
+                break;
+        }
+        client.skin.drawCommand(1,  1, 'Space', 'Back to Game', COMMAND_ENTER);
+        menu.focus(this);
+        return true;
+    }},
+    command: {value: function (command, options){
+        // TODO: Document.
+        if(command == COMMAND_CANCEL){
+            client.drivers.gameplay.drivers.map.display();
+            menu.showDefault();
+            return true;
+        }
+        switch(options.key){
+            case 'a': this.display('moving'); break;
+            case 'b': this.display('combat'); break;
+            case 'c': this.display('item_get'); break;
+            case 'd': this.display('item_equip'); break;
+            case 'e': this.display('item_use'); break;
+            case 'f': this.display('item_id'); break;
+            case 'g': this.display('start'); break;
+            case 'h': this.display('death'); break;
+            case 'i': this.display('win'); break;
+            case 'space':
+                client.drivers.gameplay.drivers.map.display();
+                menu.showDefault();
+        }
+        return true;
+    }}
+});
+/*var helpMenu = Object.create(driver, {
     setup: {value: function (){}, writable: true},
     display: {value: function (title, description){
         menu.blank();
@@ -684,7 +866,7 @@ var helpMenu = Object.create(driver, {
         menu.showDefault();
         return false;
     }}
-});
+});*/
 
 // ============================================================================
     return menu; // Return the menu; end the namespace.

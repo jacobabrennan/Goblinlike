@@ -265,10 +265,10 @@ modelLibrary.registerModel('item', Object.create(weapon, { // Rock
     generationWeight: {value: 1, writable: true},
     // Display:
     name: {value: 'Rock', writable: true},
-    character: {value: ':', writable: true},
-    color: {value: '#444', writable: true},
+    character: {value: '*', writable: true},
+    //color: {value: '#444', writable: true},
     // Stats:
-    weight: {value: 4, writable: true},
+    weight: {value: 1, writable: true},
     baseDamage: {value: 1, writable: true},
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
@@ -285,7 +285,7 @@ modelLibrary.registerModel('item', Object.create(weapon, { // Club
     name: {value: 'Club', writable: true},
     character: {value: '|', writable: true},
     // Stats:
-    weight: {value: 4, writable: true},
+    weight: {value: 2, writable: true},
     baseDamage: {value: 2, writable: true},
     damageSigma: {value: 1/3, writable: true},
     // Behavior:
@@ -370,7 +370,7 @@ modelLibrary.registerModel('item', Object.create(weapon, { // Hammer
     // Description:
     viewText: {value: 'You see a dwarven hammer. This finely crafted stone weapon is what dwarven warcraft is all about. You doubt you could weild it.'}
 }));
-modelLibrary.registerModel('item', Object.create(bow, { // Short Bow
+modelLibrary.registerModel('specials', Object.create(bow, { // Short Bow
     // Id:
     generationId: {value: 'short bow'},
     generationWeight: {value: 2, writable: true},

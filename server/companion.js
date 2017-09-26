@@ -136,8 +136,8 @@ var companion = Object.create(person, {
         switch(randomIndex){
             case 0:
             case 1:
-                this.equip(Object.instantiate(modelLibrary.getModel('item', 'short bow')));
-                this.equip(Object.instantiate(modelLibrary.getModel('item', 'arrow5')));
+                this.equip(Object.instantiate(modelLibrary.getModel('specials', 'short bow')));
+                this.equip(Object.instantiate(modelLibrary.getModel('item', 'arrow10')));
                 break;
             case 2:
             case 4:
@@ -521,7 +521,7 @@ var goalEnemy = Object.create(goal, {
 var goalHero = Object.create(goal, {
     behavior: {value: function (controllee){
         var target = gameManager.currentGame.hero;
-        var pursueRange = Math.min(3, target.companions.length);
+        var pursueRange = Math.max(2, Math.min(3, target.companions.length));
         if(!target || (
             (target.levelId == controllee.levelId) &&
             distance(controllee.x, controllee.y, target.x, target.y) <= pursueRange

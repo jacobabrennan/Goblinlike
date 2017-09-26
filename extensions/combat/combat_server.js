@@ -46,7 +46,7 @@ var DAMAGE_0000000000000000 =  0;
         var deltaHp = this.hp - oldHp;
         // TODO: Find a good way to tell the player the results of their attack.
         if(deltaHp < 0){
-            this.sound('pain', 7, this, 'The '+this.name+' cries out in pain!');
+            this.sound('pain', 7, this)//, 'The '+this.name+' cries out in pain!');
         } else if(deltaHp === 0){
         } else{
         }
@@ -113,6 +113,13 @@ var DAMAGE_0000000000000000 =  0;
          *  It returns the amount of damage actually done, positive indicates
          *      a loss of HP.
          **/
+        // Create Attack Info Message
+        var theHero = gameManager.currentGame.hero
+        var sourceName = (this === theHero)? 'You attack' : this.name+' attacks';
+        var targetName = (target === theHero)? 'you' : target.name;
+        var message = sourceName+' '+targetName;
+        if(theHero){ theHero.inform(message);}
+        //
         var damageDone;
         // If a weapon is equipped, attack with that.
         var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;

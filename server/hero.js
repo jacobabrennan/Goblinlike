@@ -44,7 +44,10 @@ var hero = Object.create(person, {
         return this;
     }, writable: true},
     die: {value: function (){
+        this.inform('');
         this.inform('You have died.');
+        this.inform('');
+        this.inform('Press Space to Continue');
         gameManager.gameOver();
     }, writable: true},
     endTurn: {value: function (){
@@ -404,11 +407,16 @@ var hero = Object.create(person, {
             This command from the player directs the person to drop the specified
                 item from inventory.
         **/
-        var stairs = mapManager.getTile(this.x, this.y, this.levelId);
-        if(typeof stairs.climb == 'function'){
-            stairs.climb(this);
+        for(var posY = -1; posY <= 1; posY++){
+            for(var posX = -1; posX <= 1; posX++){
+                var stairs = mapManager.getTile(this.x+posX, this.y+posY, this.levelId);
+                if(typeof stairs.climb == 'function'){
+                    stairs.climb(this);
+                    // End turn.
+                    this.endTurn();
+                    return;
+                }
+            }
         }
-        // End turn.
-        this.endTurn();
     }, writable: true}
 });
