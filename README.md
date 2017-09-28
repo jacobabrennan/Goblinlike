@@ -1,6 +1,8 @@
-# goblinlike
-Simple Rogue-Like game featuring a Goblin protagonist.
+# Goblin-Like
+Old School Roguelike featuring a Goblin protagonist.
 
-Ahoy folks! This is the next game I'm getting ready to wrap up in a pretty 1.0! Head on over to it's gh-pages to give it a try:
-
+Try out a live version of the game:
 http://jacobabrennan.github.io/goblinlike/
+
+Roguelikes can be difficult to learn. Check out this video to see an example of gameplay:
+https://www.youtube.com/watch?v=FTpG3BmOk0k
