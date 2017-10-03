@@ -6,7 +6,7 @@
 
     // Misc. Configuration:
 var debug = false;
-var VERSION = '1.1.3';
+var VERSION = '1.1.4';
 var displaySize = 21;
 var DEFAULT_MAP_SIZE = 48;
 var HIGHLIGHT = 'highlight';

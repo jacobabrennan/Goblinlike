@@ -112,11 +112,13 @@ var memory = {
         var objViewText = objMemory.viewText;
         if(objMemory.companion){
             return objMemory;
-        } else if(objMemory == gameManager.currentGame.hero){
+        }
+        if(objMemory == gameManager.currentGame.hero){
             return {name: objMemory.name, viewText: "You see a tired and ragged goblin, tired of being hunted by humans in the forest, and looking for a better life, maybe underground..."};
-        } else if(objMemory.lore && gameManager.currentGame){
+        }
+        if(objMemory.lore && gameManager.currentGame){
             if(objMemory.lore > gameManager.currentGame.hero.lore()){
-                objViewText = "You know nothing about the "+objMemory.description()+".";
+                return {name: objMemory.description(), viewText: "You know nothing about the "+objMemory.description()+"."};
             }
         }
         //var objMemory = this.getIdObject(containable.id);
