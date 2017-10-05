@@ -211,7 +211,7 @@ var memory = {
             }
         }
         var statusText = 'Health: '+this.character.hp+'/'+this.character.maxHp+',  ';
-        statusText += 'Moral: ' + Math.floor(this.character.moral);
+        statusText += 'Morale: ' + Math.floor(this.character.moral);
         client.skin.status(statusText);
     }
 };
