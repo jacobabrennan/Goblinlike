@@ -4,5 +4,7 @@ Old School Roguelike featuring a Goblin protagonist.
 Try out a live version of the game:
 http://jacobabrennan.github.io/Goblinlike/
 
-Roguelikes can be difficult to learn. Check out this video to see an example of gameplay:
-https://www.youtube.com/watch?v=FTpG3BmOk0k
+Check out this video to see a quick "Let's Play" of Goblin-Like:
+https://www.youtube.com/watch?v=Rb1C8TAebz4
+
+The above video is also a great tutorial if you've never played a text based Roguelike.
