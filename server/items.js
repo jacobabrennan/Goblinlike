@@ -25,6 +25,7 @@ var wand = Object.create(item, {
         damageSigma: {value: 0, writable: true},
         baseDamage: {value: 3, writable: true},
         attack: {value: function (attacker, target){
+            this.baseDamage = attacker.wisdom+attacker.level;
             attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
             return projectile.attack.apply(this, arguments);
         }}
@@ -49,10 +50,10 @@ var wand = Object.create(item, {
             attacker.update('inventory');
         }
         var deltaLore = gameManager.currentGame.hero.lore() - this.lore;
-        var loreAttempt = gaussRandom(
+        var loreAttempt = deltaLore;/*gaussRandom(
             deltaLore,
             10-gameManager.currentGame.hero.wisdom
-        );
+        );*/
         if(loreAttempt < 0){
             attacker.inform('You do not know how to use the '+this.description()+'.');
             return 0;
@@ -69,6 +70,7 @@ var wand = Object.create(item, {
         damageDone = theProj.project(direction, projectileOptions);
         // TODO: Return actual damage done.
         if(damageDone){
+            console.log(damageDone);
             return damageDone;
         } else{
             return 0;
@@ -87,10 +89,10 @@ var scroll = Object.create(item, {
     }},
     use: {value: function(user, targetData){
         var deltaLore = gameManager.currentGame.hero.lore() - this.lore;
-        var loreAttempt = gaussRandom(
+        var loreAttempt = deltaLore;/*gaussRandom(
             deltaLore,
             10-gameManager.currentGame.hero.wisdom
-        );
+        );*/
         if(loreAttempt < 0){
             user.inform('You do not know how to use the '+this.description()+'.');
             //this.consume(user);
@@ -249,8 +251,8 @@ modelLibrary.registerModel('item', Object.create(scroll, {
         } else if(!user.checkView(testTarget)){
             user.inform('The '+testTarget.name+' is not in view.');
         } else{
-            user.inform('You read the scroll. A fireball envelopes '+testTarget.name+'!');
-            testTarget.hurt(5, DAMAGE_FIRE, user);
+            user.inform('A fireball envelopes '+testTarget.name+'!');
+            testTarget.hurt(15+user.level, DAMAGE_FIRE, user);
         }
         scroll.effect.apply(this, arguments);
         // TODO: Other kinds of checks.

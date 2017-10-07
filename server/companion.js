@@ -146,6 +146,7 @@ var companion = Object.create(person, {
                 if(this.equip(aRock)){
                     break;
                 }
+                // No break here. Equip club if rock not equipped.
             case 3:
                 this.equip(Object.instantiate(modelLibrary.getModel('item', 'club')));
                 break;
@@ -377,6 +378,12 @@ var companion = Object.create(person, {
             var skipCheck = false;
             var ownEquip = this.equipment[thePlace];
             if(thePlace == EQUIP_OFFHAND){
+                // Check two-handed weapon
+                var twoHander = this.equipment[EQUIP_MAINHAND];
+                if(twoHander && twoHander.twoHanded){
+                    desire = 0;
+                    skipCheck = true;
+                }
                 // Check ammo.
                 var ownBow = this.equipment[EQUIP_MAINHAND];
                 if(ownBow && ownBow.damageScale && ownBow.ammoType){

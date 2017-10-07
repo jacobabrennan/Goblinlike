@@ -994,15 +994,14 @@ modelLibrary.registerModel('enemy', Object.create(snakePrototype, { // worm
     name: {value: 'Giant Worm', writable: true},
     // Display:
     character: {value: 'w', writable: true},
-    color: {value: '#963', writable: true},
+    color: {value: '#a0a', writable: true},
     bodyCharacter: {value: 'o', writable: true},
-    bodyColor: {value: '#963', writable: true},
+    bodyColor: {value: '#a0a', writable: true},
     bodyBackground: {value: undefined, writable: true},
     // Stats:
     rewardExperience: {value: 90, writable: true},
     turnDelay: {value: 2, writable: true},
     baseHp: {value: 100, writable: true},
-    rewardExperience: {value: 55, writable: true},
     baseAttack: {value: 10, writable: true},
     //erratic: {value: 1, writable: true},
     // Behavior:

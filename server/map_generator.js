@@ -84,25 +84,7 @@ var protoLevel = {
         //this.hallLengthMax = options.hallLengthMax || this.hallLengthMax;
         //this.hallLengthMin = options.hallLengthMin || this.hallLengthMin;
         if(options.hallLengthMax){ this.hallLengthMax = options.hallLengthMax;}
-        else{
-            switch(depth){
-                // default: Already set to default value.
-                // case 7: Already Dealt with elsewhere.
-                case 6: this.hallLengthMax = 4; break;
-                case 5: this.hallLengthMax = 6; break;
-                case 4: this.hallLengthMax = 8; break;
-            }
-        }
         if(options.hallLengthMin){ this.hallLengthMin = options.hallLengthMin;}
-        else{
-            switch(depth){
-                // default: Already set to default value.
-                // case 7: Already Dealt with elsewhere.
-                case 6: this.hallLengthMin = 0; break;
-                case 5: this.hallLengthMin = 2; break;
-                case 4: this.hallLengthMin = 4; break;
-            }
-        }
         this.width = options.width || this.width;
         this.height = options.height || this.height;
         if(options.placeStairsUp   !== undefined){

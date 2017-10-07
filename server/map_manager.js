@@ -80,12 +80,10 @@ var mapManager = {
                 disposeDepth.dispose();
             }
             var levelOptions;
-            if(depth == FINAL_DEPTH){
+            if(depth >= 5){
                 levelOptions = {
                     hallLengthMax: 1,
-                    hallLengthMin: 0,
-                    // placeStairsDown: false
-                    // Keep the stairs down, replace with boss
+                    hallLengthMin: 0
                 };
             }
             depthLevel = this.generateLevel(depth, levelOptions);
