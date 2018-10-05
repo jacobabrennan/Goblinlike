@@ -4,16 +4,16 @@
  *      
   ===========================================================================*/
 
-client.drivers.title = Object.create(driver, {
-    drivers: {value: {}, writable: true},
-    setup: {value: function (configuration){
+client.drivers.title = Object.extend(driver, {
+    drivers: {},
+    setup(configuration){
         /**
             This function is called by client.setup as soon as the page loads.
             It configures the client to be able to display the menu.
             It does not return anything.
          **/
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
         if(block){
@@ -37,15 +37,15 @@ client.drivers.title = Object.create(driver, {
                 return true;
         }
         return false;
-    }},
-    focused: {value: function (){
+    },
+    focused(){
         this.display();
         //this.focus(client.drivers.gameplay.drivers.menu);
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         this.focus(null);
-    }},
-    newGame: {value: function (){
+    },
+    newGame(){
         // TODO: Document.
         /**
          *  This function spawns a new hero when the game begins. It directs
@@ -59,8 +59,8 @@ client.drivers.title = Object.create(driver, {
         gameDriver.memory.blank();
         client.networking.sendMessage(COMMAND_NEWGAME, {});
         client.focus(gameDriver);*/
-    }},
-    display: {value: function (options){
+    },
+    display(options){
         // TODO: Document.
         var block = driver.display.apply(this, arguments);
         if(block){ return block;}
@@ -200,10 +200,10 @@ client.drivers.title = Object.create(driver, {
         }, 10);
         return true;
         //client.displayText(picture);
-    }}
+    }
 });
-client.drivers.title.drivers.rollCharacter = Object.create(driver, {
-    roll: {value: function (){
+client.drivers.title.drivers.rollCharacter = Object.extend(driver, {
+    roll(){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
         client.skin.status('New Character');
@@ -235,8 +235,8 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
             statTotal--;
         }
         this.display();
-    }},
-    display: {value: function (){
+    },
+    display(){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
         client.skin.status('New Character');
@@ -257,8 +257,8 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
             }
         }
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
         if(block){
@@ -304,20 +304,20 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
             }
         }
         return true;
-    }},
-    focused: {value: function (){
+    },
+    focused(){
         this.roll();
         this.display();
         //this.focus(client.drivers.gameplay.drivers.menu);
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         this.name = null;
         this.vitality = null;
         this.strength = null;
         this.wisdom   = null;
         this.charisma = null;
-    }},
-    start: {value: function (){
+    },
+    start(){
         // TODO: Document.
         /**
          *  This function spawns a new hero when the game begins. It directs
@@ -339,10 +339,10 @@ client.drivers.title.drivers.rollCharacter = Object.create(driver, {
         });
         client.focus(gameDriver);
         gameDriver.display();
-    }}
+    }
 });
-client.drivers.title.drivers.about = Object.create(driver, {
-    display: {value: function (){
+client.drivers.title.drivers.about = Object.extend(driver, {
+    display(){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
         client.skin.status('About');
@@ -351,8 +351,8 @@ client.drivers.title.drivers.about = Object.create(driver, {
         client.skin.drawString(9, 10, "By Jacob A Brennan, 2015");
         client.skin.drawCommand(1,  1, 'Enter', 'Back to Title Screen', COMMAND_ENTER);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
         if(block){
@@ -363,8 +363,8 @@ client.drivers.title.drivers.about = Object.create(driver, {
             client.drivers.title.display();
         }
         return true;
-    }},
-    focused: {value: function (){
+    },
+    focused(){
         this.display();
-    }}
+    }
 });
