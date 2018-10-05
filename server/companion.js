@@ -1,3 +1,8 @@
+
+
+//== Extend Basic Types ========================================================
+
+//-- Extend Hero ---------------------------------
 (function (base){
     base.initializer = (function (parentFunction){
         return function (){
@@ -57,6 +62,8 @@
         };
     })(base.endTurn);
 })(hero);
+
+//-- Extend Person -------------------------------
 (function (base){
     base.moral = 0;
     base.terrified = false;
@@ -114,13 +121,17 @@
         };
     })(base.adjustHp);
 })(person);
-var companion = Object.create(person, {
-    character: {value: 'g', writable: true},
-    faction: {value: FACTION_GOBLIN, writable: true},
-    color: {value: '#5c3', writable: true},
-    companion: {value: true, writable: true},
-    mode: {value: MODE_FOLLOW, writable: true},
-    initializer: {value: function (){
+
+
+//== Companion =================================================================
+
+const companion = Object.extend(person, {
+    character: 'g',
+    faction: FACTION_GOBLIN,
+    color: '#5c3',
+    companion: true,
+    mode: MODE_FOLLOW,
+    initializer(){
         person.initializer.apply(this, arguments);
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
@@ -153,14 +164,14 @@ var companion = Object.create(person, {
         }
         gameManager.currentGame.companionInfo.push(this);
         return this;
-    }, writable: true},
-    adjustExperience: {value: function (amount){
+    },
+    adjustExperience(amount){
         /**
         **/
         gameManager.currentGame.hero.adjustExperience(amount);
         return;
-    }, writable: true},
-    activate: {value: function (){
+    },
+    activate(){
         /**
          *  This function actives the enemy, basically "waking it up". It is
          *  usually called when the player comes into view, makes loud noises
@@ -181,12 +192,12 @@ var companion = Object.create(person, {
             this.sound('greeting', 10, this, this.name+' joins you!');
         }
         this.active = true;
-    }},
-    hurt: {value: function (){
+    },
+    hurt(){
         this.activate();
         return person.hurt.apply(this, arguments);
-    }, writable: true},
-    hear: {value: function (tamber, amplitude, source, message){
+    },
+    hear(tamber, amplitude, source, message){
         if(source && (source != this) && (source.faction & this.faction)){
             switch(tamber){
                 case 'terror': this.adjustMoral(1); break;
@@ -197,8 +208,8 @@ var companion = Object.create(person, {
             }
         }
         return person.hear.apply(this, arguments);
-    }, writable: true},
-    dispose: {value: function (){
+    },
+    dispose(){
         if(!this.dead){
             this.lost = true;
         }
@@ -209,15 +220,15 @@ var companion = Object.create(person, {
             }
         }
         return person.dispose.apply(this, arguments);
-    }, writable: true},
-    bumped: {value: function (bumper){
+    },
+    bumped(bumper){
         if(bumper.companion && bumper.terrified && !this.terrified){
             mapManager.swapPlaces(this, bumper);
         } else{
             person.bumped.apply(this, arguments);
         }
-    }},
-    unequip: {value: function (oldItem){
+    },
+    unequip(oldItem){
         var success = person.unequip.apply(this, arguments);
         if(success){
             success = this.inventoryRemove(oldItem);
@@ -227,12 +238,12 @@ var companion = Object.create(person, {
             }
         }
         return false;
-    }},
-    camp: {value: function (){
+    },
+    camp(){
         this.camping = gameManager.currentGame.hero.camping;
         return this.camping;
-    }, writable: true},
-    behavior: {value: function (){
+    },
+    behavior(){
         var result = false;
         if(this.terrified){
             result = this.pursueSafety();
@@ -252,14 +263,14 @@ var companion = Object.create(person, {
             result = this.pursueGoal();
         }
         return;
-    }, writable: true},
-    pursueHero: {value: function (){
-        this.setGoal(goalHero);
-    }, writable: true},
-    pursueEnemy: {value: function (){
-        this.setGoal(goalEnemy);
-    }, writable: true},
-    pursueSafety: {value: function (){
+    },
+    pursueHero(){
+        this.setGoal(GoalHero);
+    },
+    pursueEnemy(){
+        this.setGoal(GoalEnemy);
+    },
+    pursueSafety(){
         /**
             Each actor exerts a vector force on the companion. The terrified
             companion will then pursue a course in that direction, effectively
@@ -299,8 +310,8 @@ var companion = Object.create(person, {
             success = this.move(primaryDir) || this.move(secondaryDir);
         }
         return success;
-    }, writable: true},
-    desperation: {value: function (){
+    },
+    desperation(){
         /**
             Attack any nearby enemy.
         **/
@@ -325,8 +336,8 @@ var companion = Object.create(person, {
         } else{
             return false;
         }
-    }, writable: true},
-    pursueLoot: {value: function (){
+    },
+    pursueLoot(){
         var viewContents = this.getViewContents();
         var targetLoot;
         var highDesire = 0;
@@ -346,9 +357,9 @@ var companion = Object.create(person, {
             }
         }
         if(!targetLoot){ return;}
-        this.setGoal(goalLoot, targetLoot);
-    }, writable: true},
-    itemDesire: {value: function (theItem){
+        this.setGoal(GoalLoot, targetLoot);
+    },
+    itemDesire(theItem){
         var desire = 0;
         var desireMultiplier = 1;
         // Check wand, and charges.
@@ -423,33 +434,36 @@ var companion = Object.create(person, {
         }
         // Return desire.
         return desire * desireMultiplier;
-    }, writable: true},
-    setGoal: {value: function (goalType, goalTarget){
+    },
+    setGoal(goalType, goalTarget){
         if(!goalType){
             this.goal = null;
             return;
         }
-        this.goal = Object.create(goalType);
-        goalType.initializer.call(this.goal, goalTarget);
-    }, writable: true},
-    pursueGoal: {value: function(){
+        this.goal = new goalType(goalTarget);
+    },
+    pursueGoal: function(){
         if(!this.goal){ return false;}
         var success = this.goal.behavior(this);
         if(!success){ this.setGoal();}
         return success;
-    }, writable: true}
+    }
 });
-var goal = {
-    target: undefined,
-    initializer: function (){ return this;},
-    behavior: function (controllee){ return false;}
-};
-var goalLoot = Object.create(goal, {
-    initializer: {value: function (goalTarget){
+
+class Goal {
+    constructor() {
+        this.target = undefined;
+    }
+    behavior(controllee){
+        return false;
+    }
+}
+class GoalLoot extends Goal {
+    constructor(goalTarget) {
+        super(...arguments);
         this.target = goalTarget;
-        return this;
-    }, writable: true},
-    behavior: {value: function (controllee){
+    }
+    behavior(controllee) {
         if(
             !this.target ||
             this.target.x === undefined || this.target.y === undefined
@@ -468,10 +482,10 @@ var goalLoot = Object.create(goal, {
             controllee.x, controllee.y, this.target.x, this.target.y);
         // Else, move.
         return controllee.move(direction);
-    }, writable: true}
-});
-var goalEnemy = Object.create(goal, {
-    behavior: {value: function (controllee){
+    }
+}
+class GoalEnemy extends Goal {
+    behavior(controllee) {
         // Check if any targets in view.
         var viewContents = controllee.getViewContents();
         var noEnemies = true;
@@ -523,10 +537,10 @@ var goalEnemy = Object.create(goal, {
         }
         var direction = directionTo(controllee.x, controllee.y, nextCoord.x, nextCoord.y);
         return controllee.move(direction);
-    }, writable: true}
-});
-var goalHero = Object.create(goal, {
-    behavior: {value: function (controllee){
+    }
+}
+class GoalHero extends Goal {
+    behavior(controllee) {
         var target = gameManager.currentGame.hero;
         var pursueRange = Math.max(2, Math.min(3, target.companions.length));
         if(!target || (
@@ -560,5 +574,5 @@ var goalHero = Object.create(goal, {
         }
         // Else, move.
         return controllee.move(direction);
-    }, writable: true}
-});
+    }
+}
