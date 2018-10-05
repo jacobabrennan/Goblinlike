@@ -12,21 +12,21 @@
  *      
  *===========================================================================*/
 
-var person = Object.create(actor, {
+const person = Object.extend(actor, {
     // Redefined properties
-    character: {value: '@', writable: true},
-    faction: {value: FACTION_GOBLIN, writable: true},
-    name: {value: 'person', writable: true},
-    color: {value: '#0f0', writable: true},
+    character: '@',
+    faction: FACTION_GOBLIN,
+    name: 'person',
+    color: '#0f0',
     // New properties
-    gender: {value: undefined, writable: true},
-    updates: {value: undefined, writable: true},
-    messages: {value: undefined, writable: true},
-    inventory: {value: undefined, writable: true},
-    turnActive: {value: false, writable: true},
-    turnCallback: {value: undefined, writable: true},
+    gender: undefined,
+    updates: undefined,
+    messages: undefined,
+    inventory: undefined,
+    turnActive: false,
+    turnCallback: undefined,
     // Redefined Methods
-    initializer: {value: function (){
+    initializer(){
         /**
             A standard initializer, used for inheritence and setup.
             The function updates several values so that the player will know
@@ -47,16 +47,16 @@ var person = Object.create(actor, {
         this.update('viewRange');
         this.inventory = [];
         return this;
-    }, writable: true},
-    place: {value: function (){
+    },
+    place(){
         var success = actor.place.apply(this, arguments);
         if(success){
             this.update('y');
             this.update('x');
         }
         return success;
-    }},
-    camp: {value: function (){
+    },
+    camp(){
         if(!this.camping){
             return false;
         }
@@ -66,8 +66,8 @@ var person = Object.create(actor, {
         }
         this.camping = false;
         return false;
-    }, writable: true},
-    takeTurn: {value: function (callback){
+    },
+    takeTurn(callback){
         /**
             This function alerts the player, possibly over a network, that it
                 is their turn. This function supercedes the parent function,
@@ -98,8 +98,8 @@ var person = Object.create(actor, {
             this.behavior();
         }
         this.endTurn();
-    }, writable: true},
-    endTurn: {value: function (){
+    },
+    endTurn(){
         /**
             This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
@@ -109,8 +109,8 @@ var person = Object.create(actor, {
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
         callbackTemp(true);
-    }, writable: true},
-    move: {value: function (direction){
+    },
+    move(direction){
         /**
             This function is used to move the object in a specific direction,
                 one of:
@@ -132,9 +132,9 @@ var person = Object.create(actor, {
             content.activate();
         }, this);*/
         return success;
-    }, writable: true},
+    },
     // New Methods
-    update: {value: function (which){
+    update(which){
         /**
             This function is used to maintain a list of all aspects of the person
                 which have changed since their last turn. Items in this list
@@ -148,8 +148,8 @@ var person = Object.create(actor, {
         if(this.updates.indexOf(which) == -1){
             this.updates.push(which);
         }
-    }, writable: true},
-    packageUpdates: {value: function (){
+    },
+    packageUpdates(){
         /**
             This function creates a data package containing information about
                 aspects of the person that have changed since the person's last
@@ -181,13 +181,13 @@ var person = Object.create(actor, {
             }
         }, this);
         return updatePackage;
-    }, writable: true},
-    hear: {value: function (tamber, amplitude, source, message){
+    },
+    hear(tamber, amplitude, source, message){
         if(message && source != this){
             this.inform(message);
         }
-    }},
-    inform: {value: function (message){
+    },
+    inform(message){
         /**
             This function sends a message to the player. These messages are
                 displayed, one at a time, at the start of the player's next
@@ -199,8 +199,8 @@ var person = Object.create(actor, {
             //this.messages.push(message);
         //var oldMessage = this.messages[0];
         this.messages.push(message);
-    }, writable: true},
-    inventoryAdd: {value: function (newItem){
+    },
+    inventoryAdd(newItem){
         // Remove from current Location.
         newItem.unplace();
         // Handle stackable items.
@@ -228,8 +228,8 @@ var person = Object.create(actor, {
         this.inventory.push(newItem);
         this.update('inventory');
         return true;
-    }, writable: true},
-    getItem: {value: function (newItem, single){
+    },
+    getItem(newItem, single){
         /**
             This function handles the movement of items into the person's
                 inventory. It is a general house keeping function, perhaps
@@ -263,8 +263,8 @@ var person = Object.create(actor, {
         //
         this.inventoryAdd(newItem);
         return true;
-    }, writable: true},
-    inventoryRemove: {value: function (oldItem){
+    },
+    inventoryRemove(oldItem){
         /**
             This function handles removal of an item from inventory, but not
                 the moving of that item to any other location. Dropping an item
@@ -277,8 +277,8 @@ var person = Object.create(actor, {
         arrayRemove(this.inventory, oldItem);
         this.update('inventory');
         return true;
-    }, writable: true},
-    getWeight: {value: function (){
+    },
+    getWeight(){
         var totalWeight = 0;
         for(var invIndex = 0; invIndex < this.inventory.length; invIndex++){
             var indexedItem = this.inventory[invIndex];
@@ -286,5 +286,5 @@ var person = Object.create(actor, {
             totalWeight += itemWeight;
         }
         return totalWeight;
-    }, writable: true}
+    }
 });
