@@ -1,14 +1,17 @@
-// TODO: Document.
-var client = Object.create(driver, {
-    drivers: {value: {}, writable: true},
-    setup: {value: function (configuration){
+
+
+//== TODO: Document ============================================================
+
+const client = Object.extend(driver, {
+    drivers: {},
+    setup(configuration){
         this.skin.setup(configuration);
         this.keyCapture.setup(configuration);
         this.drivers.title.setup(configuration);
         this.drivers.gameplay.setup(configuration);
         this.focus(this.drivers.title);
-    }},
-    reportScores: {value: function (win){
+    },
+    reportScores(win){
         var scores = gameManager.currentGame.compileScores(win);
         var request = new XMLHttpRequest();
         request.open("POST", URL_SCORE_REPORT, true);
@@ -25,18 +28,19 @@ var client = Object.create(driver, {
         }
         var rBody = JSON.stringify(scores);
         request.send('score='+rBody);
-    }}
+    }
 });
+
 driver.handleClick = function (x, y, options){
     if(!(this.currentFocus && this.currentFocus.handleClick)){ return false;}
     return this.currentFocus.handleClick(x, y, options);
 };
 
 client.networking = {
-    sendMessage: function (command, options){
+    sendMessage(command, options){
         gameManager.clientCommand(command, options);
     },
-    recieveMessage: function (command, options){
+    recieveMessage(command, options){
         switch(command){
             case COMMAND_NEWGAME:
                 client.drivers.gameplay.newGame(options);
@@ -59,6 +63,7 @@ client.networking = {
         }
     }
 };
+
 client.preferences = {
     /* Special Key Names: backspace, tab, enter, return, capslock, esc, escape,
        space, pageup, pagedown, end, home, left, up, right, down, ins, del,
@@ -121,7 +126,7 @@ client.preferences = {
 
 // TODO: Document.
 client.keyCapture = {
-	setup: function (configuration){
+	setup(configuration){
         // TODO: Document.
         // TODO: Change focus to container in 'production'.
         //client.skin.container.addEventListener('keydown', function (e){
