@@ -1,7 +1,10 @@
-// TODO: Document.
-var driver = {
+
+
+//== TODO: Document ============================================================
+
+const driver = {
     currentFocus: undefined,
-    focus: function (newFocus){
+    focus(newFocus){
         // TODO: Document.
         if(this.currentFocus == newFocus){
             return;
@@ -14,25 +17,25 @@ var driver = {
             this.currentFocus.focused();
         }
     },
-    blur: function (){
+    blur(){
         // TODO: Document.
         if(this.currentFocus && this.currentFocus.blurred){
             this.currentFocus.blurred();
         }
         this.currentFocus = undefined;
     },
-    focused: function (){
+    focused(){
         // TODO: Document.
         },
-    blurred: function (){
+    blurred(){
         // TODO: Document.
         },
-    command: function (which, options){
+    command(which, options){
         // TODO: Document.
         if(!(this.currentFocus && this.currentFocus.command)){ return false;}
         return this.currentFocus.command(which, options);
     },
-    display: function (){
+    display(){
         // TODO: Document.
         if(!(this.currentFocus && this.currentFocus.display)){ return false;}
         return this.currentFocus.display.apply(this.currentFocus, arguments);
