@@ -10,21 +10,21 @@
  *          
  *===========================================================================*/
 
-var actor = Object.create(movable, {
+const actor = Object.extend(movable, {
     // Redefined properties:
-    character: {value: '@', writable: true},
-    type: {value: TYPE_ACTOR, writable: true},
+    character: '@',
+    type: TYPE_ACTOR,
     // Newly defined Properties:
-    intelligence: {value: undefined, writable: true},
-    viewRange: {value: 7, writable: true},
-    turnDelay: {value: 1, writable: true},
-    nextTurn: {value: 0, writable: true},
+    intelligence: undefined,
+    viewRange: 7,
+    turnDelay: 1,
+    nextTurn: 0,
     //
-    /*initializer: {value: function (){
+    /*initializer(){
         movable.initializer.apply(this, arguments);
         return this;
-    }, writable: true},*/
-    dispose: {value: function (){
+    },*/
+    dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
          *      by removing it from the map and nulling out all references
@@ -32,8 +32,8 @@ var actor = Object.create(movable, {
          **/
         gameManager.cancelActor(this);
         movable.dispose.apply(this, arguments);
-    }, writable: true},
-    takeTurn: {value: function (callback){
+    },
+    takeTurn(callback){
         /**
             This function causes the actor to perform their turn taking
                 behavior, such as moving about the map, attacking, or alerting
@@ -65,8 +65,8 @@ var actor = Object.create(movable, {
             this.nextTurn += this.turnDelay;
             callback(true);
         }
-    }, writable: true},
-    pack: {value: function (){
+    },
+    pack(){
         /**
             This function creates a "sensory package" of the object for use by
                 a client, possibly over the network. This allows a client to
@@ -85,12 +85,12 @@ var actor = Object.create(movable, {
         var sensoryData = containable.pack.apply(this, arguments);
         sensoryData.type = TYPE_ACTOR;
         return sensoryData;
-    }, writable: true},
-    inform: {value: function (body){
+    },
+    inform(body){
         /**
             This function sends a message to the actor's intelligence. it is a
                 stub to be used by the prototypes further derived decendants.
             It doesn't return anything.
          **/
-    }, writable: true}
+    }
 });
