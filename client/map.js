@@ -10,10 +10,10 @@
 
 ==============================================================================*/
 
-client.drivers.gameplay.drivers.map = Object.create(driver, {
-    displayWidth: {value: displaySize, writable: true},
-    displayHeight: {value: displaySize, writable: true},
-    setup: {value: function (configuration){
+client.drivers.gameplay.drivers.map = Object.extend(driver, {
+    displayWidth: displaySize,
+    displayHeight: displaySize,
+    setup(configuration){
         /**
             This function configures the map to display game data. It is called
             as soon as the client loads, in client.drivers.gameplay.setup It
@@ -24,8 +24,8 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
             
             It does not return anything.
          **/
-    }},
-    handleClick: {value: function (x, y, options){
+    },
+    handleClick(x, y, options){
         x -= displaySize;
         if(x < 0){ return false;}
         var centerX = Math.floor(displaySize/2);
@@ -40,8 +40,8 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         }
         client.command(direction, {key: null});
         return true;
-    }, writable: true},
-    display: {value: function (displayOptions){
+    },
+    display(displayOptions){
         /*
             This function displays a representation of the game map made from
             data supplied by the memory system.
@@ -116,9 +116,9 @@ client.drivers.gameplay.drivers.map = Object.create(driver, {
         }
         var result = driver.display.apply(this, arguments);
         return result;
-    }},
-    drawText: {value: function (x, y, character, color, background){
+    },
+    drawText(x, y, character, color, background){
         x += displaySize;
         client.skin.drawCharacter(x, y, character, color, background);
-    }, writable: true}
+    }
 });
