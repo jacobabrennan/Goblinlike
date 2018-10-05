@@ -1,17 +1,21 @@
-client.drivers.ending = Object.create(driver, {
-    endLines: {value: 10, writable: true}, // Set in display. Any number > ~2 will do for initial setting.
-    focused: {value: function (){
+
+
+//== Ending ====================================================================
+
+client.drivers.ending = Object.extend(driver, {
+    endLines: 10, // Set in display. Any number > ~2 will do for initial setting.
+    focused(){
         //this.winInfo = client.drivers.gameplay.won; // Set separately by menu
         this.offsetY = 0;
         this.interval = setInterval(function (){
             client.display()
         }, 100);
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         this.winInfo = null;
         clearInterval(this.interval);
-    }},
-    display: {value: function (){
+    },
+    display(){
         var scrollStop = (this.offsetY/FONT_SIZE > this.endLines+displaySize/2)? true : false;
         if(!scrollStop){
             this.offsetY++;
@@ -83,5 +87,5 @@ client.drivers.ending = Object.create(driver, {
         client.skin.drawString(displaySize-9, --I, 'Final Score: '+Math.floor(C.experience+(goblinCount*GOBLIN_SCORE)));
         client.skin.context.setTransform(1, 0, 0, 1, 0, 0);
         this.endLines = -I;
-    }}
+    }
 });
