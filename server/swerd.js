@@ -1,5 +1,11 @@
-/* Thanks to Christopher Pound ( christopherpound.com ), by way of LummoxJR ( byond.com/developer/LummoxJR/sWerd ).
+
+
+//== Swerd Documentation =======================================================
+
+/* Thanks to Christopher Pound ( christopherpound.com ),
+by way of LummoxJR ( byond.com/developer/LummoxJR/sWerd ).
 /*
+
 Enter W
 Pick Sequence
 Find Sub-Rules and substitute recursively
@@ -35,8 +41,12 @@ sWerd.rules.W.forEach(function (pattern){
         C.appendChild(E);
     }
 }, 100);*/
-var sWerd = (function (){
-    var repeat = function (ruleArray){
+
+
+//== Swerd =====================================================================
+
+const sWerd = (function (){
+    const repeat = function (ruleArray){
         var finishArray = [];
         for(var I = 0; I < ruleArray.length; I++){
             var entry = ruleArray[I];
@@ -82,20 +92,20 @@ var sWerd = (function (){
             R: repeat(['h','f','s']) // Frickatives
             None: bdgjmnqrvxz
         },*/
-        a: function (){
+        a() {
             var W = this.substitute('W', 1);
             var S = W.S;
             S = S.charAt(0).toUpperCase()+S.substring(1);
             return W.R+': '+S;
         },
-        full: function (){
+        full() {
             var W = this.substitute('W');
             var X = this.substitute('X');
             W = W.charAt(0).toUpperCase()+W.substring(1);
             X = X.charAt(0).toUpperCase()+X.substring(1);
             return (W+' '+X);
         },
-        name: function (){
+        name() {
             var W = this.substitute('W', 1);
             var S = W.S;
             if(S.indexOf('coc') != -1){
@@ -104,10 +114,10 @@ var sWerd = (function (){
             S = S.charAt(0).toUpperCase()+S.substring(1);
             return S;
         },
-        scroll: function (){
+        scroll() {
             return this.substitute('S');
         },
-        substitute: function (rule, temp){
+        substitute(rule, temp) {
             var subList = this.rules[rule];
             var selection;
             if(subList){
