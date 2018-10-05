@@ -4,6 +4,11 @@
  *      
   ===========================================================================*/
 
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
+
+//------------------------------------------------
 client.drivers.title = Object.extend(driver, {
     drivers: {},
     setup(configuration){

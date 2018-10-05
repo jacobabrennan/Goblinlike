@@ -11,7 +11,14 @@
 
 ==============================================================================*/
 
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
+import memory from './memory.js';
+
+//------------------------------------------------
 client.drivers.gameplay = Object.extend(driver, {
+    memory: memory,
     drivers: {},
     activeTurn: false,
     dead: false,
@@ -138,7 +145,7 @@ client.drivers.gameplay = Object.extend(driver, {
             return;
         // If targetClass contains DIRECTION, then prompt input of direction.
         } else if(targetClass & TARGET_DIRECTION){
-            this.drivers.menu.directionSelect('Input a direction:', function (direction){
+            this.drivers.menu.directionSelect('Input a direction:', (direction) => {
                 targetData.direction = direction;
                 callback(targetData);
             });
@@ -156,7 +163,7 @@ client.drivers.gameplay = Object.extend(driver, {
             } else{
                 viewObjects = this.memory.getView(posX, posY, range);
             }
-            viewObjects.forEach(function (candidate){
+            viewObjects.forEach(candidate => {
         // If targetClass doesn't contain SELF, then remove self from list.
                 if(!(targetClass & TARGET_SELF)){
                     if(candidate.id == this.memory.character.id){
@@ -188,7 +195,7 @@ client.drivers.gameplay = Object.extend(driver, {
                         //break;
                 }
                 candidates.push(candidate);
-            }, this);
+            });
         }
         // If targetClass contains ALL, then select all candidates.
         if(targetClass & TARGET_ALL){
@@ -202,10 +209,15 @@ client.drivers.gameplay = Object.extend(driver, {
                 var indexedCandidate = candidates[candidateIndex];
                 candidateNames[candidateIndex] = indexedCandidate.name;
             }
-            this.drivers.menu.options('Select Target', candidateNames, candidates, function (targetName, targetIndex){
-                targetData.target = candidates[targetIndex];
-                callback(targetData);
-            });
+            this.drivers.menu.options(
+                'Select Target',
+                candidateNames,
+                candidates,
+                (targetName, targetIndex) => {
+                    targetData.target = candidates[targetIndex];
+                    callback(targetData);
+                }
+            );
         } else{
             targetData.targets = candidates;
             callback(targetData);
@@ -234,7 +246,7 @@ client.drivers.gameplay.commandAttack = function (){
     /*
         Innitiate an ATTACK action. Prompt the player for a direction.
     */
-    this.target(TARGET_DIRECTION, undefined, function (targetData){
+    this.target(TARGET_DIRECTION, undefined, (targetData) => {
         this.activeTurn = false;
         client.networking.sendMessage(
             COMMAND_ATTACK, {direction: targetData.direction}
@@ -246,7 +258,7 @@ client.drivers.gameplay.commandClose = function (){
         Innitiate an CLOSE action (to close a door). Prompt for direction.
         This does not return anything.
     */
-    this.target(TARGET_DIRECTION, undefined, function (targetData){
+    this.target(TARGET_DIRECTION, undefined, (targetData) => {
         client.networking.sendMessage(COMMAND_CLOSE, {
             direction: targetData.direction
         });
@@ -260,19 +272,18 @@ client.drivers.gameplay.commandDrop = function (){
     // Compile array of item names for display.
     var items = this.memory.character.inventory;
     var itemNames = [];
-    items.forEach(function (thing){
+    items.forEach(thing => {
         if(thing.type == TYPE_ITEM){
             itemNames.push(thing.name);
         }
-    }, this);
+    });
     // Create a function to call when a selection has been made.
-    var self = this;
-    var optionsCallback = function (selectedName, selectionIndex){
+    var optionsCallback = (selectedName, selectionIndex) => {
         var selectedItem = items[selectionIndex];
         if(selectedItem.name != selectedName){
             console.log('Problem: '+selectedName+' != '+selectedItem.name);
         }
-        self.activeTurn = false;
+        this.activeTurn = false;
         client.networking.sendMessage(COMMAND_DROP, {
             id: selectedItem.id
         });
@@ -289,21 +300,20 @@ client.drivers.gameplay.commandEquip = function (){
     var invNames = [];
     var invEquipment = [];
     if(this.memory.character.inventory){
-        this.memory.character.inventory.forEach(function (invItem){
+        this.memory.character.inventory.forEach(invItem => {
             if(invItem.placement){
                 invNames.push(invItem.name);
                 invEquipment.push(invItem);
             }
-        }, this);
+        });
     }
     // Create a function to call when a selection has been made.
-    var self = this;
-    var invCallback = function (selectedName, selectedIndex){
+    var invCallback = (selectedName, selectedIndex) => {
         var selectedItem = invEquipment[selectedIndex];
         if(selectedItem.name != selectedName){
             console.log('Problem: '+selectedName+' != '+selectedItem.name);
         }
-        self.activeTurn = false;
+        this.activeTurn = false;
         client.networking.sendMessage(COMMAND_EQUIP, {
             itemId: selectedItem.id
         });
@@ -334,7 +344,7 @@ client.drivers.gameplay.commandUnequip = function (){
         }
     }
     // Create options menu callback.
-    var equipCallback = function (selectedName, selectedIndex){
+    var equipCallback = (selectedName, selectedIndex) => {
         // After user has selected an item:
         // Send an unequip message to the server.
         var selectedItem = equipItems[selectedIndex];
@@ -353,7 +363,7 @@ client.drivers.gameplay.commandFire = function (){
         Innitiate an FIRE action (to fire a weapon). Prompt for direction.
         This does not return anything.
     */
-    this.target(TARGET_DIRECTION, undefined, function (targetData){
+    this.target(TARGET_DIRECTION, undefined, (targetData) => {
         client.networking.sendMessage(COMMAND_FIRE, {
             direction: targetData.direction
         });
@@ -372,20 +382,19 @@ client.drivers.gameplay.commandGet = function (){
         this.memory.character.y,
         1
     );
-    containables.forEach(function (thing){
+    containables.forEach(thing => {
         if(thing.type == TYPE_ITEM){
             items.push(thing);
             itemNames.push(thing.name);
         }
-    }, this);
+    });
     // Create a function to call when a selection has been made.
-    var self = this;
-    var optionsCallback = function (selectedName, selectionIndex){
+    var optionsCallback = (selectedName, selectionIndex) => {
         var selectedItem = items[selectionIndex];
         if(selectedItem.name != selectedName){
             console.log('Problem: '+selectedName+' != '+selectedItem.name);
         }
-        self.activeTurn = false;client.networking.sendMessage(COMMAND_GET, {
+        this.activeTurn = false;client.networking.sendMessage(COMMAND_GET, {
             id: selectedItem.id
         });
     };
@@ -408,23 +417,22 @@ client.drivers.gameplay.commandLook = function (){
     // Compile list of names of things in view.
     var viewNames = [];
     var viewEntities = [];
-    view.forEach(function (content, viewIndex){
+    view.forEach((content, viewIndex) => {
         var cId = content.id;
         var unique = (uniqueIds.indexOf(cId) == -1);
         if(!unique){ return;}
         uniqueIds.push(cId);
         viewNames.push(content.name);
         viewEntities.push(content);
-    }, this);
+    });
     // Create callback function for when the player has made a selection.
-    var self = this;
-    var optionsCallback = function (selectedName, selectedIndex){
+    var optionsCallback = (selectedName, selectedIndex) => {
         var selectedContent = viewEntities[selectedIndex];
-        var recallInfo = self.memory.recall(selectedContent);
+        var recallInfo = this.memory.recall(selectedContent);
         if(recallInfo.companion){
-            self.drivers.menu.status(recallInfo);
+            this.drivers.menu.status(recallInfo);
         } else{
-            self.drivers.menu.description(
+            this.drivers.menu.description(
                 'Examine '+recallInfo.name+':',
                 recallInfo.viewText
             );
@@ -438,7 +446,7 @@ client.drivers.gameplay.commandCamp = function (){
         Innitiate a CAMP action. Directs the hero to rest and heal.
         This does not return anything.
     */
-    self.activeTurn = false;
+    this.activeTurn = false;
     client.networking.sendMessage(COMMAND_CAMP, {});
 };
 client.drivers.gameplay.commandStairs = function (){
@@ -446,7 +454,7 @@ client.drivers.gameplay.commandStairs = function (){
         Innitiate a climb stairs action. Directs the hero to climb stairs.
         This does not return anything.
     */
-    self.activeTurn = false;
+    this.activeTurn = false;
     client.networking.sendMessage(COMMAND_STAIRS, {});
 };
 client.drivers.gameplay.commandThrow = function (){
@@ -459,31 +467,30 @@ client.drivers.gameplay.commandThrow = function (){
     // Compile a list of names to be passed to the options menu.
     var inventoryNames = [];
     if(this.memory.character.inventory){
-        this.memory.character.inventory.forEach(function (item, index){
+        this.memory.character.inventory.forEach((item, index) => {
             inventoryNames[index] = item.name;
-        }, this);
+        });
     }
     // Create a function to be called when player has selected an option.
-    var self = this;
-    var inventoryCallback = function (selectedName, selectedIndex){
+    var inventoryCallback = (selectedName, selectedIndex) => {
         // Once the player has selected an item:
         // Ensure that the player has selected a valid item.
-        var selectedItem = self.memory.character.inventory[selectedIndex];
+        var selectedItem = this.memory.character.inventory[selectedIndex];
         if(selectedItem.name != selectedName){
             console.log('Problem: '+selectedName+' != '+selectedItem.name);
         }
         // Create a function to be called when the player selects a direction.
-        var directionCallback = function (targetData){
+        var directionCallback = (targetData) => {
             var throwData = {
                 itemId: selectedItem.id,
                 direction: targetData.direction
             };
-            self.activeTurn = false;
+            this.activeTurn = false;
             // Send message to the server to throw the selected item.
             client.networking.sendMessage(COMMAND_THROW, throwData);
         };
         // Prompt player to select a direction.
-        self.target(TARGET_DIRECTION, undefined, directionCallback);
+        this.target(TARGET_DIRECTION, undefined, directionCallback);
     };
     // Send the item options to the player.
     this.drivers.menu.options('Throw Item', inventoryNames, null, inventoryCallback);
@@ -496,12 +503,12 @@ client.drivers.gameplay.commandUse = function (){
     // Compile an array of the names of items from inventory.
     var inventoryNames = [];
     if(this.memory.character.inventory){
-        this.memory.character.inventory.forEach(function (item, index){
+        this.memory.character.inventory.forEach((item, index) => {
             inventoryNames[index] = item.name;
-        }, this);
+        });
     }
     // Create a callback function for after player has selected and targeted.
-    var targetCallback = function (targetData){
+    var targetCallback = (targetData) => {
         var parsedTargetData = {
             target: undefined,
             targets: undefined,
@@ -512,25 +519,24 @@ client.drivers.gameplay.commandUse = function (){
         }
         if(targetData.targets){
             parsedTargetData.targets = [];
-            parsedData.targets.forEach(function (target){
+            parsedData.targets.forEach(target => {
                 parsedTargetData.push(target.id);
             });
         }
-        self.activeTurn = false;
+        this.activeTurn = false;
         client.networking.sendMessage(COMMAND_USE, {
             itemId: theItem.id,
             targetData: parsedTargetData
         });
     };
     // Create a callback function for after the player has selected.
-    var self = this;
     var theItem;
-    var inventoryCallback = function (selectedName, selectedIndex){
-        theItem = self.memory.character.inventory[selectedIndex];
+    var inventoryCallback = (selectedName, selectedIndex) => {
+        theItem = this.memory.character.inventory[selectedIndex];
         if(theItem.name != selectedName){
             console.log('Problem: '+selectedName+' != '+theItem.name);
         }
-        self.target(theItem.targetClass, theItem.targetRange, targetCallback);
+        this.target(theItem.targetClass, theItem.targetRange, targetCallback);
     };
     // Display options to player.
     this.drivers.menu.options('Use Item', inventoryNames, null, inventoryCallback);

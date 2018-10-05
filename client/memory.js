@@ -15,10 +15,10 @@
 // TODO: Add a beastiary, as per "and information about enemies encountered".
 // TODO: Complete comments for sub-objects.
 
-client.drivers.gameplay.memory = (function (){
-// =============================================================================
+//-- Imports -------------------------------------
+import client from './client.js';
 
-
+//------------------------------------------------
 const memory = {
     currentTime: undefined,
     character: undefined,
@@ -34,7 +34,7 @@ const memory = {
     },
     blank(options){
         this.currentTime = 0;
-        idObjects = {};
+        this.idObjects = {};
         if(this.map){
             this.map.dispose();
         }
@@ -217,7 +217,8 @@ const memory = {
         client.skin.status(statusText);
     }
 };
-    
+export default memory;
+
     
 /*==============================================================================
 
@@ -379,8 +380,3 @@ class MapMemory {
         // TODO: Implement. Clean up references.
     }
 }
-
-
-// ============================================================================
-    return memory;
-})();

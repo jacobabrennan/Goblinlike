@@ -232,6 +232,7 @@ const person = Object.extend(actor, {
         return true;
     },
     getItem(newItem, single){
+        // TODO: There is some sort of error here sometimes.
         /**
             This function handles the movement of items into the person's
                 inventory. It is a general house keeping function, perhaps

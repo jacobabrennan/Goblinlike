@@ -1,6 +1,6 @@
 
 
-//== TODO: Document ============================================================
+//== Driver - TODO: Document ===================================================
 
 const driver = {
     currentFocus: undefined,
@@ -41,3 +41,4 @@ const driver = {
         return this.currentFocus.display.apply(this.currentFocus, arguments);
     }
 };
+export default driver;

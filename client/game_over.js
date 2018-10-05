@@ -12,11 +12,16 @@
  *      
   ===========================================================================*/
 
-client.drivers.gameOver = Object.create(driver, {
-    displayPane: {value: undefined, writable: true},
-    displayPane2: {value: undefined, writable: true},
-    characterData: {value: undefined, writable: true},
-    setup: {value: function (configuration){
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
+
+//------------------------------------------------
+client.drivers.gameOver = Object.extend(driver, {
+    displayPane: undefined,
+    displayPane2: undefined,
+    characterData: undefined,
+    setup(configuration){
         /**
             This function is called by client.setup as soon as the page loads.
             It configures the client to be able to display the menu.
@@ -28,11 +33,11 @@ client.drivers.gameOver = Object.create(driver, {
         this.displayPane2 = document.createElement('div');
         this.displayPane2.setAttribute('id', 'gameOverMap');
         this.displayPane2.setAttribute('class', 'pane');
-    }},
-    acceptDeath: {value: function (characterData){
+    },
+    acceptDeath(characterData){
         this.characterData = characterData;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
         if(block){
@@ -40,17 +45,17 @@ client.drivers.gameOver = Object.create(driver, {
         }
         client.focus(client.drivers.title);
         return false;
-    }},
-    display: {value: function (options){
+    },
+    display(options){
         // TODO: Document.
-    }},
-    focused: {value: function (){
+    },
+    focused(){
         this.display();
         //this.focus(client.drivers.gameplay.drivers.menu);
         client.skin.registerPanel(this.displayPane, true);
         client.skin.registerPanel(this.displayPane2, true);
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         this.characterData = null;
-    }}
+    }
 });

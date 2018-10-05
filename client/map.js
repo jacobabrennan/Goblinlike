@@ -10,6 +10,11 @@
 
 ==============================================================================*/
 
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
+
+//------------------------------------------------
 client.drivers.gameplay.drivers.map = Object.extend(driver, {
     displayWidth: displaySize,
     displayHeight: displaySize,
@@ -93,7 +98,7 @@ client.drivers.gameplay.drivers.map = Object.extend(driver, {
                         var contentColor = null;
                         var contentBack = null;
                         for(var tI = 0; tI < cL; tI++){
-                            indexedC = indexedTile.contents[tI];
+                            let indexedC = indexedTile.contents[tI];
                             if(!contentChar){ contentChar = indexedC.character;}
                             if(!contentColor){
                                 contentColor = indexedC.color;

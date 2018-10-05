@@ -1,7 +1,11 @@
 
 
-//== TODO: Document ============================================================
+//== Client - TODO: Document ===================================================
 
+//-- Imports -------------------------------------
+import driver from './driver.js';
+
+//------------------------------------------------
 const client = Object.extend(driver, {
     drivers: {},
     setup(configuration){
@@ -30,6 +34,7 @@ const client = Object.extend(driver, {
         request.send('score='+rBody);
     }
 });
+export default client;
 
 driver.handleClick = function (x, y, options){
     if(!(this.currentFocus && this.currentFocus.handleClick)){ return false;}

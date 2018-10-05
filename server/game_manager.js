@@ -1,6 +1,8 @@
 const gameManager = (function (){
 // ============================================================================
-
+function getClient() {
+    return window.goblinClient;
+}
 
 const manager = {
     currentGame: undefined,
@@ -11,7 +13,7 @@ const manager = {
         return this.currentGame;
     },
     gameOver: function (){
-        client.reportScores()
+        getClient().reportScores()
         var oldGame = this.currentGame;
         this.currentGame = null;
         oldGame.gameOver();
@@ -125,7 +127,7 @@ class Game {
         // TODO: Refactor this with actual networking.
         this.hero.intelligence = {
             sendMessage: function (command, options){
-                client.networking.recieveMessage(command, options);
+                getClient().networking.recieveMessage(command, options);
             },
             sense: function (sensoryData){
                 this.sendMessage(COMMAND_SENSE, sensoryData);
@@ -254,7 +256,7 @@ class Game {
             messageData: newMessages
         };
         this.hero.intelligence.win(winData);
-        client.reportScores(true);
+        getClient().reportScores(true);
         this.dispose();
     }
     compileScores(win) {

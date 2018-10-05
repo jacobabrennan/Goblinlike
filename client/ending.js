@@ -2,6 +2,11 @@
 
 //== Ending ====================================================================
 
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
+
+//------------------------------------------------
 client.drivers.ending = Object.extend(driver, {
     endLines: 10, // Set in display. Any number > ~2 will do for initial setting.
     focused(){

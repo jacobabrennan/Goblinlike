@@ -3,107 +3,41 @@
     <head>
         <meta charset="utf-8">
         <title>Goblin-like</title>
+        <link rel="stylesheet" href="goblin_like.css" />
         <script src="shared/environment.js"></script>
         <!-- Server -->
         <script src="server/priority_queue.js"></script>
         <script src="client/libraries/mousetrap.min.js"></script>
             <!-- Only Libraries and snippets before this point. -->
-        <script src="server/game_manager.js"></script>
-        <script src="server/map_manager.js"></script>
-        <script src="server/modelLibrary.js"></script>
-        <script src="server/mappables.js"></script>
-        <script src="server/tiles.js"></script>
-        <script src="server/path_finder.js"></script>
-        <script src="server/map_generator.js"></script>
-        <script src="server/level.js"></script>
-        <script src="server/item.js"></script>
-        <script src="server/actor.js"></script>
-        <script src="server/view.js"></script>
-        <script src="server/sound.js"></script>
-        <script src="server/person.js"></script>
-        <script src="server/hero.js"></script>
-        <script src="extensions/stats/stats_server.js"></script>
-        <script src="extensions/equipment/equipment_server.js"></script>
-        <script src="extensions/combat/combat_server.js"></script>
-        <script src="server/companion.js"></script>
-        <script src="server/enemies.js"></script>
-        <script src="server/skills.js"></script>
-        <script src="server/items.js"></script>
-        <script src="server/swerd.js"></script>
-        <!-- Client -->
-        <script src="client/driver.js"></script>
-        <script src="client/client.js"></script>
-        <script src="client/skin.js"></script>
-        <script src="client/title.js"></script>
-        <script src="client/gameplay.js"></script>
-        <script src="client/map.js"></script>
-        <script src="client/menu.js"></script>
-        <script src="client/memory.js"></script>
-        <script src="client/ending.js"></script>
+        <script defer src="server/game_manager.js"></script>
+        <script defer src="server/map_manager.js"></script>
+        <script defer src="server/modelLibrary.js"></script>
+        <script defer src="server/mappables.js"></script>
+        <script defer src="server/tiles.js"></script>
+        <script defer src="server/path_finder.js"></script>
+        <script defer src="server/map_generator.js"></script>
+        <script defer src="server/level.js"></script>
+        <script defer src="server/item.js"></script>
+        <script defer src="server/actor.js"></script>
+        <script defer src="server/view.js"></script>
+        <script defer src="server/sound.js"></script>
+        <script defer src="server/person.js"></script>
+        <script defer src="server/hero.js"></script>
+        <script defer src="extensions/stats/stats_server.js"></script>
+        <script defer src="extensions/equipment/equipment_server.js"></script>
+        <script defer src="extensions/combat/combat_server.js"></script>
+        <script defer src="server/companion.js"></script>
+        <script defer src="server/enemies.js"></script>
+        <script defer src="server/skills.js"></script>
+        <script defer src="server/items.js"></script>
+        <script defer src="server/swerd.js"></script>
         <!-- Debug -->
-        <script src="debug.js"></script>
-        <style>
-@font-face {
-    font-family: 'press_start_kregular';
-    src: url('rsc/fonts/prstartk.eot');
-    src: url('rsc/fonts/prstartk.eot?#iefix') format('embedded-opentype'),
-         url('rsc/fonts/prstartk.woff2') format('woff2'),
-         url('rsc/fonts/prstartk.woff') format('woff'),
-         url('rsc/fonts/prstartk.ttf') format('truetype'),
-         url('rsc/fonts/prstartk.svg#press_start_kregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-html, body{
-    padding: 0px;
-    margin: 0em;
-}
-body{
-    background-color: #030306;
-    background-image: url('rsc/background_1.png');
-}
-.central{
-    text-align: center;
-}
-#game_area, #game_area *{
-    font-size: 16px !important;
-    line-height: 1em !important;
-    margin: 0em;
-    padding: 0px;
-}
-#game_area{
-    cursor: pointer;
-    background: #000;
-    display: inline-block;
-    /*border: double 16px #104;*/
-    outline: 0px;
-}
-#game_area canvas{
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    image-rendering: pixels;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: -o-crisp-edges;
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;
-}
-        </style>
+        <script defer src="debug.js"></script>
     </head>
     <body>
         <div class="central">
             <div id="game_area"></div>
         </div>
-        <script>
-var configuration = {
-    containerId: 'game_area',
-    font: 'press_start_kregular',
-    highlightColor: '#fc0'
-};
-console.log('Start');
-client.setup(configuration);
-        </script>
+        <script type="module" src="goblin_like.js"></script>
     </body>
 </html>

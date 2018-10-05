@@ -10,10 +10,11 @@
 
 ==============================================================================*/
 
-client.drivers.gameplay.drivers.menu = (function (){ // Create a namespace.
-//===== Menu Namespace =======================================================//
+//-- Imports -------------------------------------
+import client from './client.js';
+import driver from './driver.js';
 
-
+//------------------------------------------------
 const menu = Object.extend(driver, {
     displayWidth: displaySize,
     displayHeight: displaySize,
@@ -123,6 +124,7 @@ const menu = Object.extend(driver, {
         focus(directionSelectMenu);
     }
 });
+client.drivers.gameplay.drivers.menu = menu;
     
     
 /*==============================================================================
@@ -137,7 +139,6 @@ const menu = Object.extend(driver, {
     They are not prototypes, and should not be instanced.
     
 ==============================================================================*/
-
 
 const descriptionMenu = Object.extend(driver, {
     setup(){},
@@ -516,7 +517,7 @@ const optionsMenu = Object.extend(driver, {
                     selectFunction
                 );
                 if(this.actionDetails){
-                    indexedDetail = this.actionDetails[displayIndex];
+                    let indexedDetail = this.actionDetails[displayIndex];
                     if(!indexedDetail || indexedDetail.id === undefined){ continue;}
                     var identifiedDetail = mapManager.idManager.get(indexedDetail.id);
                     if(!identifiedDetail){ continue;}
@@ -870,8 +871,3 @@ const helpMenu = Object.extend(driver, {
         return false;
     }
 });*/
-
-
-// ============================================================================
-    return menu; // Return the menu; end the namespace.
-})();
