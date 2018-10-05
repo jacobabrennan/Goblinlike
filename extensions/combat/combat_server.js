@@ -1,16 +1,16 @@
 
     
-// === Combat System ======================================================
+// === Combat System ===========================================================
 // TODO: Document this mess.
 
 // Damage Types (bit flags):
-var DAMAGE_PHYSICAL = 1;
-var DAMAGE_FIRE =  2;
-var DAMAGE_ACID =  4;
-var DAMAGE_MAGIC =  8;
-var DAMAGE_0000000000010000 = 16;
-var DAMAGE_0000000000100000 = 32;
-var DAMAGE_0000000000000000 =  0;
+const DAMAGE_PHYSICAL = 1;
+const DAMAGE_FIRE =  2;
+const DAMAGE_ACID =  4;
+const DAMAGE_MAGIC =  8;
+const DAMAGE_0000000000010000 = 16;
+const DAMAGE_0000000000100000 = 32;
+const DAMAGE_0000000000000000 =  0;
 
 (function (){
     /**
@@ -288,19 +288,19 @@ var DAMAGE_0000000000000000 =  0;
 
 //== Define Weapons ============================================================
 // TODO: Refactor projectiles. It's a real mess, really.
-var weapon = Object.create(item, {
+const weapon = Object.extend(item, {
     // Redefined Properties
-    character: {value: '/', writable: true},
-    placement: {value: EQUIP_MAINHAND, writable: true},
+    character: '/',
+    placement: EQUIP_MAINHAND,
     // Redefined Methods
     // New Properties
-    damageType: {value: DAMAGE_PHYSICAL, writable: true},
-    baseDamage: {value: 1, writable: true},
-    damageSigma: {value: 0, writable: true},
-    twoHanded: {value: false, writable: true},
-    throwable: {value: false, writable: true},
+    damageType: DAMAGE_PHYSICAL,
+    baseDamage: 1,
+    damageSigma: 0,
+    twoHanded: false,
+    throwable: false,
     // New Methods
-    attack: {value: function (attacker, target){
+    attack(attacker, target){
         /**
          *  This function handles one attacker attacking an enemy actor via a
          *      weapon. This is a hook that derived types can use for all sorts
@@ -318,21 +318,21 @@ var weapon = Object.create(item, {
         var damageDone = target.hurt(damage, damageType, attacker, this);
         // Return that actual damage done.
         return damageDone;
-    }, writable: true}
+    }
 });
-var bow = Object.create(item, {
+const bow = Object.extend(item, {
     // Redefined Properties
-    character: {value: '}', writable: true},
-    placement: {value: EQUIP_MAINHAND, writable: true},
+    character: '}',
+    placement: EQUIP_MAINHAND,
     // Redefined Methods
     // New Properties
-    damageScale: {value: 1, writable: true},
-    range: {value: 6, writable: true},
-    ammoType: {value: 'arrow', writable: true},
+    damageScale: 1,
+    range: 6,
+    ammoType: 'arrow',
         // TODO: Better ammo types, perhaps with bit flags. That way, you could
             // fire 'blizzard arrows' or silly stuff like that.
     // New Methods
-    shoot: {value: function (attacker, direction, forceTarget){
+    shoot(attacker, direction, forceTarget){
         /**
          *  This function handles one attacker attacking an enemy actor via a
          *      weapon. This is a hook that derived types can use for all sorts
@@ -377,7 +377,7 @@ var bow = Object.create(item, {
         } else{
             return null;
         }
-    }, writable: true}
+    }
 });
 
 item.project = function (direction, options){
@@ -455,10 +455,10 @@ weapon.bump = function (obstruction){
     }
     return movable.bump.apply(this, arguments);
 };
-var projectile = Object.create(weapon, {
-    placement: {value: EQUIP_OFFHAND, writable: true},
-    ephemeral: {value: true, writable: true},
-    project: {value: function (direction, options){
+const projectile = Object.extend(weapon, {
+    placement: EQUIP_OFFHAND,
+    ephemeral: true,
+    project(direction, options){
         // Returns damage done, if any.
         delete this.projectDamageDone;
         var originalStackable = this.stackable;
@@ -538,8 +538,8 @@ var projectile = Object.create(weapon, {
             this.dispose();
         }
         return this.projectDamageDone;
-    }, writable: true},
-    bump: {value: function (obstruction){
+    },
+    bump(obstruction){
         if(!this.damageScale){
             return weapon.bump.apply(this, arguments);
         }
@@ -554,8 +554,8 @@ var projectile = Object.create(weapon, {
             delete this.damageScale;
         }
         return movable.bump.apply(this, arguments);
-    }},
-    attack: {value: function (attacker, target){
+    },
+    attack(attacker, target){
         /**
          *  This function handles one attacker attacking an enemy actor via a
          *      weapon. This is a hook that derived types can use for all sorts
@@ -573,7 +573,7 @@ var projectile = Object.create(weapon, {
         var damageDone = target.hurt(damage, damageType, attacker, this);
         // Return that actual damage done.
         return damageDone;
-    }}
+    }
 });
 
 
@@ -594,73 +594,3 @@ var projectile = Object.create(weapon, {
         return defended;
     };
 })(item);
-
-
-
-//== Storage ===================================================================
-
-/* Simple JavaScript Inheritance
-     * By John Resig http://ejohn.org/
-     * MIT Licensed.
-     * /  
-     // Inspired by base2 and Prototype
-(function(){
-  var initializing = false
-  var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.* /; // Remove space between '* /' when uncommenting.
-
-  // The base Class implementation (does nothing)
-  this.Class = function(){};
-
-  // Create a new Class that inherits from this class
-  Class.extend = function(prop) {
-    var _super = this.prototype;
-
-    // Instantiate a base class (but only create the instance,
-    // don't run the init initializer)
-    initializing = true;
-    var prototype = new this();
-    initializing = false;
-
-    // Copy the properties over onto the new prototype
-    for (var name in prop) {
-      // Check if we're overwriting an existing function
-      prototype[name] = (typeof prop[name] == "function") &&
-        (typeof _super[name] == "function") && fnTest.test(prop[name]) ?
-        (function(name, fn){
-          return function() {
-            var tmp = this._super;
-
-            // Add a new ._super() method that is the same method
-            // but on the super-class
-            this._super = _super[name];
-
-            // The method only need to be bound temporarily, so we
-            // remove it when we're done executing
-            var ret = fn.apply(this, arguments);        
-            this._super = tmp;
-
-            return ret;
-          };
-        })(name, prop[name]) :
-        prop[name];
-    }
-
-    // The dummy class initializer
-    function Class() {
-      // All construction is actually done in the init method
-      if ( !initializing && this.init )
-        this.init.apply(this, arguments);
-    }
-
-    // Populate our constructed prototype object
-    Class.prototype = prototype;
-
-    // Enforce the initializer to be what we expect
-    Class.prototype.initializer = Class;
-
-    // And make this class extendable
-    Class.extend = arguments.callee;
-
-    return Class;
-  };
-})();*/
