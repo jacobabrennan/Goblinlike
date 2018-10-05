@@ -1,9 +1,13 @@
-var g = () => {
+
+
+//== Debugging Utilities =======================================================
+
+const g = () => {
     return gameManager.currentGame;
 };
-var h = () => {
+const h = () => {
     return g().hero;
 };
-var l = () => {
+const l = () => {
     return mapManager.getLevel(h().levelId);
 };
