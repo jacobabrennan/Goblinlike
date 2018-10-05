@@ -11,11 +11,11 @@
 
 ==============================================================================*/
 
-client.drivers.gameplay = Object.create(driver, {
-    drivers: {value: {}, writable: true},
-    activeTurn: {value: false, writable: true},
-    dead: {value: false, writable: true},
-    setup: {value: function (configuration){
+client.drivers.gameplay = Object.extend(driver, {
+    drivers: {},
+    activeTurn: false,
+    dead: false,
+    setup(configuration){
         // TODO: Document.
         this.drivers.map.setup(configuration);
         this.drivers.menu.setup(configuration);
@@ -28,25 +28,25 @@ client.drivers.gameplay = Object.create(driver, {
         }
         this.hero.update('inventory');
         */
-    }},
-    focused: {value: function (options){
+    },
+    focused(options){
         this.focus(this.drivers.menu);
-    }},
-    newGame: {value: function (gameData){
+    },
+    newGame(gameData){
         this.dead = false;
         this.won = false;
         this.memory.sense(gameData);
-    }},
-    gameOver: {value: function (deathData){
+    },
+    gameOver(deathData){
         this.dead = true;
         this.takeTurn(deathData);
-    }},
-    win: {value: function (winData){
+    },
+    win(winData){
         this.won = winData;
         this.won.characterData = this.memory.character;
         this.takeTurn(winData);
-    }},
-    handleClick: {value: function (x, y, options){
+    },
+    handleClick(x, y, options){
         var block = driver.handleClick.apply(this, arguments);
         if(block){
             return block;
@@ -55,8 +55,8 @@ client.drivers.gameplay = Object.create(driver, {
             return true;
         }
         return this.drivers.map.handleClick(x, y, options);
-    }, writable: true},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         var block = driver.command.call(this, command, options);
         if(block){ return block;}
@@ -83,16 +83,16 @@ client.drivers.gameplay = Object.create(driver, {
             case COMMAND_CAMP   : this.commandCamp(   ); break;
         }
         return false;
-    }},
-    display: {value: function (options){
+    },
+    display(options){
         // TODO: Document.
         this.drivers.map.display();
         var block = driver.display.apply(this, arguments);
         if(block){ return block;}
         //this.drivers.menu.display();
         return false;
-    }},
-    takeTurn: {value: function (turnData){
+    },
+    takeTurn(turnData){
         // TODO: Document.
         if(!this.dead && !this.won){
             this.activeTurn = true;
@@ -109,8 +109,8 @@ client.drivers.gameplay = Object.create(driver, {
             this.drivers.menu.showDefault();
         }
         this.display();
-    }},
-    target: {value: function (targetClass, range, callback){
+    },
+    target(targetClass, range, callback){
         /**
             This function provides the interface for the user to skills, items,
                 and other actions. It can select an appropriate target
@@ -210,7 +210,7 @@ client.drivers.gameplay = Object.create(driver, {
             targetData.targets = candidates;
             callback(targetData);
         }
-    }}
+    }
 });
 
 
