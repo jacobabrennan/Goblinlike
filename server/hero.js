@@ -12,21 +12,21 @@
  *      
  *===========================================================================*/
 
-var hero = Object.create(person, {
+const hero = Object.extend(person, {
     // Redefined properties
-    character: {value: 'g', writable: true},
-    faction: {value: FACTION_GOBLIN, writable: true},
-    name: {value: 'person', writable: true},
-    color: {value: '#0f0', writable: true},
-    colorNatural: {value: '#0f0', writable: true},
+    character: 'g',
+    faction: FACTION_GOBLIN,
+    name: 'person',
+    color: '#0f0',
+    colorNatural: '#0f0',
     // New properties
-    updates: {value: undefined, writable: true},
-    messages: {value: undefined, writable: true},
-    inventory: {value: undefined, writable: true},
-    turnActive: {value: false, writable: true},
-    turnCallback: {value: undefined, writable: true},
+    updates: undefined,
+    messages: undefined,
+    inventory: undefined,
+    turnActive: false,
+    turnCallback: undefined,
     // Redefined Methods
-    initializer: {value: function (options){
+    initializer(options){
         /**
             A standard initializer, used for inheritence and setup.
             The function updates several values so that the player will know
@@ -42,15 +42,15 @@ var hero = Object.create(person, {
         this.update('viewRange');
         this.inventory = [];
         return this;
-    }, writable: true},
-    die: {value: function (){
+    },
+    die(){
         this.inform('');
         this.inform('You have died.');
         this.inform('');
         this.inform('Press Space to Continue');
         gameManager.gameOver();
-    }, writable: true},
-    endTurn: {value: function (){
+    },
+    endTurn(){
         /**
             This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
@@ -60,8 +60,8 @@ var hero = Object.create(person, {
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
         callbackTemp(true);
-    }, writable: true},
-    move: {value: function (direction){
+    },
+    move(direction){
         /**
             This function is used to move the object in a specific direction,
                 one of:
@@ -84,9 +84,9 @@ var hero = Object.create(person, {
             content.hear('footsteps', 15, this);
         }, this);
         return success;
-    }, writable: true},
+    },
     // New Methods
-    update: {value: function (which){
+    update(which){
         /**
             This function is used to maintain a list of all aspects of the person
                 which have changed since their last turn. Items in this list
@@ -100,8 +100,8 @@ var hero = Object.create(person, {
         if(this.updates.indexOf(which) == -1){
             this.updates.push(which);
         }
-    }, writable: true},
-    packageUpdates: {value: function (){
+    },
+    packageUpdates(){
         /**
             This function creates a data package containing information about
                 aspects of the person that have changed since the person's last
@@ -122,13 +122,13 @@ var hero = Object.create(person, {
             }
         }, this);
         return updatePackage;
-    }, writable: true},
-    hear: {value: function (tamber, amplitude, source, message){
+    },
+    hear(tamber, amplitude, source, message){
         if(message && source != this){
             this.inform(message);
         }
-    }, writable: true},
-    inform: {value: function (message){
+    },
+    inform(message){
         /**
             This function sends a message to the player. These messages are
                 displayed, one at a time, at the start of the player's next
@@ -145,7 +145,7 @@ var hero = Object.create(person, {
         }
         oldMessage += message;
         this.messages[0] = oldMessage;*/
-    }, writable: true},
+    },
     
     
 /*===========================================================================
@@ -156,13 +156,13 @@ var hero = Object.create(person, {
  *      
  *===========================================================================*/
 
-    commandWait: {value: function (options){
+    commandWait(options){
         /**
             This command from the player causes the person to wait (pass).
          **/
         this.endTurn();
-    }, writable: true},
-    commandMove: {value: function (options){
+    },
+    commandMove(options){
         /**
             This command from the player causes the person to move.
             The person will attack any hostile actor in the destination tile.
@@ -198,8 +198,8 @@ var hero = Object.create(person, {
             this.move(direction);
             this.endTurn();
         }
-    }, writable: true},
-    commandClose: {value: function (options){
+    },
+    commandClose(options){
         /**
             This command from the player causes the person to close a door.
         **/
@@ -226,8 +226,8 @@ var hero = Object.create(person, {
             this.inform('There is no door there.');
         }
         this.endTurn();
-    }, writable: true},
-    commandAttack: {value: function (options){
+    },
+    commandAttack(options){
         /**
          *  This command from the player directs the person to attack an enemy,
          *      as specified by id.
@@ -272,8 +272,8 @@ var hero = Object.create(person, {
                 this.endTurn();
             }
         }
-    }, writable: true},
-    commandGet: {value: function (options){
+    },
+    commandGet(options){
         /**
             This command from the player directs the person to place the
                 item into its inventory. The item can be specified in multiple
@@ -305,8 +305,8 @@ var hero = Object.create(person, {
         }
         // End turn.
         this.endTurn();
-    }, writable: true},
-    commandDrop: {value: function (options){
+    },
+    commandDrop(options){
         /**
             This command from the player directs the person to drop the specified
                 item from inventory.
@@ -332,8 +332,8 @@ var hero = Object.create(person, {
         }
         // End turn.
         this.endTurn();
-    }, writable: true},
-    commandCamp: {value: function (options){
+    },
+    commandCamp(options){
         /**
             This command from the player directs the hero to rest here until all
             goblins are healed and in good moral.
@@ -344,8 +344,8 @@ var hero = Object.create(person, {
         }, this);
         // End turn.
         this.endTurn();
-    }, writable: true},
-    commandUse: {value: function (options){
+    },
+    commandUse(options){
         /**
             This command from the player directs the person to use the specified
                 item from inventory on the specified target.
@@ -401,8 +401,8 @@ var hero = Object.create(person, {
         }
         // End turn.
         this.endTurn();
-    }, writable: true},
-    commandStairs: {value: function (options){
+    },
+    commandStairs(options){
         /**
             This command from the player directs the person to drop the specified
                 item from inventory.
@@ -418,5 +418,5 @@ var hero = Object.create(person, {
                 }
             }
         }
-    }, writable: true}
+    }
 });
