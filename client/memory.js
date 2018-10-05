@@ -17,12 +17,14 @@
 
 client.drivers.gameplay.memory = (function (){
 // =============================================================================
-var memory = {
+
+
+const memory = {
     currentTime: undefined,
     character: undefined,
     map: undefined,
     idObjects: {},
-    setup: function (configuration){
+    setup(configuration){
         /**
             Configures the memory object. It is invoked, as soon as the page
             loads, by client.drivers.gameplay.setup.
@@ -30,15 +32,15 @@ var memory = {
             It does not return anything.
         **/
     },
-    blank: function (options){
+    blank(options){
         this.currentTime = 0;
         idObjects = {};
         if(this.map){
             this.map.dispose();
         }
-        this.map = Object.instantiate(mapMemory);
+        this.map = new MapMemory;
     },
-    sense: function (sensoryData){
+    sense(sensoryData){
         /**
             Accepts information about the game world, usually at the start of
             the player's turn. This info is then stores for later access.
@@ -58,7 +60,7 @@ var memory = {
             this.map.recordData(sensoryData.view, this.currentTime);
         }
     },
-    /*storeIdObject: function (object, id){
+    /*storeIdObject(object, id){
         / **
             Maintains a library of all objects the player has encountered, by
             id. This allows the player to recognize when something they saw in
@@ -70,7 +72,7 @@ var memory = {
         ** /
         this.idObjects[id] = object;
     },
-    cancelIdObject: function (id){
+    cancelIdObject(id){
         / **
             Removes an object, referenced by id, from memory. Because ids are
             recycled, this is neccessary to prevent the memory from identifying
@@ -80,7 +82,7 @@ var memory = {
         ** /
         delete this.idObjects[id];
     },
-    getIdObject: function (id, name){
+    getIdObject(id, name){
         / **
             Returns an object previously stored in memory using storeIdObject,
             or undefined if no object is known. It will, optionally, only return
@@ -93,7 +95,7 @@ var memory = {
         }
         return rememberedObject;
     },*/
-    recall: function (containable){
+    recall(containable){
         /**
             Allows the character to remember information about enemies
             previously encountered.
@@ -126,7 +128,7 @@ var memory = {
         return {name: objMemory.name, viewText: objViewText};
         // TODO: Finish this with real stuffs.
     },
-    getDisplayLevel: function (){
+    getDisplayLevel(){
         /**
             Returns the memory representation of the current level, for display
             in the map.
@@ -135,7 +137,7 @@ var memory = {
         var currentLevelMemory = this.map.getLevel(currentLevelId);
         return currentLevelMemory;
     },
-    getView: function (x, y, range){
+    getView(x, y, range){
         /**
             This function returns an array of all tile contents (but not tiles)
             within the specified range of the specified coordinates on the
@@ -148,7 +150,7 @@ var memory = {
         if(!currentLevel){ return [];}
         return currentLevel.getView(x, y, range);
     },
-    getRange: function (x, y, range){
+    getRange(x, y, range){
         /**
             This function returns an array of all tile contents (but not tiles)
             within the specified range of the specified coordinates on the
@@ -160,7 +162,7 @@ var memory = {
         if(!currentLevel){ return [];}
         return currentLevel.getRange(x, y, range);
     },
-    updateSelf: function (updateData){
+    updateSelf(updateData){
         /**
             This function parses data about updates to the player's hero object
             that have taken place between turns, and stores the new info in
@@ -169,7 +171,7 @@ var memory = {
             It does not return anything.
         **/
         if(!this.character){
-            this.character = Object.instantiate(characterMemory);
+            this.character = new CharacterMemory();
         }
         // Handle each aspect of the update data separately.
         /* TODO: Revisit this before release. If no special handling is needed,
@@ -230,61 +232,49 @@ var memory = {
     
 ==============================================================================*/
 
-var characterMemory = {
+class CharacterMemory {
     // TODO: Document.
-    hp: undefined,
-    mp: undefined,
-    maxHp: undefined,
-    maxMp: undefined,
-    inventory: undefined,
-    initializer: function (){
-        // TODO: Document.
+    constructor() {
+        this.hp = undefined;
+        this.mp = undefined;
+        this.maxHp = undefined;
+        this.maxMp = undefined;
+        this.inventory = undefined;
         this.inventory = [];
-        return this;
     }
-};
-var tileMemory = {
+}
+
+class TileMemory {
     // TODO: Document.
-    id: undefined,
-    contents: undefined,
-    timeStamp: undefined,
-    initializer: function (tileData, currentTime){
-        // TODO: Document.
+    constructor(tileData, currentTime) {
         this.id = tileData.id;
         this.contents = tileData.contents;
         this.timeStamp = currentTime;
-        return this;
     }
-};
-var levelMemory = {
+}
+
+class LevelMemory {
     // TODO: Document.
-    width: undefined,
-    height: undefined,
-    tileGrid: undefined,
-    tileTypes: undefined,
-    initializer: function (levelData){
-        // TODO: Document.
+    constructor(levelData) {
         this.width = levelData.width;
         this.height = levelData.height;
         this.tileGrid = [];
         this.tileGrid.length = this.width * this.height;
         this.tileTypes = levelData.tileTypes;
         return this;
-    },
-    recordView: function (viewData, currentTime){
+    }
+    recordView(viewData, currentTime){
         // TODO: Document.
         this.currentTime = currentTime;
         for(var index = 0; index < viewData.tiles.length; index++){
             var indexedTile = viewData.tiles[index];
             var compoundIndex = indexedTile.y*this.width + indexedTile.x;
             //var tileType = this.tileTypes[indexedTile.id];
-            var newTileMemory = tileMemory.initializer.call(
-                Object.create(tileMemory), indexedTile, currentTime
-            );
+            var newTileMemory = new TileMemory(indexedTile, currentTime);
             this.tileGrid[compoundIndex] = newTileMemory;
         }
-    },
-    getTile: function (x, y){
+    }
+    getTile(x, y){
         // TODO: Document.
         if(x < 0 || x >= this.width || y < 0 || y >= this.height){
             return undefined;
@@ -292,8 +282,8 @@ var levelMemory = {
         var compoundIndex = y*this.width + x;
         var result = this.tileGrid[compoundIndex];
         return result;
-    },
-    getRange: function (x, y, range, age){
+    }
+    getRange(x, y, range, age){
         /**
             This function returns an array of all tile contents (but not tiles)
             within the specified range of the specified coordinates. The array
@@ -329,8 +319,8 @@ var levelMemory = {
         }
         // Return range contents.
         return rangeContents;
-    },
-    getView: function (x, y, range){
+    }
+    getView(x, y, range){
         /**
             This function returns an array of all tile contents (but not tiles)
             within the specified range of the specified coordinates. The array
@@ -341,36 +331,32 @@ var levelMemory = {
          **/
         return this.getRange(x, y, range, 0);
     }
-};
-var mapMemory = {
+}
+
+class MapMemory {
     // TODO: Document.
-    levels: undefined,
-    initializer: function (){
+    constructor() {
         this.levels = {};
-        return this;
-    },
-    getLevel: function (levelId){
+    }
+    getLevel(levelId){
         /**
             This function allows levels to be referenced by id.
             It returns the level memory, if found.
                 Otherwise, it returns undefined.
          **/
         return this.levels[levelId];
-    },
-    recordLevel: function (levelData){
+    }
+    recordLevel(levelData){
         /**
          *  This function creates a new levelMemory from data, and stores
          *      it in the list of levels, accessibly by levelId.
          *  It returns a new levelMemory object.
          **/
-        var newLevel = levelMemory.initializer.call(
-            Object.create(levelMemory),
-            levelData
-        );
+        var newLevel = new LevelMemory(levelData);
         this.levels[levelData.levelId] = newLevel;
         return newLevel;
-    },
-    recordData: function (data){
+    }
+    recordData(data){
         /**
          *  This function takes in map data from the server and records it
          *      in its appropriate level. This includes creating new level
@@ -388,11 +374,13 @@ var mapMemory = {
                 client.drivers.gameplay.memory.currentTime
             );
         }
-    },
-    dispose: function (){
+    }
+    dispose(){
         // TODO: Implement. Clean up references.
     }
-};
+}
+
+
 // ============================================================================
     return memory;
 })();
