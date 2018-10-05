@@ -1,8 +1,11 @@
-// TODO: Document.
-client.skin = Object.create(driver, {
-    container: {value: undefined, writable: true},
-    context: {value: undefined, writable: true},
-    setup: {value: function (configuration){
+
+
+//== TODO: Document ============================================================
+
+client.skin = Object.extend(driver, {
+    container: undefined,
+    context: undefined,
+    setup(configuration){
         /**
             This function configures the map to display game data. It is called
             as soon as the client loads, in client.drivers.gameplay.setup It
@@ -32,8 +35,8 @@ client.skin = Object.create(driver, {
             client.skin.resize();
         }, false);
         this.resize();
-    }},
-    clickHandler: {value: function (clickEvent){
+    },
+    clickHandler(clickEvent){
         // Determine Game-Pixel Location of click
         var displayCanvas = client.skin.context.canvas;
         var rectangle = displayCanvas.getBoundingClientRect();
@@ -48,17 +51,17 @@ client.skin = Object.create(driver, {
         if(!client.skin.triggerCommand(x, y)){
             client.handleClick(x, y);
         }
-    }, writable: true},
+    },
 
 //-- Full Screen / Resizing ----------------------------------------------------
-    viewportSize: {value: function (){
+    viewportSize(){
         var e  = document.documentElement;
         var g  = document.getElementsByTagName('body')[0];
         var _x = window.innerWidth  || e.clientWidth  || g.clientWidth;
         var _y = window.innerHeight || e.clientHeight || g.clientHeight;
         return {width: _x, height: _y};
-    }},
-    resize: {value: function (){
+    },
+    resize(){
         var size = this.viewportSize();
         var monitorAspectRatio = size.width / size.height;
         var gameAspectRatio = (displaySize*2) / (displaySize+1);
@@ -79,10 +82,10 @@ client.skin = Object.create(driver, {
         }
         this.container.style.width  = modifiedWidth +"px";
         this.container.style.height = modifiedHeight+"px";
-    }},
+    },
 
 //-- Draw Functions ------------------------------------------------------------
-    fillRect: {value: function (x, y, width, height, color){
+    fillRect(x, y, width, height, color){
         this.context.fillStyle = color || '#000';
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
         y = (displaySize) - y;
@@ -93,8 +96,8 @@ client.skin = Object.create(driver, {
         var fillWidth  =  width*TILE_SIZE;
         fillY -= fillHeight;
         this.context.fillRect(x*TILE_SIZE, fillY, fillWidth, fillHeight);
-    }, writable: true},
-    drawCharacter: {value: function(x, y, character, color, background, font){
+    },
+    drawCharacter: function(x, y, character, color, background, font){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
         y = (displaySize) - y;
@@ -110,8 +113,8 @@ client.skin = Object.create(driver, {
         this.context.fillStyle = color || '#fff';
         this.context.fillText(character, x*TILE_SIZE, y*TILE_SIZE);
         if(font){ this.context.font = ''+FONT_SIZE+'px '+this.font;}
-    }, writable: true},
-    drawString: {value: function (x, y, newText, color, background, font){
+    },
+    drawString(x, y, newText, color, background, font){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
         // Reverse y (canvas origin problem):
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
@@ -134,8 +137,8 @@ client.skin = Object.create(driver, {
         this.context.fillStyle = color || '#fff';
         this.context.fillText(newText, x*TILE_SIZE, y*TILE_SIZE);
         if(font){ this.context.font = ''+FONT_SIZE+'px '+this.font;}
-    }, writable: true},
-    drawParagraph: {value: function (x, y, newText, color, background, font, width){
+    },
+    drawParagraph(x, y, newText, color, background, font, width){
         // Returns the number of lines it took to display the message.
         var lines = 1;
         if(color == HIGHLIGHT){ color = this.highlightColor;}
@@ -166,13 +169,13 @@ client.skin = Object.create(driver, {
             x, y-currentLine, currentString, color, background, font);
         lines++;
         return lines;
-    }, writable: true},
-    status: {value: function (statusText, color){
+    },
+    status(statusText, color){
         //this.statusBar.textContent = statusText;
         this.fillRect(0, displaySize, (displaySize*2)*TILE_SIZE, TILE_SIZE);
         this.drawString(0, displaySize, statusText, color);
-    }},
-    drawCommand: {value: function (x, y, key, name, command){
+    },
+    drawCommand(x, y, key, name, command){
         var keyLength = key.length;
         this.drawString(x, y, key, HIGHLIGHT);
         if(name){
@@ -182,17 +185,17 @@ client.skin = Object.create(driver, {
         for(var posX = 0; posX < totalLength; posX++){
             this.registerCommand(x+posX, y, command);
         }
-    }},
+    },
 
 //-- Command Handling ----------------------------------------------------------
-    clearCommands: {value: function (){
+    clearCommands(){
         this.commandCoords = [];
-    }},
-    registerCommand: {value: function (x, y, command){
+    },
+    registerCommand(x, y, command){
         var compoundIndex = (y*displaySize*2) + x;
         this.commandCoords[compoundIndex] = command;
-    }},
-    triggerCommand: {value: function (x, y){
+    },
+    triggerCommand(x, y){
         var compoundIndex = (y*displaySize*2) + x;
         var command = this.commandCoords[compoundIndex];
         if(command){
@@ -204,5 +207,5 @@ client.skin = Object.create(driver, {
             return true;
         }
         return false;
-    }}
+    }
 });
