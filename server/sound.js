@@ -1,3 +1,7 @@
+
+
+//== Sound =====================================================================
+
 actor.sound = function (tamber, amplitude, source, message){
     if(!this.x || !this.y|| !this.levelId){ return;}
     //var hearers = getDijkstraContents(this, amplitude);
