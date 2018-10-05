@@ -1,42 +1,44 @@
 (function (){ // Open new namespace for skills.
 //==============================================================================
-var skill = {
+
+
+const skill = {
     name: undefined,
     range: 1,
     targetClass: TARGET_ENEMY,
-    use: function (user, target){}
+    use(user, target){}
 };
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'attack', writable: true},
-    name: {value: 'attack', writable: true},
-    range: {value: 1, writable: true},
-    targetClass: {value: TARGET_ENEMY, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'attack',
+    name: 'attack',
+    range: 1,
+    targetClass: TARGET_ENEMY,
+    use(user, target){
         var result = 0;
         if(target){
             result = user.attack(target);
         }
         return result;
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'breath fire', writable: true},
-    name: {value: 'breath fire', writable: true},
-    range: {value: 4, writable: true},
-    targetClass: {value: TARGET_ENEMY, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'breath fire',
+    name: 'breath fire',
+    range: 4,
+    targetClass: TARGET_ENEMY,
+    use(user, target){
         target.hear('fire', 10, user, 'The '+user.name+' breathes fire!');
         var attemptedDamage = gaussRandom(user.baseIntelligence,1);
         var damageDone = target.hurt(attemptedDamage, DAMAGE_FIRE, user);
         return damageDone;
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'teleport', writable: true},
-    name: {value: 'teleport', writable: true},
-    range: {value: 10, writable: true},
-    targetClass: {value: TARGET_ENEMY|TARGET_RANGE, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'teleport',
+    name: 'teleport',
+    range: 10,
+    targetClass: TARGET_ENEMY|TARGET_RANGE,
+    use(user, target){
         var range = 3;
         if(distance(user.x,user.y, target.x,target.y) <= range){ return false;}
         var possibles = [];
@@ -56,41 +58,41 @@ modelLibrary.registerModel('skill', Object.create(skill, {
             }
         }
         return false;
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'glare', writable: true},
-    name: {value: 'glare', writable: true},
-    range: {value: 10, writable: true},
-    targetClass: {value: TARGET_ENEMY, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'glare',
+    name: 'glare',
+    range: 10,
+    targetClass: TARGET_ENEMY,
+    use(user, target){
         target.hear('glare', 10, user, 'The '+user.name+' glares at you.');
         if(target.adjustMoral){
             var damageDone = target.adjustMoral(-10); // TODO: Stats
             return damageDone;
         }
         return 0;
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'wail', writable: true},
-    name: {value: 'wail', writable: true},
-    range: {value: 10, writable: true},
-    targetClass: {value: TARGET_ENEMY|TARGET_ALL, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'wail',
+    name: 'wail',
+    range: 10,
+    targetClass: TARGET_ENEMY|TARGET_ALL,
+    use(user, target){
         target.hear('wail', 10, user, 'The '+user.name+' lets out a terrible wail.');
         if(target.adjustMoral){
             var damageDone = target.adjustMoral(-10); // TODO: Stats
             return damageDone;
         }
         return 0;
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'breed', writable: true},
-    name: {value: 'breed', writable: true},
-    targetClass: {value: TARGET_SELF, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'breed',
+    name: 'breed',
+    targetClass: TARGET_SELF,
+    use(user, target){
         return user.breed();
         /*var selfType = modelLibrary.getModel('enemy', user.generationId);
         if(!selfType){ return false;}
@@ -115,20 +117,22 @@ modelLibrary.registerModel('skill', Object.create(skill, {
         }
         progeny.activate();
         return true;*/
-    }, writable: true}
+    }
 }));
-modelLibrary.registerModel('skill', Object.create(skill, {
-    generationId: {value: 'sap', writable: true},
-    name: {value: 'sap', writable: true},
-    range: {value: 10, writable: true},
-    targetClass: {value: TARGET_ENEMY, writable: true},
-    use: {value: function (user, target){
+modelLibrary.registerModel('skill', Object.extend(skill, {
+    generationId: 'sap',
+    name: 'sap',
+    range: 10,
+    targetClass: TARGET_ENEMY,
+    use(user, target){
         target.hear('sap', 10, user, 'The '+user.name+' saps your health!');
         var damageDone = target.hurt(5, DAMAGE_MAGIC, user); // TODO: Stats
         var healingDone = user.adjustHp(damageDone);
         return healingDone;
-    }, writable: true}
+    }
 }));
+
+
 //==============================================================================
     // Close namespace.
 })();
