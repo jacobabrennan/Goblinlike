@@ -4,8 +4,8 @@
  */
 
 mapManager.getViewGrid = (function (){ // Create new namespace.
-    var viewGrid = {
-        initializer: function (x, y, levelId, range){
+    class ViewGrid {
+        constructor(x, y, levelId, range) {
             this.x = x;
             this.y = y;
             this.levelId = levelId;
@@ -18,21 +18,20 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
             for(var viewI = 0; viewI < this.view.length; viewI++){
                 this.view[viewI] = 0;
             }
-            return this;
-        },
-        setVisible: function(x, y){
+        }
+        setVisible(x, y) {
             var offsetX = (x-this.x)+this.range;
             var offsetY = (y-this.y)+this.range;
             var compoundIndex = offsetY*this.width + offsetX;
             this.view[compoundIndex] = true;
-        },
-        isVisible: function(x, y){
+        }
+        isVisible(x, y) {
             var offsetX = (x-this.x)+this.range;
             var offsetY = (y-this.y)+this.range;
             var compoundIndex = offsetY*this.width + offsetX;
             return this.view[compoundIndex];
-        },
-        isOpaque: function(x, y){
+        }
+        isOpaque(x, y) {
             var testTile = mapManager.getTile(x, y, this.levelId);
             if(!testTile){ return true;}
             if(testTile.opaque){ return true;}
@@ -43,8 +42,8 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
             }
             return false;
         }
-    };
-    var computeQuadrant = function (view, xPos, yPos, maxRadius, dx, dy){
+    }
+    const computeQuadrant = function (view, xPos, yPos, maxRadius, dx, dy){
         var startAngle = [];
         startAngle[99] = undefined;
         var endAngle = startAngle.slice(0);
@@ -213,10 +212,7 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
         }
     };
     var compute = function (x, y, levelId, visionRange){
-        var newView = viewGrid.initializer.call(
-            Object.create(viewGrid),
-            x, y, levelId, visionRange
-        );
+        var newView = new ViewGrid(x, y, levelId, visionRange);
         newView.setVisible(x, y); //player can see themself
         //compute the 4 quadrants of the view
         computeQuadrant(newView, x, y, visionRange,  1,  1);
@@ -231,7 +227,8 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
 })();
 
 
-//===== Extend Level =========================================================//
+//===== Extend Level ===========================================================
+
 level.prototype.getView = function (x, y, range){
     /**
         This function constructs a grid (an array with indexes ordered by
