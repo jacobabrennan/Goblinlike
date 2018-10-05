@@ -29,7 +29,9 @@
 
 mapManager.generateLevel = (function (){
 //== Map Generator Namespace ===================================================
-var accessFunction = function (depth, options){
+
+
+const accessFunction = function (depth, options){
     /**
         This function proceedurally generates a new level with the supplied
         parameters:
@@ -61,7 +63,7 @@ var accessFunction = function (depth, options){
     var newLevel = generator.generate(prototypeOptions);
     return newLevel;
 };
-var protoLevel = {
+const protoLevel = {
     roomSideMax: 7,
     roomSideMin: 3,
     hallLengthMax: 20,
@@ -76,7 +78,7 @@ var protoLevel = {
     openings: undefined,
     openingsHash: undefined,
     rooms: undefined,
-    generate: function (options){
+    generate(options){
         // Configure generation options and defaults.
         this.depth = options.depth || this.depth;
         this.roomSideMax = options.roomSideMax || this.roomSideMax;
@@ -312,7 +314,7 @@ var protoLevel = {
         }
         return newLevel;
     },
-    getCoordsRotate: function (x1, y1, x2, y2, direction){
+    getCoordsRotate(x1, y1, x2, y2, direction){
         // Functional
         switch (direction){
             case NORTH:
@@ -325,7 +327,7 @@ var protoLevel = {
                 return [x1+x2, y1+y2];
         }
     },
-    getDirectionRotate: function (oldDirection, rotateDirection){
+    getDirectionRotate(oldDirection, rotateDirection){
         // Functional
         var oldDegrees = 0;
         //var rotateDegrees = 0;
@@ -364,14 +366,14 @@ var protoLevel = {
         if(newDegrees >= 337 && newDegrees < 360){ return EAST     ;}
         return 0;
     },
-    getTile: function (x, y){
+    getTile(x, y){
         if(x < 0 || x >= this.width || y < 0 || y >= this.height){
             return ' ';
         }
         var compoundIndex = y*this.width + x;
         return this.mapText.charAt(compoundIndex);
     },
-    setTile: function (x, y, newValue){
+    setTile(x, y, newValue){
         if(x < 0 || x >= this.width || y < 0 || y >= this.height){
             return undefined;
         }
@@ -381,7 +383,7 @@ var protoLevel = {
         this.mapText = halfFirst+newValue+halfSecond;
         return newValue;
     },
-    placeRoom: function (x, y, direction){
+    placeRoom(x, y, direction){
         /**
          *  Return null if the room could not be placed, a room with the
          *      following structure if placement is successful:
@@ -503,7 +505,7 @@ var protoLevel = {
         };
         return roomInfo;
     },
-    placeHall: function (x, y, direction){
+    placeHall(x, y, direction){
         /**
          *  Return null if the room could not be placed, a room with the
          *  following structure if placement is successful:
@@ -574,10 +576,10 @@ var protoLevel = {
         // return roomInfo;
         return true;
     },
-    getOpening: function (x, y){
+    getOpening(x, y){
         return this.openingsHash[''+x+','+y];
     },
-    closeOpening: function (x, y, newValue){
+    closeOpening(x, y, newValue){
         var opening = this.getOpening(x, y);
         if(!opening){
             this.setTile(x, y, newValue);
@@ -589,7 +591,7 @@ var protoLevel = {
             this.setTile(x, y, newValue);
         }
     },
-    placeOpening: function (x, y, direction, forceDoor, hall){
+    placeOpening(x, y, direction, forceDoor, hall){
         var oldOpening = this.getOpening(x, y);
         var newDirection = direction;
         if(oldOpening){
@@ -644,7 +646,7 @@ var protoLevel = {
         this.openingsHash[opening.index] = opening;
         this.setTile(x, y, ''+newDirection);
     },
-    placeDoor: function (x, y, force){
+    placeDoor(x, y, force){
         var selfOpening = this.getOpening(x, y);
         if(!selfOpening && !force){
             return false;
@@ -678,6 +680,8 @@ var protoLevel = {
         return true;
     }
 };
+
+
 //== Close generator namespace =================================================
     return accessFunction;
 })();
