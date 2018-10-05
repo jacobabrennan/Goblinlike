@@ -1,10 +1,12 @@
-var gameManager = (function (){
+const gameManager = (function (){
 // ============================================================================
-var manager = {
+
+
+const manager = {
     currentGame: undefined,
     newGame: function (options){
         if(this.currentGame){ return false;}
-        this.currentGame = Object.instantiate(game);
+        this.currentGame = new Game();
         this.currentGame.start(options);
         return this.currentGame;
     },
@@ -107,15 +109,15 @@ var manager = {
         }
     }
 };
-game = {
-    hero: undefined,
-    currentTime: 0,
-    constructor: function (){
+
+class Game {
+    constructor() {
+        this.hero = undefined;
+        this.currentTime = 0;
         this.companionInfo = [];
-        return this;
-    },
-    start: function (options){
-        var newLevel = mapManager.generateLevel(1);
+    }
+    start(options) {
+        let newLevel = mapManager.generateLevel(1);
         this.hero = Object.instantiate(hero, options);
         this.hero.place(
             newLevel.startCoords.x, newLevel.startCoords.y, newLevel.id);
@@ -130,23 +132,23 @@ game = {
             },
             takeTurn: function (theMover){
                 // Compile sensory data about the player's view.
-                var currentLevel = mapManager.getLevel(theMover.levelId);
-                var viewData;
+                let currentLevel = mapManager.getLevel(theMover.levelId);
+                let viewData;
                 if(currentLevel){
                     viewData = currentLevel.packageView(
                         theMover.x, theMover.y, theMover.viewRange);
                 }
                 // Compile data about recent changes to the person.
-                var selfData = theMover.packageUpdates();
+                let selfData = theMover.packageUpdates();
                 theMover.updates = undefined;
                 // Compile package of new messages.
-                var newMessages;
+                let newMessages;
                 if(theMover.messages && theMover.messages.length){
                     newMessages = theMover.messages;
                     theMover.messages = null;
                 }
                 // Create final package and send it to the player.
-                var turnData = {
+                let turnData = {
                     characterData: selfData,
                     sensoryData: viewData,
                     messageData: newMessages
@@ -155,14 +157,14 @@ game = {
             },
             camp: function (theMover){
                 // Compile data about recent changes to the person.
-                var selfData = theMover.packageUpdates();
+                let selfData = theMover.packageUpdates();
                 theMover.updates = undefined;
                 // Create final package and send it to the player.
-                var turnData = {
+                let turnData = {
                     characterData: selfData,
                     time: gameManager.currentTime()
                 };
-                var delay = (Math.random() < 1/10)? 10 : 1;
+                let delay = (Math.random() < 1/10)? 10 : 1;
                 this.sendMessage(COMMAND_SENSE, turnData);
                 setTimeout(function (){
                     theMover.endTurn();
@@ -176,63 +178,63 @@ game = {
             }
         };
         //--
-        var levelData = newLevel.packageSetup();
+        let levelData = newLevel.packageSetup();
         gameManager.registerActor(this.hero);
         this.hero.intelligence.sendMessage(COMMAND_NEWGAME, {
             level: levelData
         });
         gameManager.turn();
-    },
-    dispose: function (){
+    }
+    dispose() {
         this.hero = null;
-    },
-    gameOver: function (){
+    }
+    gameOver() {
         // Compile data to show to player about the conditions of their death.
         // Compile data about the hero's view.
-        var currentLevel = mapManager.getLevel(this.hero.levelId);
-        var viewData;
+        let currentLevel = mapManager.getLevel(this.hero.levelId);
+        let viewData;
         if(currentLevel){
             viewData = currentLevel.packageView(
                 this.hero.x, this.hero.y, this.hero.viewRange
             );
         }
         // Compile data about recent changes to the hero.
-        var selfData = this.hero.packageUpdates();
+        let selfData = this.hero.packageUpdates();
         // Compile package of new messages.
-        var newMessages;
+        let newMessages;
         if(this.hero.messages && this.hero.messages.length){
             newMessages = this.hero.messages;
         }
         // Create final package and send it to the player.
-        var deathData = {
+        let deathData = {
             characterData: selfData,
             sensoryData: viewData,
             messageData: newMessages
         };
         this.hero.intelligence.gameOver(deathData);
         this.dispose();
-    },
-    win: function (){
+    }
+    win() {
         this.hero.inform('The undead have been defeated.');
         this.hero.inform('You have won the game!');
         // Compile data from final turn to display to player.
         // Compile data about the hero's view.
-        var currentLevel = mapManager.getLevel(this.hero.levelId);
-        var viewData;
+        let currentLevel = mapManager.getLevel(this.hero.levelId);
+        let viewData;
         if(currentLevel){
             viewData = currentLevel.packageView(
                 this.hero.x, this.hero.y, this.hero.viewRange
             );
         }
         // Compile data about recent changes to the hero.
-        var selfData = this.hero.packageUpdates();
+        let selfData = this.hero.packageUpdates();
         // Compile package of new messages.
-        var newMessages;
+        let newMessages;
         if(this.hero.messages && this.hero.messages.length){
             newMessages = this.hero.messages;
         }
         // Compile info about each goblin.
-        var goblinsData = [] // TODO
+        let goblinsData = [] // TODO
         for(var gI = 0; gI < this.companionInfo.length; gI++){
             var indexG = this.companionInfo[gI];
             goblinsData.push({
@@ -254,8 +256,8 @@ game = {
         this.hero.intelligence.win(winData);
         client.reportScores(true);
         this.dispose();
-    },
-    compileScores: function (win){
+    }
+    compileScores(win) {
         var scores = {
             name: this.hero.name,
             score: this.hero.experience,
@@ -282,8 +284,8 @@ game = {
             scores.goblins.push(gInfo);
         }
         return scores;
-    },
-    clientCommand: function (command, options){
+    }
+    clientCommand(command, options) {
         if(this.hero){
             switch(command){
                 case COMMAND_ATTACK:  this.hero.commandAttack(options);  break;
@@ -303,9 +305,10 @@ game = {
             }
         }
     }
-};
-var timeManager = (function (){
-    var manager = {
+}
+
+const timeManager = (function (){
+    const manager = {
         actors: new PriorityQueue(function (a,b){
             var turnDifference = a.nextTurn - b.nextTurn;
             if(turnDifference){
@@ -383,29 +386,26 @@ var timeManager = (function (){
         },
         registerEvent: function (eventFunction, delay){
             var timeStamp = gameManager.currentTime() + delay;
-            var newEvent = Object.instantiate(
-                eventActor, eventFunction, timeStamp
-            );
+            var newEvent = new EventActor(eventFunction, timeStamp);
             this.registerActor(newEvent);
         }
     };
-    var eventActor = {
-        nextTurn: undefined,
-        callbackStorage: undefined,
-        eventFunction: undefined,
-        takeTurn: function (callback){
-            this.eventFunction();
-            callback(false);
-        },
-        dispose: function (){},
-        constructor: function (eventFunction, timeStamp){
+    class EventActor {
+        constructor(eventFunction, timeStamp) {
             this.eventFunction = eventFunction;
             this.nextTurn = timeStamp;
-            return this;
+            this.callbackStorage = undefined;
         }
+        takeTurn(callback) {
+            this.eventFunction();
+            callback(false);
+        }
+        dispose() {}
     };
     return manager;
 })();
+
+
 // ============================================================================
     return manager;
 })();

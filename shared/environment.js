@@ -17,7 +17,7 @@ const FINAL_DEPTH = 7;
 const INTRO_TITLE = 'You descend into darkness';
 const INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
 const GOBLIN_SCORE = 100;
-const URL_SCORE_REPORT = 'http://jacobabrennan.com:7231/scores';
+const URL_SCORE_REPORT = 'http://example.com';//'http://jacobabrennan.com:7231/scores';
     // Directions:
 const WAIT      = 0;
 const NORTH     = 1;
