@@ -1,18 +1,22 @@
-var tile = Object.create(mappable, {
+
+
+//== Tiles =====================================================================
+
+const tile = Object.extend(mappable, {
     /**
      *  Tiles are the basic unit of map layout. Tiles determine the layout of
      *      the map, and how other mappables move about and interact with the
      *      game map in the most basic ways. They also determine line of sight.
      *  This is a prototype, and must be instanced before use.
      **/
-    id: {value: undefined, writable: true},
+    id: undefined,
         /*  TODO: ID needs to be renamed or refactored, as it confuses matters
             as other objects derived from the same ancestor also have ids with
             different implementations. */
-    character: {value: '.', writable: true},
-    dense: {value: true, writable: true},
-    opaque: {value: true, writable: true},
-    enter: {value: function (content){
+    character: '.',
+    dense: true,
+    opaque: true,
+    enter(content){
         /**
          *  This function determines whether content is allowed to enter the
          *      tile. It handles density checks. It is also a hook for further
@@ -28,8 +32,8 @@ var tile = Object.create(mappable, {
             }
         // Movement is allowed, return true.
         return true;
-    }, writable: true},
-    entered: {value: function (content){
+    },
+    entered(content){
         /**
          *  Entered is a hook for further derived tiles. It is called whenever
          *      a movable enters a tile, after movement is finished. It is not
@@ -38,55 +42,55 @@ var tile = Object.create(mappable, {
          *      spring when the user steps on them.
          *  It does not return anything.
          **/
-    }, writable: true}
+    }
 });
 
 var genericTileTypes = {
-    '!': Object.create(tile, { // Testing Marker
-        id: {value: 'test'},
-        character: {value: 'x'},
-        dense: {value: false},
-        opaque: {value: false},
-        color: {value: '#400'},
-        background: {value: '#200'}
-        //background: {value: '#111'}
+    '!': Object.extend(tile, { // Testing Marker
+        id: 'test',
+        character: 'x',
+        dense: false,
+        opaque: false,
+        color: '#400',
+        background: '#200'
+        //background: '#111'
     }),
-    '%': Object.create(tile, { // Undefined
-        id: {value: 'undefined'},
-        character: {value: '%'},
-        color: {value: '#08F'},
-        background: {value: '#111'}
+    '%': Object.extend(tile, { // Undefined
+        id: 'undefined',
+        character: '%',
+        color: '#08F',
+        background: '#111'
     }),
-    '#': Object.create(tile, { // Wall
-        id: {value: 'wall'},
-        character: {value: '#'},
-        background: {value: '#111'}
+    '#': Object.extend(tile, { // Wall
+        id: 'wall',
+        character: '#',
+        background: '#111'
     }),
-    '.': Object.create(tile, { // Floor
-        id: {value: 'floor'},
-        character: {value: '.'},
-        dense: {value: false},
-        opaque: {value: false},
-        color: {value: '#444'},
-        background: {value: '#111'}
-        //background: {value: '#111'}
+    '.': Object.extend(tile, { // Floor
+        id: 'floor',
+        character: '.',
+        dense: false,
+        opaque: false,
+        color: '#444',
+        background: '#111'
+        //background: '#111'
     }),
-    ' ': Object.create(tile, { // Hall
-        id: {value: 'hall'},
-        character: {value: '.'},
-        dense: {value: false},
-        opaque: {value: false},
-        color: {value: '#222'},
-        background: {value: '#000'}
-        //background: {value: '#111'}
+    ' ': Object.extend(tile, { // Hall
+        id: 'hall',
+        character: '.',
+        dense: false,
+        opaque: false,
+        color: '#222',
+        background: '#000'
+        //background: '#111'
     }),
-    '+': Object.create(tile, { // Door
-        id: {value: 'door'},
-        character: {value: '+'},
-        dense: {value: true},
-        color: {value: '#fc0'},
-        background: {value: '#111'},
-        toggleDoor: {value: function (x, y, theActor, force){
+    '+': Object.extend(tile, { // Door
+        id: 'door',
+        character: '+',
+        dense: true,
+        color: '#fc0',
+        background: '#111',
+        toggleDoor(x, y, theActor, force){
             var levelId;
             if(theActor.levelId){
                 levelId = theActor.levelId;
@@ -104,16 +108,16 @@ var genericTileTypes = {
                 }
             }
             return true;
-        }, writable: true}
+        }
     }),
-    "'": Object.create(tile, { // Door (Open)
-        id: {value: 'doorOpen'},
-        character: {value: "'"},
-        dense: {value: false},
-        opaque: {value: false},
-        color: {value: '#fc0'},
-        background: {value: '#111'},
-        toggleDoor: {value: function (x, y, theActor){
+    "'": Object.extend(tile, { // Door (Open)
+        id: 'doorOpen',
+        character: "'",
+        dense: false,
+        opaque: false,
+        color: '#fc0',
+        background: '#111',
+        toggleDoor(x, y, theActor){
             var levelId;
             if(theActor.levelId){
                 levelId = theActor.levelId;
@@ -132,27 +136,27 @@ var genericTileTypes = {
                 currentLevel.placeTile(x, y, genericTileTypes["+"]);
             }
             return true;
-        }, writable: true}
+        }
     }),
-    '"': Object.create(tile, { // Door (Open)
-        id: {value: 'doorBroken'},
-        character: {value: "'"},
-        dense: {value: false},
-        opaque: {value: false},
-        color: {value: '#000'},
-        background: {value: '#111'},
-        toggleDoor: {value: function (x, y, theActor){
+    '"': Object.extend(tile, { // Door (Open)
+        id: 'doorBroken',
+        character: "'",
+        dense: false,
+        opaque: false,
+        color: '#000',
+        background: '#111',
+        toggleDoor(x, y, theActor){
             return false;
-        }, writable: true}
+        }
     }),
-    '>': Object.create(tile, { // Stairs Down
-        id: {value: 'stairs_down'},
-        character: {value: '>'},
-        background: {value: '#fc0'},
-        color: {value: '#000'},
-        dense: {value: false},
-        opaque: {value: false},
-        climb: {value: function (content){
+    '>': Object.extend(tile, { // Stairs Down
+        id: 'stairs_down',
+        character: '>',
+        background: '#fc0',
+        color: '#000',
+        dense: false,
+        opaque: false,
+        climb(content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth+1, true);
             var placeX = newLevel.stairsUpCoords.x;
@@ -192,22 +196,22 @@ var genericTileTypes = {
                 content.intelligence.sense(viewData);
             }
         // --
-        }, writable: true}/*,
-        enter: {value: function (entrant){
+        }/*,
+        enter(entrant){
             if(entrant.type != TYPE_ACTOR){
                 return false;
             }
             return tile.enter.apply(this, arguments);
-        }, writable: true}*/
+        }*/
     }),
-    '<': Object.create(tile, { // Stairs Up
-        id: {value: 'stairs_up'},
-        character: {value: '<'},
-        background: {value: '#fc0'},
-        color: {value: '#000'},
-        dense: {value: false},
-        opaque: {value: false},
-        climb: {value: function (content){
+    '<': Object.extend(tile, { // Stairs Up
+        id: 'stairs_up',
+        character: '<',
+        background: '#fc0',
+        color: '#000',
+        dense: false,
+        opaque: false,
+        climb(content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth-1);
             if(!newLevel){
@@ -249,12 +253,12 @@ var genericTileTypes = {
                 content.intelligence.sense(viewData);
             }
         // --
-        }, writable: true}/*,
-        enter: {value: function (entrant){
+        }/*,
+        enter(entrant){
             if(entrant.type != TYPE_ACTOR){
                 return false;
             }
             return tile.enter.apply(this, arguments);
-        }, writable: true}*/
+        }*/
     })
 };
