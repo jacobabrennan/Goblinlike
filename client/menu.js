@@ -12,11 +12,13 @@
 
 client.drivers.gameplay.drivers.menu = (function (){ // Create a namespace.
 //===== Menu Namespace =======================================================//
-var menu = Object.create(driver, {
-    displayWidth: {value: displaySize},
-    displayHeight: {value: displaySize},
-    defaultMenu: {value: undefined, writable: true},
-    showDefault: {value: function (){
+
+
+const menu = Object.extend(driver, {
+    displayWidth: displaySize,
+    displayHeight: displaySize,
+    defaultMenu: undefined,
+    showDefault(){
         if(this.defaultShowing){ return;}
         if(this.focus == statusMenu || this.focus == commandsMenu){ return;}
         else{
@@ -24,8 +26,8 @@ var menu = Object.create(driver, {
             this.focus(defaultMenu);
             defaultMenu.display();
         }
-    }, writable: true},
-    setup: {value: function (configuration){
+    },
+    setup(configuration){
         /**
             This function is called by client.setup as soon as the page loads.
             It configures the client to be able to display the menu.
@@ -38,11 +40,12 @@ var menu = Object.create(driver, {
         infoMenu.setup(configuration);
         directionSelectMenu.setup(configuration);
         descriptionMenu.setup(configuration);
-    }},
-    focused: {value: function (){
+    },
+    focused(){
         this.showDefault();
-    }},/*
-    display: {value: function (){
+    },
+    /*
+    display(){
         / **
             This function displays the menu, and any focused submenus.
             It returns
@@ -55,29 +58,29 @@ var menu = Object.create(driver, {
         if(!(this.currentFocus && this.currentFocus.display)){ return false;}
         return true;
         //return this.currentFocus.display.apply(this.currentFocus, arguments);
-    }},*/
-    blank: {value: function (){
+    },*/
+    blank(){
         this.lastDraw = client.drivers.gameplay.memory.currentTime;
         client.skin.fillRect(0, 0, displaySize, displaySize, '#000');
         client.skin.clearCommands();
-    }},
-    commands: {value: function (){
+    },
+    commands(){
         /**
             This function displays the help / commands menu to the player.
             It does not return anything.
          **/
         commandsMenu.display();
         this.focus(commandsMenu);
-    }},
-    help: {value: function (){
+    },
+    help(){
         helpMenu.display();
         this.focus(helpMenu);
-    }},
-    description: {value: function (title, description){
+    },
+    description(title, description){
         descriptionMenu.display(title, description);
         this.focus(descriptionMenu);
-    }},
-    info: {value: function (messages){
+    },
+    info(messages){
         /**
             This function displays an array of messages to the player.
             It does not return anything.
@@ -87,16 +90,16 @@ var menu = Object.create(driver, {
         }
         this.focus(infoMenu);
         infoMenu.display();
-    }},
-    status: {value: function (goblinInfo){
+    },
+    status(goblinInfo){
         /**
             This function displays the player's hero's status.
             It does not return anything.
          **/
         statusMenu.display(goblinInfo);
         this.focus(statusMenu);
-    }},
-    options: {value: function (title, options, details, callback){
+    },
+    options(title, options, details, callback){
         /**
             This function displays a menu of options the player can select from.
             The optionsMenu has focus once this function ends.
@@ -110,15 +113,15 @@ var menu = Object.create(driver, {
             page: 0
         });
         this.focus(optionsMenu);
-    }},
-    directionSelect: {value: function(message, callback){
+    },
+    directionSelect: function(message, callback){
         /**
             This function prompts the player to input a direction.
             It does not return anything.
          **/
         directionSelectMenu.display(message, callback);
         focus(directionSelectMenu);
-    }}
+    }
 });
     
     
@@ -136,9 +139,9 @@ var menu = Object.create(driver, {
 ==============================================================================*/
 
 
-var descriptionMenu = Object.create(driver, {
-    setup: {value: function (){}, writable: true},
-    display: {value: function (title, description){
+const descriptionMenu = Object.extend(driver, {
+    setup(){},
+    display(title, description){
         /**
             This function displays the descriptionMenu in the document.
             It returns true to signify that drawing should not continue;
@@ -153,8 +156,8 @@ var descriptionMenu = Object.create(driver, {
         client.skin.drawCommand(1, 1, 'Space', 'Done', COMMAND_CANCEL);
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         client.drivers.gameplay.drivers.map.display();
         switch(command){
@@ -164,9 +167,9 @@ var descriptionMenu = Object.create(driver, {
         }
         menu.showDefault();
         return false;
-    }}
+    }
 });
-var commandsMenu = Object.create(driver, {
+const commandsMenu = Object.extend(driver, {
     /**
         The statusMenu is used by the menuing system to display information
             about the character. It is the default display state of the
@@ -174,8 +177,8 @@ var commandsMenu = Object.create(driver, {
             infoMenu so the player can access old messages more easily.
         It is not a prototype, and should not be instanced.
      **/
-    setup: {value: function (){}},
-    display: {value: function (){
+    setup(){},
+    display(){
         /**
             This function displays the statusMenu in the document.
             It returns true to signify that drawing should not continue;
@@ -210,8 +213,8 @@ var commandsMenu = Object.create(driver, {
         commandLink(1, 1, "Space", COMMAND_CANCEL, 'View Status');
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         switch(command){
             case COMMAND_PAGEDOWN:
@@ -223,19 +226,19 @@ var commandsMenu = Object.create(driver, {
                 return true;
         }
         return false;
-    }}
+    }
 });
-var infoMenu = Object.create(driver, {
+const infoMenu = Object.extend(driver, {
     /**
         The infoMenu is used by the menuing system to display blocks of
         text to the player.
         It is not a prototype, and should not be instanced.
     **/
-    messages: {value: undefined, writable: true},
-    pendingIndex: {value: undefined, writable: true},
-    pageIndex: {value: undefined, writable: true},
-    pageLength: {value: 13, writable: true},
-    setup: {value: function (){
+    messages: undefined,
+    pendingIndex: undefined,
+    pageIndex: undefined,
+    pageLength: 13,
+    setup(){
         /**
             This function is called by menu.setup as soon as the page loads.
             It configures the client to be able to display the info.
@@ -243,8 +246,8 @@ var infoMenu = Object.create(driver, {
          **/
         this.messageIndex = 0;
         this.messages = [];
-    }},
-    stackMessages: {value: function (messages){
+    },
+    stackMessages(messages){
         /**
             Used to display new messages. It also adds the messages to the old
             messages list so they can be recalled later.
@@ -257,8 +260,8 @@ var infoMenu = Object.create(driver, {
         }
         this.pageIndex = 0;
         this.display();
-    }},
-    advanceMessage: {value: function (direction){
+    },
+    advanceMessage(direction){
         /**
          *  Used to cycle through and display old messages.
          *  It does not return anything.
@@ -269,8 +272,8 @@ var infoMenu = Object.create(driver, {
         var maxPage = Math.floor((offsetLength)/this.pageLength);
         this.pageIndex = Math.max(0, Math.min(maxPage, this.pageIndex));
         this.display();
-    }},
-    display: {value: function (){
+    },
+    display(){
         /**
             This function displays the infoMenu in the document.
             It returns true to signify that drawing should not continue;
@@ -299,8 +302,8 @@ var infoMenu = Object.create(driver, {
         }
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         if(command >= 0 && command <= 15){
             return false;
@@ -326,15 +329,15 @@ var infoMenu = Object.create(driver, {
                 }
         }
         return true;
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         // TODO: Document.
         //this.pendingIndex = 0;
         this.pageIndex = 0;
         client.drivers.gameplay.drivers.map.display();
-    }}
+    }
 });
-var statusMenu = Object.create(driver, {
+const statusMenu = Object.extend(driver, {
     /**
         The statusMenu is used by the menuing system to display information
             about the character. It is the default display state of the
@@ -342,8 +345,8 @@ var statusMenu = Object.create(driver, {
             infoMenu so the player can access old messages more easily.
         It is not a prototype, and should not be instanced.
      **/
-    setup: {value: function (){}},
-    display: {value: function (goblinInfo){
+    setup(){},
+    display(goblinInfo){
         /**
             This function displays the statusMenu in the document.
             
@@ -420,8 +423,8 @@ var statusMenu = Object.create(driver, {
         }
         client.skin.drawCommand(1, 1, 'Space', 'View Commands', COMMAND_HELP);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         if(client.drivers.gameplay.dead){
             if(command == COMMAND_ENTER || command == COMMAND_CANCEL){
@@ -439,27 +442,27 @@ var statusMenu = Object.create(driver, {
                 return true;
         }
         return false;
-    }}
+    }
 });
-var optionsMenu = Object.create(driver, {
+const optionsMenu = Object.extend(driver, {
     /**
         The optionsMenu is used to prompt the player to make a selection
             from several provided options.
         It is not a prototype, and should not be instanced.
      **/
-    optionsDisplayMax: {value: displaySize-8},
-    actionTitle: {value: undefined, writable: true},
-    actionOptions: {value: undefined, writable: true},
-    optionsPage: {value: undefined, writable: true},
-    actionCallback: {value: undefined, writable: true},
-    setup: {value: function (){
+    optionsDisplayMax: displaySize-8,
+    actionTitle: undefined,
+    actionOptions: undefined,
+    optionsPage: undefined,
+    actionCallback: undefined,
+    setup(){
         /**
             This function is called by menu.setup as soon as the page loads.
             It configures the client to be able to display info.
             It does not return anything.
          **/
-    }},
-    display: {value: function (options){
+    },
+    display(options){
         /**
             This function displays the optionsMenu in the document.
             It returns true to signify that drawing should not continue;
@@ -540,8 +543,8 @@ var optionsMenu = Object.create(driver, {
         client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         if(command >= 0 && command <= 15){
             return false;
@@ -576,23 +579,23 @@ var optionsMenu = Object.create(driver, {
                 }
         }
         return true;
-    }},
-    select: {value: function (selectionIndex){
+    },
+    select(selectionIndex){
         // TODO: Document.
         var indexedOption = this.actionOptions[selectionIndex];
         this.actionCallback(indexedOption, selectionIndex);
-    }} 
+    } 
 });
-var directionSelectMenu = Object.create(driver, {
+const directionSelectMenu = Object.extend(driver, {
     /**
         The directionSelectMenu is used by the menuing system to prompt the
             player to select a direction. This is used in targeting spells,
             etc.
         It is not a prototype, and should not be instanced.
      **/
-    directionCallback: {value: undefined, writable: true},
-    setup: {value: function (){}},
-    display: {value: function (message, callback){
+    directionCallback: undefined,
+    setup(){},
+    display(message, callback){
         /**
             This function displays the infoMenu in the document.
             It returns true to signify that drawing should not continue;
@@ -604,8 +607,8 @@ var directionSelectMenu = Object.create(driver, {
         client.skin.drawCommand(1, 1, 'Space', 'Cancel', COMMAND_CANCEL);
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         switch(command){
             case COMMAND_CANCEL:
@@ -619,15 +622,15 @@ var directionSelectMenu = Object.create(driver, {
                 callbackStorage(command);
         }
         return true;
-    }},
-    blurred: {value: function (){
+    },
+    blurred(){
         // TODO: Document.
         this.directionCallback = undefined;
-    }}
+    }
 });
-var helpMenu = Object.create(driver, {
-    setup: {value: function (){}, writable: true},
-    display: {value: function (which){
+const helpMenu = Object.extend(driver, {
+    setup(){},
+    display(which){
         menu.blank();
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
@@ -781,8 +784,8 @@ var helpMenu = Object.create(driver, {
         client.skin.drawCommand(1,  1, 'Space', 'Back to Game', COMMAND_ENTER);
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         if(command == COMMAND_CANCEL){
             client.drivers.gameplay.drivers.map.display();
@@ -804,11 +807,11 @@ var helpMenu = Object.create(driver, {
                 menu.showDefault();
         }
         return true;
-    }}
+    }
 });
-/*var helpMenu = Object.create(driver, {
-    setup: {value: function (){}, writable: true},
-    display: {value: function (title, description){
+/*var helpMenu = Object.extend(driver, {
+    setup(){},
+    display(title, description){
         menu.blank();
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
@@ -859,18 +862,16 @@ var helpMenu = Object.create(driver, {
         client.skin.drawCommand(1,  1, 'Space', 'Back to Game', COMMAND_ENTER);
         menu.focus(this);
         return true;
-    }},
-    command: {value: function (command, options){
+    },
+    command(command, options){
         // TODO: Document.
         client.drivers.gameplay.drivers.map.display();
         menu.showDefault();
         return false;
-    }}
+    }
 });*/
+
 
 // ============================================================================
     return menu; // Return the menu; end the namespace.
 })();
-
-
-
