@@ -434,10 +434,7 @@ var pathWeightCompare = function (a, b){
 
 var aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, minNodeDist){
     // Create heap for open nodes, list for closed nodes, and variable for final path.
-    var open = priorityQueue.constructor.call(
-        Object.create(priorityQueue),
-        pathWeightCompare
-    );
+    var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
     var path;
     // Add the starting position to the heap.
@@ -510,10 +507,7 @@ var aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, m
     return path;
 };
 var dijkstra = function (start, dist, finished, maxNodeDepth){
-    var open = priorityQueue.constructor.call(
-        Object.create(priorityQueue),
-        pathWeightCompare
-    );
+    var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
     var ret = [];
     var path;
@@ -573,7 +567,7 @@ var dijkstra = function (start, dist, finished, maxNodeDepth){
     return ret;
 };
 var dijkstraRange = function (start, dist, maxRange){
-    var open = Object.instantiate(priorityQueue, pathWeightCompare);
+    var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
     var path = [];
     open.enqueue(new pathNode(start,null,0,0,0));

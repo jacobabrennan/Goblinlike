@@ -306,7 +306,7 @@ game = {
 };
 var timeManager = (function (){
     var manager = {
-        actors: priorityQueue.constructor.call(Object.create(priorityQueue), function (a,b){
+        actors: new PriorityQueue(function (a,b){
             var turnDifference = a.nextTurn - b.nextTurn;
             if(turnDifference){
                 return turnDifference;
@@ -319,7 +319,7 @@ var timeManager = (function (){
         registerActor: function (newActor){
             /**
                 This function adds an object of type actor to the actors queue
-                    The queue is a priorityQueue which orders who will take
+                    The queue is a PriorityQueue which orders who will take
                     turns.
                 An actor should reregister itself after every turn, as they are
                     removed in nextActor as part of the process of assigning
