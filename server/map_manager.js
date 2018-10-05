@@ -6,7 +6,7 @@
  *
  *===========================================================================*/
 
-var mapManager = {
+const mapManager = {
     /**
         This object keeps track of all levels in the game and allows them
             to be accessed via unique ids. This prevents the need for managing
@@ -15,7 +15,7 @@ var mapManager = {
      **/
     levels: {},
     depths: [],
-    reset: function (){
+    reset() {
         // TODO: document.
         this.idManager.reset();
         this.depths = [];
@@ -27,7 +27,7 @@ var mapManager = {
             }
         }
     },
-    registerLevel: function (newLevel){
+    registerLevel(newLevel) {
         /**
             This function must be called whenever a new level is created. It
                 ensures that the supplied level is properly referenced so
@@ -39,7 +39,7 @@ var mapManager = {
             this.depths[newLevel.depth] = newLevel;
         }
     },
-    cancelLevel: function (oldLevel){
+    cancelLevel(oldLevel) {
         /**
             This function must be called whenever a level is no longer in use.
                 Otherwise, levels would not be garbage collected.
@@ -50,7 +50,7 @@ var mapManager = {
             this.depths[oldLevel.depth] = undefined;
         }
     },
-    getLevel: function (levelId){
+    getLevel(levelId) {
         /**
             This function allows any part of the game to access any level by
                 level id.
@@ -58,7 +58,7 @@ var mapManager = {
          **/
         return this.levels[levelId];
     },
-    getDepth: function (depth, buildNew){
+    getDepth(depth, buildNew) {
         /**
             This function returns the level at the specified depth, creating it
             if neccessary and buildNew is true. Otherwise, it return undefined.
@@ -104,7 +104,7 @@ var mapManager = {
         }
         return depthLevel;
     },
-    getTile: function (x, y, levelId){
+    getTile(x, y, levelId) {
         /**
             This function allows any part of the game to access any tile on any
                 level by coordinates and id.rsc/fonts/
@@ -114,7 +114,7 @@ var mapManager = {
         if(!referencedLevel){ return undefined;}
         return referencedLevel.getTile(x, y);
     },
-    getTileContents: function (x, y, levelId, onlyFirst){
+    getTileContents(x, y, levelId, onlyFirst) {
         /**
             This function allows any part of the game to access the contents of
                 any tile on any level by coordinates and id.
@@ -130,7 +130,7 @@ var mapManager = {
         if(!referencedLevel){ return undefined;}
         return referencedLevel.getTileContents(x, y, onlyFirst);
     },
-    getRangeContents: function (x, y, levelId, range){
+    getRangeContents(x, y, levelId, range) {
         /**
             This function compiles an array of all containables within range of
             the given coordinates. The grid includes all coordinates within the
@@ -143,7 +143,7 @@ var mapManager = {
         if(!referencedLevel){ return undefined;}
         return referencedLevel.getRangeContents(x, y, range);
     },
-    generateLevel: function (options){
+    generateLevel(options) {
         /**
          *  This function proceedurally generates a new level with the supplied
          *      parameters:
@@ -162,7 +162,7 @@ var mapManager = {
         var newLevel = generator.generate(options);
         return newLevel;
     },
-    swapPlaces: function (content1, content2){
+    swapPlaces(content1, content2) {
         var oldX = content1.x;
         var oldY = content1.y;
         var oldId = content1.levelId;
@@ -195,7 +195,7 @@ var mapManager = {
             }
             this.ids = [];
         },
-        assignId: function (thing){
+        assignId(thing) {
             // TODO: Document.
             var newId;
             if(this.recycledIds.length){
@@ -206,7 +206,7 @@ var mapManager = {
             this.ids[newId] = thing;
             return newId;
         },
-        cancelId: function (id){
+        cancelId(id) {
             // TODO: Document.
             var identifiedThing = this.ids[id];
             if(!identifiedThing){ return;}
@@ -215,7 +215,7 @@ var mapManager = {
             if(oldIndex){ return;}
             this.recycledIds.push(id);
         },
-        get: function (id){
+        get(id) {
             // TODO: Document.
             return this.ids[id];
         },
@@ -246,7 +246,7 @@ var mapManager = {
         wandMetals: {}, // Item.name : metal
         scrolls: {}, // item.name : scroll name
         scrollNames: {}, // scroll name : item.name
-        describeScroll: function (item){
+        describeScroll(item) {
             if(
                 gameManager.currentGame &&
                 gameManager.currentGame.hero.lore() >= item.lore
@@ -267,7 +267,7 @@ var mapManager = {
             }
             return scrollName+' scroll';
         },
-        describePotion: function (item){
+        describePotion(item) {
             if(
                 gameManager.currentGame &&
                 gameManager.currentGame.hero.lore() >= item.lore
@@ -284,7 +284,7 @@ var mapManager = {
             }
             return potionColor+' potion';
         },
-        describeWand: function (item){
+        describeWand(item) {
             if(
                 gameManager.currentGame &&
                 gameManager.currentGame.hero.lore() >= item.lore
