@@ -10,23 +10,23 @@
 
 ==============================================================================*/
 
-var item = Object.create(movable, {
+const item = Object.extend(movable, {
     // Redefined Properties
-    character: {value: '~', writable: true},
-    color: {value: '#963', writable: true},
-    type: {value: TYPE_ITEM, writable: true},
-    dense: {value: false, writable: true},
+    character: '~',
+    color: '#963',
+    type: TYPE_ITEM,
+    dense: false,
     // New Properties
-    targetClass: {value: TARGET_SELF, writable: true},
-    targetRange: {value: RANGE_VIEW, writable: true},
-    stackable: {value: false, writable: true},
-    stackCount: {value: 1, writable: true},
-    consumable: {value: false, writable: true},
-    loreLevel: {value: 0, writable: true},
-    weight: {value: 1, writable: true},
-    effect: {value: function (user, targetData){}},
-    effectFlags: {value: 0, writable: true},
-    use: {value: function(user, targetData){
+    targetClass: TARGET_SELF,
+    targetRange: RANGE_VIEW,
+    stackable: false,
+    stackCount: 1,
+    consumable: false,
+    loreLevel: 0,
+    weight: 1,
+    effect(user, targetData){},
+    effectFlags: 0,
+    use(user, targetData){
         /**
             Structure of targetData:
             {
@@ -44,8 +44,8 @@ var item = Object.create(movable, {
         if(this.consumable){
             this.consume(user);
         }
-    }, writable: true},
-    pack: {value: function (){
+    },
+    pack(){
         /**
             This function creates a "sensory package" of the object for use by a
             client, possibly over the network. This allows a client to know
@@ -72,11 +72,11 @@ var item = Object.create(movable, {
             sensoryData.name = this.description()+'*'+this.stackCount;
         }
         return sensoryData;
-    }, writable: true},
-    description: {value: function (){
+    },
+    description(){
         return this.name;
-    }},
-    unstack: {value: function (){
+    },
+    unstack(){
         if(!(this.stackable && this.stackCount > 1)){
             return null;
         }
@@ -85,18 +85,18 @@ var item = Object.create(movable, {
         clone1.stackCount = 1;
         this.stackCount--;
         return clone1;
-    }, writable: true},
-    stack: {value: function (newItem){
+    },
+    stack(newItem){
         if(!(this.stackable && newItem.name == this.name)){
             return;
         }
         this.stackCount += newItem.stackCount;
         newItem.dispose();
-    }, writable: true},
-    getWeight: {value: function (){
+    },
+    getWeight(){
         return this.stackCount * this.weight;
-    }, writable: true},
-    consume: {value: function (user){
+    },
+    consume(user){
         if(this.stackCount > 1){
             this.stackCount--;
         } else{
@@ -106,5 +106,5 @@ var item = Object.create(movable, {
             }
             this.dispose();
         }
-    }}
+    }
 });
