@@ -1,8 +1,11 @@
-// TODO: Document.
-var modelLibrary = {
+
+
+//== TODO: Document. ===========================================================
+
+const modelLibrary = {
     models: {},
     modelWeights: {},
-    registerModel: function (modelType, newPrototype){
+    registerModel(modelType, newPrototype){
         var generationId = newPrototype.generationId;
         var typeModels = this.models[modelType];
         var typeWeights = this.modelWeights[modelType];
@@ -25,7 +28,7 @@ var modelLibrary = {
         }
         typeModels[generationId] = newPrototype;
     },
-    getModel: function (modelType, modelId){
+    getModel(modelType, modelId){
         var typeModels = this.models[modelType];
         if(!typeModels){
             return null;
@@ -33,7 +36,7 @@ var modelLibrary = {
         var model = typeModels[modelId];
         return model;
     },
-    getModelByWeight: function (modelType, weight){
+    getModelByWeight(modelType, weight){
         weight = Math.round(weight);
         var typeWeights = this.modelWeights[modelType];
         var weightClass;
