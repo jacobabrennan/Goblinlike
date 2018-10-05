@@ -237,7 +237,7 @@ var characterMemory = {
     maxHp: undefined,
     maxMp: undefined,
     inventory: undefined,
-    constructor: function (){
+    initializer: function (){
         // TODO: Document.
         this.inventory = [];
         return this;
@@ -248,7 +248,7 @@ var tileMemory = {
     id: undefined,
     contents: undefined,
     timeStamp: undefined,
-    constructor: function (tileData, currentTime){
+    initializer: function (tileData, currentTime){
         // TODO: Document.
         this.id = tileData.id;
         this.contents = tileData.contents;
@@ -262,7 +262,7 @@ var levelMemory = {
     height: undefined,
     tileGrid: undefined,
     tileTypes: undefined,
-    constructor: function (levelData){
+    initializer: function (levelData){
         // TODO: Document.
         this.width = levelData.width;
         this.height = levelData.height;
@@ -278,7 +278,7 @@ var levelMemory = {
             var indexedTile = viewData.tiles[index];
             var compoundIndex = indexedTile.y*this.width + indexedTile.x;
             //var tileType = this.tileTypes[indexedTile.id];
-            var newTileMemory = tileMemory.constructor.call(
+            var newTileMemory = tileMemory.initializer.call(
                 Object.create(tileMemory), indexedTile, currentTime
             );
             this.tileGrid[compoundIndex] = newTileMemory;
@@ -345,7 +345,7 @@ var levelMemory = {
 var mapMemory = {
     // TODO: Document.
     levels: undefined,
-    constructor: function (){
+    initializer: function (){
         this.levels = {};
         return this;
     },
@@ -363,7 +363,7 @@ var mapMemory = {
          *      it in the list of levels, accessibly by levelId.
          *  It returns a new levelMemory object.
          **/
-        var newLevel = levelMemory.constructor.call(
+        var newLevel = levelMemory.initializer.call(
             Object.create(levelMemory),
             levelData
         );

@@ -2,7 +2,7 @@
 
 // TODO: Document file.
 
-var mappable = {
+const mappable = {
     /**
      *  Mappable is a prototype from which all other objects that appear on the
      *      map are derived.
@@ -12,7 +12,7 @@ var mappable = {
     color: undefined,
     background: undefined,
     dense: false,
-    dispose: function (){
+    dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
          *      by removing it from the map and nulling out all references
@@ -20,27 +20,27 @@ var mappable = {
          **/
     }
 };
-var containable = Object.create(mappable, {
+const containable = Object.extend(mappable, {
     // TODO: Document.
-    levelId: {value: undefined, writable: true},
-    x: {value: undefined, writable: true},
-    y: {value: undefined, writable: true},
-    name: {value: 'something', writable: true},
-    id: {value: undefined, writable: true},
-    nextContent: {value: undefined, writable: true},
+    levelId: undefined,
+    x: undefined,
+    y: undefined,
+    name: 'something',
+    id: undefined,
+    nextContent: undefined,
         // Tile contents implemented as linked list.
-    type: {value: TYPE_CONTAINABLE, writable: true},
-    viewText: {value: 'You know nothing about this.', writable: true},
-    constructor: {value: function (levelId){
+    type: TYPE_CONTAINABLE,
+    viewText: 'You know nothing about this.',
+    initializer(levelId){
         // TODO: Document.
         this.levelId = levelId;
-        if(mappable.constructor){
-            mappable.constructor.call(this);
+        if(mappable.initializer){
+            mappable.initializer.call(this);
         }
         this.id = mapManager.idManager.assignId(this);
         return this;
-    }, writable: true},
-    dispose: {value: function (){
+    },
+    dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
          *      by removing it from the map and nulling out all references
@@ -49,8 +49,8 @@ var containable = Object.create(mappable, {
         this.unplace();
         this.levelId = undefined;
         mapManager.idManager.cancelId(this.id);
-    }, writable: true},
-    place: {value: function (x, y, levelId){
+    },
+    place(x, y, levelId){
         /**
             This function is used to place the object at specific coordinates
                 on a specific level, referenced by id.
@@ -71,8 +71,8 @@ var containable = Object.create(mappable, {
         var placeLevel = mapManager.getLevel(levelId);
         var success = placeLevel.placeContainable(x, y, this);
         return success;
-    }, writable: true},
-    unplace: {value: function (){
+    },
+    unplace(){
         /**
             This function removes the containable from the level. This allows
                 it to be placed in the player's inventory, into a shop, a
@@ -88,8 +88,8 @@ var containable = Object.create(mappable, {
         this.x = undefined;
         this.y = undefined;
         return success;
-    }, writable: true},
-    bump: {value: function (obstruction){
+    },
+    bump(obstruction){
         /**
             Called when the object attempts to be placed in the same space as
             another containable object, but fails due to density.
@@ -97,16 +97,16 @@ var containable = Object.create(mappable, {
             It does not return anything.
          **/
         obstruction.bumped(this);
-    }, writable: true},
-    bumped: {value: function (bumper){
+    },
+    bumped(bumper){
         /**
             Called when another containable object attempts to be placed in the
             same space, but fails due to density.
             
             It does not return anything.
          **/
-    }, writable: true},
-    pack: {value: function (){
+    },
+    pack(){
         /**
             This function creates a "sensory package" of the object for use by
                 a client, possibly over the network. This allows a client to
@@ -135,12 +135,12 @@ var containable = Object.create(mappable, {
         if(this.color){ sensoryData.color = this.color;}
         if(this.background){ sensoryData.background = this.background;}
         return sensoryData;
-    }, writable: true}
+    }
 });
-var movable = Object.create(containable, {
+const movable = Object.extend(containable, {
     // TODO: Document.
-    dense: {value: true, writable: true},
-    move: {value: function (direction){
+    dense: true,
+    move(direction){
         /**
             This function is used to move the object in a specific direction,
                 one of:
@@ -159,5 +159,5 @@ var movable = Object.create(containable, {
             entryTile.entered(this);
         }
         return success;
-    }, writable: true}
+    }
 });

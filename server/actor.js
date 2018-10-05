@@ -5,7 +5,7 @@
  *  This prototype represents an actor in the game capable of moving about
  *      world and interacting with all other kinds of data objects present on
  *      the map. Most notably, actors can take part in combat.
- *  This is a prototype. I must be instantiated and it's constructor called
+ *  This is a prototype. I must be instantiated and it's initializer called
  *      in order to be used properly.
  *          
  *===========================================================================*/
@@ -20,8 +20,8 @@ var actor = Object.create(movable, {
     turnDelay: {value: 1, writable: true},
     nextTurn: {value: 0, writable: true},
     //
-    /*constructor: {value: function (){
-        movable.constructor.apply(this, arguments);
+    /*initializer: {value: function (){
+        movable.initializer.apply(this, arguments);
         return this;
     }, writable: true},*/
     dispose: {value: function (){

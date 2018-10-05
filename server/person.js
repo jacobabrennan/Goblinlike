@@ -26,14 +26,14 @@ var person = Object.create(actor, {
     turnActive: {value: false, writable: true},
     turnCallback: {value: undefined, writable: true},
     // Redefined Methods
-    constructor: {value: function (){
+    initializer: {value: function (){
         /**
-            A standard constructor, used for inheritence and setup.
+            A standard initializer, used for inheritence and setup.
             The function updates several values so that the player will know
                 about them immediately.
             Returns a reference to itself.
          **/
-        actor.constructor.apply(this, arguments);
+        actor.initializer.apply(this, arguments);
         this.name = sWerd.name();
         // Select Gender
         if(Math.random()*100 < 49){ // 0-47

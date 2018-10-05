@@ -1,11 +1,11 @@
 (function (base){
-    base.constructor = (function (parentFunction){
+    base.initializer = (function (parentFunction){
         return function (){
             this.companions = [];
             parentFunction.apply(this, arguments);
             return this;
         };
-    })(base.constructor);
+    })(base.initializer);
     base.die = (function (parentFunction){
         return function (){
             this.companions = null;
@@ -60,13 +60,13 @@
 (function (base){
     base.moral = 0;
     base.terrified = false;
-    base.constructor = (function (parentFunction){
+    base.initializer = (function (parentFunction){
         return function (){
             parentFunction.apply(this, arguments);
             this.moral = this.charisma;
             return this;
         };
-    })(base.constructor);
+    })(base.initializer);
     base.adjustMoral = function (amount){
         this.moral += amount;
         var terrify = false;
@@ -120,8 +120,8 @@ var companion = Object.create(person, {
     color: {value: '#5c3', writable: true},
     companion: {value: true, writable: true},
     mode: {value: MODE_FOLLOW, writable: true},
-    constructor: {value: function (){
-        person.constructor.apply(this, arguments);
+    initializer: {value: function (){
+        person.initializer.apply(this, arguments);
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
         var colorB = randomInterval(0,64);
@@ -430,7 +430,7 @@ var companion = Object.create(person, {
             return;
         }
         this.goal = Object.create(goalType);
-        goalType.constructor.call(this.goal, goalTarget);
+        goalType.initializer.call(this.goal, goalTarget);
     }, writable: true},
     pursueGoal: {value: function(){
         if(!this.goal){ return false;}
@@ -441,11 +441,11 @@ var companion = Object.create(person, {
 });
 var goal = {
     target: undefined,
-    constructor: function (){ return this;},
+    initializer: function (){ return this;},
     behavior: function (controllee){ return false;}
 };
 var goalLoot = Object.create(goal, {
-    constructor: {value: function (goalTarget){
+    initializer: {value: function (goalTarget){
         this.target = goalTarget;
         return this;
     }, writable: true},

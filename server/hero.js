@@ -26,14 +26,14 @@ var hero = Object.create(person, {
     turnActive: {value: false, writable: true},
     turnCallback: {value: undefined, writable: true},
     // Redefined Methods
-    constructor: {value: function (options){
+    initializer: {value: function (options){
         /**
-            A standard constructor, used for inheritence and setup.
+            A standard initializer, used for inheritence and setup.
             The function updates several values so that the player will know
                 about them immediately.
             Returns a reference to itself.
          **/
-        person.constructor.apply(this, arguments);
+        person.initializer.apply(this, arguments);
         if(options && options.name){
             this.name = options.name;
         }

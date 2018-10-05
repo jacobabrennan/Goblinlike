@@ -96,14 +96,14 @@ if(Object.instantiate){
     console.log('Cannot attach method "instantiate" to Object.');
 } else{
     Object.instantiate = function (aPrototype){
-        if(aPrototype.constructor){
-            // Create arguments, minus prototype, to pass to constructor.
+        if(aPrototype.initializer){
+            // Create arguments, minus prototype, to pass to initializer.
             const cleanArguments = [];
             for(let argI = 1; argI < arguments.length; argI++){
                 cleanArguments.push(arguments[argI]);
             }
-            // Call constructor, return new object.
-            return aPrototype.constructor.apply(
+            // Call initializer, return new object.
+            return aPrototype.initializer.apply(
                 Object.create(aPrototype),
                 cleanArguments
             );

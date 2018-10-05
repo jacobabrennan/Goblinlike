@@ -5,7 +5,7 @@
 
 mapManager.getViewGrid = (function (){ // Create new namespace.
     var viewGrid = {
-        constructor: function (x, y, levelId, range){
+        initializer: function (x, y, levelId, range){
             this.x = x;
             this.y = y;
             this.levelId = levelId;
@@ -213,7 +213,7 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
         }
     };
     var compute = function (x, y, levelId, visionRange){
-        var newView = viewGrid.constructor.call(
+        var newView = viewGrid.initializer.call(
             Object.create(viewGrid),
             x, y, levelId, visionRange
         );

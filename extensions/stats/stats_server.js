@@ -70,7 +70,7 @@
         return 30 - this.vitality;
     };
     // Redefined Methods
-    base.constructor = (function (parentFunction){
+    base.initializer = (function (parentFunction){
         return function (options){
             this.setLevel(1);
             this.experience = 0;
@@ -112,7 +112,7 @@
             parentFunction.apply(this, arguments);
             return this;
         };
-    })(base.constructor);
+    })(base.initializer);
     base.packageUpdates = (function (parentFunction){
         return function (){
             /**

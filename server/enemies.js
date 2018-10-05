@@ -322,8 +322,8 @@ var blobPrototype = (function (){
     var blobBody = Object.create(enemy, {
         headId: {value: undefined, writable: true},
         rewardExperience: {value: 0},
-        constructor: {value: function (options){
-            enemy.constructor.apply(this, arguments);
+        initializer: {value: function (options){
+            enemy.initializer.apply(this, arguments);
             var head = options.head;
             this.headId = head.id;
             this.name = head.name;
@@ -406,12 +406,12 @@ var blobPrototype = (function (){
         bodyMass: {value: 4, writable: true},
         turnDelay: {value: 2, writable: true},
         dieExtension: {value: undefined, writable: true}, // Refactor this.
-        constructor: {value: function (options){
-            enemy.constructor.apply(this, arguments);
+        initializer: {value: function (options){
+            enemy.initializer.apply(this, arguments);
             this.body = [];
             for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
                 // Skip one, to include head in mass. Makes hp calc easier.
-                var segment = blobBody.constructor.call(
+                var segment = blobBody.initializer.call(
                     Object.create(blobBody),
                     {head: this}
                 );
@@ -485,8 +485,8 @@ var blobPrototype = (function (){
 var snakePrototype = (function (){
     var snakeBody = Object.create(enemy, {
         headId: {value: undefined, writable: true},
-        constructor: {value: function (options){
-            enemy.constructor.apply(this, arguments);
+        initializer: {value: function (options){
+            enemy.initializer.apply(this, arguments);
             var head = options.head;
             this.headId = head.id;
             this.name = head.name;
@@ -540,12 +540,12 @@ var snakePrototype = (function (){
         bodyBackground: {value: undefined, writable: true},
         bodyLength: {value: 4, writable: true},
         placements: {value: undefined, writable: true},
-        constructor: {value: function (options){
-            enemy.constructor.apply(this, arguments);
+        initializer: {value: function (options){
+            enemy.initializer.apply(this, arguments);
             this.body = [];
             this.placements = [];
             for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
-                var segment = snakeBody.constructor.call(
+                var segment = snakeBody.initializer.call(
                     Object.create(snakeBody),
                     {head: this}
                 );

@@ -80,7 +80,7 @@ var item = Object.create(movable, {
         if(!(this.stackable && this.stackCount > 1)){
             return null;
         }
-        var clone1 = this.constructor.call(Object.create(this));
+        var clone1 = this.initializer.call(Object.create(this));
         clone1.unplace();
         clone1.stackCount = 1;
         this.stackCount--;

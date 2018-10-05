@@ -53,14 +53,14 @@ var EQUIP_FINGER = 'finger';
     // New Properties
     base.equipment = undefined;
     // Redefined Methods
-    base.constructor = (function (parentFunction){
+    base.initializer = (function (parentFunction){
         return function (){
             this.equipment = {};
             this.update('equipment');
             parentFunction.apply(this, arguments);
             return this;
         };
-    })(base.constructor);
+    })(base.initializer);
     base.packageUpdates = (function (parentFunction){
         return function (){
             /**

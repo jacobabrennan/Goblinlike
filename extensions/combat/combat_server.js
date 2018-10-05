@@ -25,13 +25,13 @@ var DAMAGE_0000000000000000 =  0;
     };
     actor.baseAttack = 1;
     // Redefined Functions
-    actor.constructor = (function (parentFunction){
+    actor.initializer = (function (parentFunction){
         return function (){
             this.hp = this.maxHp();
             parentFunction.apply(this, arguments);
             return this;
         };
-    })(actor.constructor);
+    })(actor.initializer);
     // New Functions
     actor.adjustHp = function (amount){
         /**
@@ -140,14 +140,14 @@ var DAMAGE_0000000000000000 =  0;
      *  Extend person
      **/
     person.lastHeal = 0;
-    person.constructor = (function (parentFunction){
+    person.initializer = (function (parentFunction){
         return function (){
             parentFunction.apply(this, arguments);
             this.update('hp');
             this.update('maxHp');
             return this;
         };
-    })(person.constructor);
+    })(person.initializer);
     person.packageUpdates = (function (parentFunction){
         return function (){
             /**
@@ -616,7 +616,7 @@ var projectile = Object.create(weapon, {
     var _super = this.prototype;
 
     // Instantiate a base class (but only create the instance,
-    // don't run the init constructor)
+    // don't run the init initializer)
     initializing = true;
     var prototype = new this();
     initializing = false;
@@ -645,7 +645,7 @@ var projectile = Object.create(weapon, {
         prop[name];
     }
 
-    // The dummy class constructor
+    // The dummy class initializer
     function Class() {
       // All construction is actually done in the init method
       if ( !initializing && this.init )
@@ -655,8 +655,8 @@ var projectile = Object.create(weapon, {
     // Populate our constructed prototype object
     Class.prototype = prototype;
 
-    // Enforce the constructor to be what we expect
-    Class.prototype.constructor = Class;
+    // Enforce the initializer to be what we expect
+    Class.prototype.initializer = Class;
 
     // And make this class extendable
     Class.extend = arguments.callee;

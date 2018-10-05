@@ -190,7 +190,7 @@ var protoLevel = {
             tileTypes[key] = genericTileTypes[key];
         }
         // Create new level, fill it with tiles, return it.
-        var newLevel = level.constructor.call(Object.create(level), this.width, this.height);
+        var newLevel = level.initializer.call(Object.create(level), this.width, this.height);
         newLevel.depth = this.depth;
         newLevel.id = assignedId;
         mapManager.registerLevel(newLevel);
@@ -279,7 +279,7 @@ var protoLevel = {
         // Place one companion per level, except on final level (none).
         var createC = function (index){
             var cPrototype = companion;
-            var C = cPrototype.constructor.call(Object.create(cPrototype));
+            var C = cPrototype.initializer.call(Object.create(cPrototype));
             var cPlaced = false;
             var tries = 100;
             while(!cPlaced && tries > 0){

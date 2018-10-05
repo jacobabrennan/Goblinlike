@@ -15,7 +15,7 @@ var level = {
     tileContentsGrid: undefined,
     stairsUpCoords: undefined,
     stairsDownCoords: undefined,
-    constructor: function (width, height){
+    initializer: function (width, height){
         // TODO: Document.
         this.width = width;
         this.height = height;
