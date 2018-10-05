@@ -36,11 +36,13 @@ const person = Object.extend(actor, {
         actor.initializer.apply(this, arguments);
         this.name = sWerd.name();
         // Select Gender
-        if(Math.random()*100 < 49){ // 0-47
+        if(Math.random()*7 <= 1){
+            this.gender = GENDER_NONBINARY;
+        } else if(Math.random() < 0.5){
             this.gender = GENDER_FEMALE;
-        } else if(Math.random()*51 < 49){
+        } else{
             this.gender = GENDER_MALE;
-        } else{ this.gender = GENDER_NONBINARY;}
+        }
         this.update('gender');
         this.update('id');
         this.update('name');
