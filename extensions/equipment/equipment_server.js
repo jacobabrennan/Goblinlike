@@ -1,15 +1,15 @@
 
     
-// === Equipment System ===================================================
+// === Equipment System ========================================================
 // TODO: Document.
 
 // Equipment placements:
-var EQUIP_MAINHAND = 'main';
-var EQUIP_OFFHAND = 'off';
-var EQUIP_BODY = 'body';
-var EQUIP_HEAD = 'head';
-var EQUIP_NECK = 'neck';
-var EQUIP_FINGER = 'finger';
+const EQUIP_MAINHAND = 'main';
+const EQUIP_OFFHAND = 'off';
+const EQUIP_BODY = 'body';
+const EQUIP_HEAD = 'head';
+const EQUIP_NECK = 'neck';
+const EQUIP_FINGER = 'finger';
 
 (function (base){
     /**
