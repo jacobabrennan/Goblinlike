@@ -169,11 +169,11 @@ include - A parameter which determines which datums to return
 */
 
 
-var P_DIJKSTRA_NOT_FOUND = 0;
-var P_DIJKSTRA_FINISHED  = 1;
-var P_DIJKSTRA_ADD_PATH  = 2;
-var P_INCLUDE_INTERIOR   = 1;
-var P_INCLUDE_FINISHED   = 2;
+const P_DIJKSTRA_NOT_FOUND = 0;
+const P_DIJKSTRA_FINISHED  = 1;
+const P_DIJKSTRA_ADD_PATH  = 2;
+const P_INCLUDE_INTERIOR   = 1;
+const P_INCLUDE_FINISHED   = 2;
 
 
 tile.adjacent = function (instanceData, closed){
@@ -262,11 +262,11 @@ genericTileTypes['>'].adjacent = function (instanceData, closed){
     return adjacentArray;
 };
 
-var nodeCleanup = function (){
+const nodeCleanup = function (){
     this.source = null;
     this.prevNode = null;
 }
-var pathNode = function (source, prevNode, parentG, parentH, parentsNodesTraversed){
+const pathNode = function (source, prevNode, parentG, parentH, parentsNodesTraversed){
     this.source = source;
     this.prevNode = prevNode;
     this.travelCost = parentG;
@@ -278,7 +278,7 @@ var pathNode = function (source, prevNode, parentG, parentH, parentsNodesTravers
     return this;
 };
 
-var pathDist = function (coords1, skipDense){
+const pathDist = function (coords1, skipDense){
     var coords2 = this;
     /*return Math.max(
         Math.abs(coords1.x-coords2.x),
@@ -325,7 +325,7 @@ var pathDist = function (coords1, skipDense){
     }
     return hDist;
 };
-var findTarget = function (start, faction){
+const findTarget = function (start, faction){
     start = {
         x: start.x,
         y: start.y,
@@ -373,7 +373,7 @@ var findTarget = function (start, faction){
     return null;
 };
 
-var findPath = function (start, end, limit){
+const findPath = function (start, end, limit){
     var isActor = (start.type == TYPE_ACTOR);
     end = {
         x: end.x,
@@ -401,7 +401,7 @@ var findPath = function (start, end, limit){
     return pathArray;
 };
 
-var getDijkstra = function (start, range){
+const getDijkstra = function (start, range){
     start = {
         x: start.x,
         y: start.y,
@@ -412,7 +412,7 @@ var getDijkstra = function (start, range){
     return dijkstraRange(start, pathDist, range);
 };
 
-var getDijkstraContents = function (start, range){
+const getDijkstraContents = function (start, range){
     var rangeContents = [];
     var rangeTiles = getDijkstra(start, range);
     for(var rangeI = 0; rangeI < rangeTiles.length; rangeI++){
@@ -428,11 +428,11 @@ var getDijkstraContents = function (start, range){
 }
 
 
-var pathWeightCompare = function (a, b){
+const pathWeightCompare = function (a, b){
     return a.f - b.f;
 };
 
-var aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, minNodeDist){
+const aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, minNodeDist){
     // Create heap for open nodes, list for closed nodes, and variable for final path.
     var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
@@ -506,7 +506,7 @@ var aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, m
     }
     return path;
 };
-var dijkstra = function (start, dist, finished, maxNodeDepth){
+const dijkstra = function (start, dist, finished, maxNodeDepth){
     var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
     var ret = [];
@@ -566,7 +566,7 @@ var dijkstra = function (start, dist, finished, maxNodeDepth){
     }
     return ret;
 };
-var dijkstraRange = function (start, dist, maxRange){
+const dijkstraRange = function (start, dist, maxRange){
     var open = new PriorityQueue(pathWeightCompare);
     var closed = {};
     var path = [];
