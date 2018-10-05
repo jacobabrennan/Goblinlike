@@ -6,24 +6,21 @@
  *
  *===========================================================================*/
 
-var level = {
-    id: undefined,
-    width: undefined,
-    height: undefined,
-    tileTypes: undefined,
-    tileGrid: undefined,
-    tileContentsGrid: undefined,
-    stairsUpCoords: undefined,
-    stairsDownCoords: undefined,
-    initializer: function (width, height){
+class level {
+    constructor(width, height){
         // TODO: Document.
+        this.id = undefined;
+        this.tileTypes = undefined;
+        this.stairsUpCoords = undefined;
+        this.stairsDownCoords = undefined;
+        //
         this.width = width;
         this.height = height;
         this.tileGrid = [];
         this.tileContentsGrid = [];
         return this;
-    },
-    dispose: function (){
+    }
+    dispose(){
         var disposeOrder = function (oldContent){
             oldContent.dispose();
         };
@@ -38,8 +35,8 @@ var level = {
         this.tileContentsGrid = undefined;
         mapManager.cancelLevel(this);
         this.id = null;
-    },
-    getTile: function (x, y){
+    }
+    getTile(x, y){
         /**
             This function is used to get the tile referenced by a the given coordinates.
             Tiles are shared objects, and one tile object can be referenced
@@ -53,8 +50,8 @@ var level = {
         }
         var compoundIndex = y*this.width + x;
         return this.tileGrid[compoundIndex];
-    },
-    placeTile: function (x, y, tile){
+    }
+    placeTile(x, y, tile){
         /**
             This function is used to place a tile at specific coordinates on
                 this level.
@@ -68,8 +65,8 @@ var level = {
         var compoundIndex = y*this.width + x;
         this.tileGrid[compoundIndex] = tile;
         return true;
-    },
-    getTileContents: function (x, y, onlyFirst){
+    }
+    getTileContents(x, y, onlyFirst){
         /**
             This function is used to obtain an array of objects contained by
                 the tile referenced at the supplied coordinates. Optionally,
@@ -101,8 +98,8 @@ var level = {
             firstContent = firstContent.nextContent;
         }
         return contents;
-    },
-    placeContainable: function (x, y, content){
+    }
+    placeContainable(x, y, content){
         /**
             This function is used to place or move containable objects on the
                 map. It takes into account the density of tiles and their
@@ -185,8 +182,8 @@ var level = {
             }
         }
         return true;
-    },
-    unplaceContainable: function (content){
+    }
+    unplaceContainable(content){
         /**
             This function removes the containable from the level. This allows
                 it to be placed in the player's inventory, into a shop, a
@@ -219,8 +216,9 @@ var level = {
         }
         // Return a successful message.
         return true;
-    },/*
-    getLine: function (x1, y1, x2, y2){
+    }
+    /*
+    getLine(x1, y1, x2, y2){
         // TODO: Document.
         var line = [];
         var rise = y2 - y1;
@@ -293,7 +291,7 @@ var level = {
         coordinates or contents, you'd first have to reverse engineer the x and
         y coordinates from the returned array's indexes.
      */
-    getRangeContents: function (x, y, range){
+    getRangeContents(x, y, range){
         /**
             This function compiles an array of all containables within range of
             the given coordinates. The grid includes all coordinates within the
@@ -314,8 +312,8 @@ var level = {
         }
         // Return the finished contents array.
         return contents;
-    },
-    getRangeActors: function (x, y, range){
+    }
+    getRangeActors(x, y, range){
         /**
             This function compiles an array of all actors within range of the
             given coordinates. The grid includes all coordinates within the
@@ -338,8 +336,8 @@ var level = {
         }
         // Return the finished actors array.
         return actors;
-    },
-    packageSetup: function (){
+    }
+    packageSetup(){
         /**
             This function creates a data package to send to clients,
                 potentially over a network, to alert them to certain level
@@ -389,8 +387,8 @@ var level = {
             tileTypes: tileTypesData
         };
         return update;
-    },
-    packageView: function (x, y, range){
+    }
+    packageView(x, y, range){
         /**
             This function creates a "sensory data" package to transmit to
                 clients, potentially over a network. This package contains
@@ -459,8 +457,8 @@ var level = {
         };
         for(var offsetY = -range; offsetY <= range; offsetY++){
             for(var offsetX = -range; offsetX <= range; offsetX++){
-                viewOffsetX = offsetX + range;
-                viewOffsetY = offsetY + range;
+                let viewOffsetX = offsetX + range;
+                let viewOffsetY = offsetY + range;
                 var viewIndex = viewOffsetY*(range*2+1) + viewOffsetX;
                 var indexedView = viewGrid[viewIndex];
                 if(!indexedView){ continue;}

@@ -232,7 +232,7 @@ mapManager.getViewGrid = (function (){ // Create new namespace.
 
 
 //===== Extend Level =========================================================//
-level.getView = function (x, y, range){
+level.prototype.getView = function (x, y, range){
     /**
         This function constructs a grid (an array with indexes ordered by
             width and height) where each coordinate index references

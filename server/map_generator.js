@@ -192,7 +192,7 @@ const protoLevel = {
             tileTypes[key] = genericTileTypes[key];
         }
         // Create new level, fill it with tiles, return it.
-        var newLevel = level.initializer.call(Object.create(level), this.width, this.height);
+        var newLevel = new level(this.width, this.height);
         newLevel.depth = this.depth;
         newLevel.id = assignedId;
         mapManager.registerLevel(newLevel);
