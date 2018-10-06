@@ -3,7 +3,7 @@
 // === Statistics System =======================================================
 
 //-- Dependencies --------------------------------
-import person from '../../server/person.js';
+import person from './person.js';
 
 
 //== Extend Actor ==============================================================

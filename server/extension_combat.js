@@ -3,12 +3,12 @@
 // === Combat System ===========================================================
 
 //-- Dependencies --------------------------------
-import {movable} from '../../server/mappables.js';
-import item from '../../server/item.js';
-import actor from '../../server/actor.js';
-import person from '../../server/person.js';
-import gameManager from '../../server/game_manager.js';
-import mapManager from '../../server/map_manager.js';
+import {movable} from './mappables.js';
+import item from './item.js';
+import actor from './actor.js';
+import person from './person.js';
+import gameManager from './game_manager.js';
+import mapManager from './map_manager.js';
 
 
 //== Extend Actor ==============================================================

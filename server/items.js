@@ -5,7 +5,7 @@
 //-- Dependencies --------------------------------
 import item from './item.js';
 import modelLibrary from './model_library.js';
-import {weapon, bow, projectile} from '../extensions/combat/combat_server.js';
+import {weapon, bow, projectile} from './extension_combat.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
@@ -79,7 +79,6 @@ const wand = Object.extend(item, {
         damageDone = theProj.project(direction, projectileOptions);
         // TODO: Return actual damage done.
         if(damageDone){
-            console.log(damageDone);
             return damageDone;
         } else{
             return 0;
@@ -201,9 +200,11 @@ modelLibrary.registerModel('item', Object.extend(potion, {
             if(user.inform){
                 user.inform("You quaff the potion. You're terrified!");
             }
-            user.adjustMoral(
-                -Math.max(this.potency/2, gaussRandom(this.potency,1))
-            );
+            if(user.adjustMoral){
+                user.adjustMoral(
+                    -Math.max(this.potency/2, gaussRandom(this.potency,1))
+                );
+            }
         }
         potion.effect.apply(this, arguments);
     },
@@ -221,9 +222,11 @@ modelLibrary.registerModel('item', Object.extend(potion, {
             if(user.inform){
                 user.inform("You quaff the potion. You're feel couragous!");
             }
-            user.adjustMoral(
-                Math.max(this.potency/2, gaussRandom(this.potency,1))
-            );
+            if(user.adjustMoral){
+                user.adjustMoral(
+                    Math.max(this.potency/2, gaussRandom(this.potency,1))
+                );
+            }
         }
         potion.effect.apply(this, arguments);
     },

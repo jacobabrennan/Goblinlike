@@ -227,8 +227,8 @@ const mapManager = {
         //=== Unidentified Item Descriptions ===========
         totalColors: [
           //'123456 Potion*99',
-            'Red'   ,'Orange','Yellow', 'Green',
-            'Violet'  ,'Cyan'  ,'Blue'  ,'Purple',
+            'Red'   ,'Orange','Yellow','Green' ,
+            'Violet','Cyan'  ,'Blue'  ,'Purple',
             'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
             'Murky' ,'Clear' ,'Chunky','Fizzy'
         ],

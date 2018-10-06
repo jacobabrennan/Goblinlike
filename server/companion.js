@@ -10,9 +10,9 @@ import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 import modelLibrary from './model_library.js';
 // Extensions must be executed first, so redefinions can references prior methods
-import '../extensions/stats/stats_server.js';
-import '../extensions/combat/combat_server.js';
-import '../extensions/equipment/equipment_server.js';
+import './extension_stats.js';
+import './extension_combat.js';
+import './extension_equipment.js';
 
 
 //== Extend Hero (All Redefines) ===============================================

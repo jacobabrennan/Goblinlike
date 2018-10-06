@@ -3,10 +3,10 @@
 // === Equipment System ========================================================
 
 //-- Dependencies --------------------------------
-import person from '../../server/person.js';
-import hero from '../../server/hero.js';
-import item from '../../server/item.js';
-import mapManager from '../../server/map_manager.js';
+import person from './person.js';
+import hero from './hero.js';
+import item from './item.js';
+import mapManager from './map_manager.js';
 
 
 //== Extend Item ===============================================================

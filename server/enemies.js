@@ -8,6 +8,10 @@ import modelLibrary from './model_library.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 import pathFinder from './path_finder.js';
+// Extensions must be executed first, so redefinions can references prior methods
+import './extension_stats.js';
+import './extension_combat.js';
+import './extension_equipment.js';
 
 
 //== Basic Enemy Definition ====================================================
