@@ -1,13 +1,19 @@
-(function (){ // Open new namespace for skills.
-//==============================================================================
 
 
+//== Skills ====================================================================
+
+//-- Dependencies --------------------------------
+import modelLibrary from './model_library.js';
+
+//-- Skill Definition ----------------------------
 const skill = {
     name: undefined,
     range: 1,
     targetClass: TARGET_ENEMY,
     use(user, target){}
 };
+
+//-- Skill Types ---------------------------------
 modelLibrary.registerModel('skill', Object.extend(skill, {
     generationId: 'attack',
     name: 'attack',
@@ -133,6 +139,5 @@ modelLibrary.registerModel('skill', Object.extend(skill, {
 }));
 
 
-//==============================================================================
-    // Close namespace.
-})();
+//-- Exports -------------------------------------
+export default skill;

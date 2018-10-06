@@ -12,6 +12,12 @@
  *      
  *===========================================================================*/
 
+//-- Dependencies --------------------------------
+import person from './person.js';
+import mapManager from './map_manager.js';
+import gameManager from './game_manager.js';
+
+//-- Implementaton -------------------------------
 const hero = Object.extend(person, {
     // Redefined properties
     character: 'g',
@@ -420,3 +426,6 @@ const hero = Object.extend(person, {
         }
     }
 });
+
+//-- Export --------------------------------------
+export default hero;

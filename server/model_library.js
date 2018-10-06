@@ -47,7 +47,7 @@ const modelLibrary = {
                 weight--;
                 continue;
             }
-            generationId = arrayPick(weightClass);
+            let generationId = arrayPick(weightClass);
             model = this.getModel(modelType, generationId);
             if(model){
                 break;
@@ -56,3 +56,5 @@ const modelLibrary = {
         return model;
     }
 };
+
+export default modelLibrary;

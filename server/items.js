@@ -1,9 +1,17 @@
-(function (){ // Open new namespace for items (to hide base item types).
-//==============================================================================
 
 
-//item.generationId = '';
+//== Items =====================================================================
+
+//-- Dependencies --------------------------------
+import item from './item.js';
+import modelLibrary from './model_library.js';
+import {weapon, bow, projectile} from '../extensions/combat/combat_server.js';
+import mapManager from './map_manager.js';
+import gameManager from './game_manager.js';
+
+//-- Extend Item ---------------------------------
 item.generationWeight = 1;
+
 
 //== Base Prototypes (wands, rings, etc.) ======================================
 
@@ -598,12 +606,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
 }));
 
 
-//==============================================================================
-    // Close namespace.
-})();
-
-
-/*
+/*==============================================================================
 
 ItemTypes:
     , Food

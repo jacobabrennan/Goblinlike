@@ -9,7 +9,12 @@
  *      in order to be used properly.
  *          
  *===========================================================================*/
+//-- Dependencies --------------------------------
+import {movable, containable} from './mappables.js';
+import gameManager from './game_manager.js';
+import mapManager from './map_manager.js';
 
+//-- Implementation ------------------------------
 const actor = Object.extend(movable, {
     // Redefined properties:
     character: '@',
@@ -94,3 +99,6 @@ const actor = Object.extend(movable, {
          **/
     }
 });
+
+//-- Export --------------------------------------
+export default actor;

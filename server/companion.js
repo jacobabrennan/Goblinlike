@@ -2,125 +2,141 @@
 
 //== Extend Basic Types ========================================================
 
-//-- Extend Hero ---------------------------------
-(function (base){
-    base.initializer = (function (parentFunction){
-        return function (){
-            this.companions = [];
-            parentFunction.apply(this, arguments);
-            return this;
-        };
-    })(base.initializer);
-    base.die = (function (parentFunction){
-        return function (){
-            this.companions = null;
-            return parentFunction.apply(this, arguments);
-        };
-    })(base.die);
-    base.setLevel = (function (parentFunction){
-        return function (){
-            var result = parentFunction.apply(this, arguments);
-            this.companions.forEach(function (theCompanion){
-                theCompanion.setLevel(this.level);
-            }, this);
-            return result;
-        };
-    })(base.setLevel);
-    base.camp = (function (parentFunction){
-        return function (setCamping){
-            if(setCamping !== undefined){
-                this.camping = setCamping;
-            }
-            if(!this.camping){ return false;}
-            var notFull = false;
-            for(var cI = 0; cI < this.companions.length; cI++){
-                var theCompanion = this.companions[cI];
-                if(theCompanion.hp < theCompanion.maxHp()){
-                    notFull = true;
-                    break;
-                }
-            }
-            if(notFull){
-                return true;
-            }
-            return parentFunction.apply(this, arguments);
-        };
-    })(base.camp);
-    base.hear = (function (parentFunction){
-        return function (tamber, amplitude, source, message){
-            if(this.camping){
-                if(tamber != 'courage'){
-                    this.camp(false);
-                }
-            }
-            return parentFunction.apply(this, arguments);
-        };
-    })(base.hear);
-    base.endTurn = (function (p){
-        return function (){
-            window.setTimeout(function (){p.call(this);}.bind(this), 10);
-        };
-    })(base.endTurn);
-})(hero);
+//-- Dependencies --------------------------------
+import hero from './hero.js';
+import person from './person.js';
+import pathFinder from './path_finder.js';
+import mapManager from './map_manager.js';
+import gameManager from './game_manager.js';
+import modelLibrary from './model_library.js';
+// Extensions must be executed first, so redefinions can references prior methods
+import '../extensions/stats/stats_server.js';
+import '../extensions/combat/combat_server.js';
+import '../extensions/equipment/equipment_server.js';
 
-//-- Extend Person -------------------------------
-(function (base){
-    base.moral = 0;
-    base.terrified = false;
-    base.initializer = (function (parentFunction){
-        return function (){
-            parentFunction.apply(this, arguments);
-            this.moral = this.charisma;
-            return this;
-        };
-    })(base.initializer);
-    base.adjustMoral = function (amount){
-        this.moral += amount;
-        var terrify = false;
-        if(this.moral < 0){ terrify = true;}
-        if(terrify && !this.terrified){
-            this.terrified = true;
-            this.color = 'red';
-            this.update('color');
-            this.sound('terror', 10, this, this.name+' is terrified!');
-        } else if(!terrify && this.terrified){
-            this.terrified = false;
-            this.color = this.colorNatural;
-            this.update('color');
-            this.sound('courage', 10, this, this.name+' regains their courage!');
-        }
-        this.update('moral');
-        return amount;
+
+//== Extend Hero (All Redefines) ===============================================
+hero.initializer = (function (parentFunction){
+    return function (){
+        this.companions = [];
+        parentFunction.apply(this, arguments);
+        return this;
     };
-    base.takeTurn = (function (parentFunction){
-        return function (){
-            var mean = this.meanMoral();
-            var moralTweak = -(this.moral-mean)/(25-this.charisma);
-            moralTweak *= this.hp/this.maxHp();
-            var tweakRound = false;
-            if(Math.abs(moralTweak) < 0.1){
-                tweakRound = true;
+})(hero.initializer);
+hero.die = (function (parentFunction){
+    return function (){
+        this.companions = null;
+        return parentFunction.apply(this, arguments);
+    };
+})(hero.die);
+hero.setLevel = (function (parentFunction){
+    return function (){
+        var result = parentFunction.apply(this, arguments);
+        this.companions.forEach(function (theCompanion){
+            theCompanion.setLevel(this.level);
+        }, this);
+        return result;
+    };
+})(hero.setLevel);
+hero.camp = (function (parentFunction){
+    return function (setCamping){
+        if(setCamping !== undefined){
+            this.camping = setCamping;
+        }
+        if(!this.camping){ return false;}
+        var notFull = false;
+        for(var cI = 0; cI < this.companions.length; cI++){
+            var theCompanion = this.companions[cI];
+            if(theCompanion.hp < theCompanion.maxHp()){
+                notFull = true;
+                break;
             }
-            this.adjustMoral(moralTweak);
-            if(tweakRound){
-                this.moral = mean;
-                this.adjustMoral(0);
+        }
+        if(notFull){
+            return true;
+        }
+        return parentFunction.apply(this, arguments);
+    };
+})(hero.camp);
+hero.hear = (function (parentFunction){
+    return function (tamber, amplitude, source, message){
+        if(this.camping){
+            if(tamber != 'courage'){
+                this.camp(false);
             }
-            return parentFunction.apply(this, arguments);
-        };
-    })(base.takeTurn);
-    base.adjustHp = (function (parentFunction){
-        return function (){
-            var adjustment = parentFunction.apply(this,arguments);
-            if(adjustment < 0 && this.hp <= 11-this.charisma){
-                this.adjustMoral(-(this.moral+this.charisma));
-            } else{
-                this.adjustMoral(adjustment*2);
-            }
-            return adjustment;
-        };
-    })(base.adjustHp);
-})(person);
+        }
+        return parentFunction.apply(this, arguments);
+    };
+})(hero.hear);
+hero.endTurn = (function (p){
+    return function (){
+        window.setTimeout(function (){p.call(this);}.bind(this), 10);
+    };
+})(hero.endTurn);
+
+
+//== Extend Person =============================================================
+
+//-- New Properties ------------------------------
+person.moral = 0;
+person.terrified = false;
+
+//-- New Methods ---------------------------------
+person.adjustMoral = function (amount){
+    this.moral += amount;
+    var terrify = false;
+    if(this.moral < 0){ terrify = true;}
+    if(terrify && !this.terrified){
+        this.terrified = true;
+        this.color = 'red';
+        this.update('color');
+        this.sound('terror', 10, this, this.name+' is terrified!');
+    } else if(!terrify && this.terrified){
+        this.terrified = false;
+        this.color = this.colorNatural;
+        this.update('color');
+        this.sound('courage', 10, this, this.name+' regains their courage!');
+    }
+    this.update('moral');
+    return amount;
+};
+
+//-- Redefined Methods ---------------------------
+person.initializer = (function (parentFunction){
+    return function (){
+        parentFunction.apply(this, arguments);
+        this.moral = this.charisma;
+        return this;
+    };
+})(person.initializer);
+person.takeTurn = (function (parentFunction){
+    return function (){
+        var mean = this.meanMoral();
+        var moralTweak = -(this.moral-mean)/(25-this.charisma);
+        moralTweak *= this.hp/this.maxHp();
+        var tweakRound = false;
+        if(Math.abs(moralTweak) < 0.1){
+            tweakRound = true;
+        }
+        this.adjustMoral(moralTweak);
+        if(tweakRound){
+            this.moral = mean;
+            this.adjustMoral(0);
+        }
+        return parentFunction.apply(this, arguments);
+    };
+})(person.takeTurn);
+person.adjustHp = (function (parentFunction){
+    return function (){
+        var adjustment = parentFunction.apply(this,arguments);
+        if(adjustment < 0 && this.hp <= 11-this.charisma){
+            this.adjustMoral(-(this.moral+this.charisma));
+        } else{
+            this.adjustMoral(adjustment*2);
+        }
+        return adjustment;
+    };
+})(person.adjustHp);
 
 
 //== Companion =================================================================
@@ -450,6 +466,7 @@ const companion = Object.extend(person, {
     }
 });
 
+//-- Goal Types ----------------------------------
 class Goal {
     constructor() {
         this.target = undefined;
@@ -502,7 +519,7 @@ class GoalEnemy extends Goal {
         // Find a target, and the path to that target. If no target, deactivate.
         var target;
         var path;
-        var targetData = findTarget(controllee, controllee.faction);
+        var targetData = pathFinder.findTarget(controllee, controllee.faction);
         if(targetData && controllee.checkView(targetData.target)){
             target = targetData.target;
             path = targetData.path;
@@ -549,7 +566,7 @@ class GoalHero extends Goal {
         )){
             return false;
         }
-        var pathArray = findPath(controllee, target, 1);
+        var pathArray = pathFinder.findPath(controllee, target, 1);
         if(!(pathArray && pathArray.length)){
             return false;
         }
@@ -576,3 +593,8 @@ class GoalHero extends Goal {
         return controllee.move(direction);
     }
 }
+
+
+//== Exports ===================================================================
+
+export default companion;

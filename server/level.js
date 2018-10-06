@@ -6,6 +6,11 @@
  *
  *===========================================================================*/
 
+//-- Dependencies --------------------------------
+import gameManager from './game_manager.js';
+import mapManager from './map_manager.js';
+
+//-- Definiton -----------------------------------
 class level {
     constructor(width, height){
         // TODO: Document.
@@ -511,3 +516,6 @@ class level {
         return update;
     }
 };
+
+//-- Export --------------------------------------
+export default level;

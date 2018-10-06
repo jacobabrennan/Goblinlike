@@ -2,6 +2,11 @@
 
 //== Tiles =====================================================================
 
+//-- Dependencies --------------------------------
+import {mappable} from './mappables.js';
+import mapManager from './map_manager.js';
+
+//-- Implementaton -------------------------------
 const tile = Object.extend(mappable, {
     /**
      *  Tiles are the basic unit of map layout. Tiles determine the layout of
@@ -262,3 +267,5 @@ var genericTileTypes = {
         }*/
     })
 };
+
+export {tile, genericTileTypes};

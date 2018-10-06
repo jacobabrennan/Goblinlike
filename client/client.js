@@ -1,4 +1,9 @@
 
+//-- Scaffolding, Remove -------------------------
+function getGameManager() {
+    return fakeNetwork.gameManager;
+}
+
 
 //== Client - TODO: Document ===================================================
 
@@ -16,7 +21,7 @@ const client = Object.extend(driver, {
         this.focus(this.drivers.title);
     },
     reportScores(win){
-        var scores = gameManager.currentGame.compileScores(win);
+        var scores = getGameManager().currentGame.compileScores(win);
         var request = new XMLHttpRequest();
         request.open("POST", URL_SCORE_REPORT, true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -43,7 +48,7 @@ driver.handleClick = function (x, y, options){
 
 client.networking = {
     sendMessage(command, options){
-        gameManager.clientCommand(command, options);
+        getGameManager().clientCommand(command, options);
     },
     recieveMessage(command, options){
         switch(command){

@@ -10,6 +10,10 @@
 
 ==============================================================================*/
 
+//-- Dependencies --------------------------------
+import {movable, containable} from './mappables.js';
+
+//-- Implementation ------------------------------
 const item = Object.extend(movable, {
     // Redefined Properties
     character: '~',
@@ -108,3 +112,6 @@ const item = Object.extend(movable, {
         }
     }
 });
+
+//-- Export --------------------------------------
+export default item;

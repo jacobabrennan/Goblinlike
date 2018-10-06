@@ -168,14 +168,12 @@ include - A parameter which determines which datums to return
 
 */
 
+//-- Dependencies --------------------------------
+import {tile, genericTileTypes} from './tiles.js';
+import PriorityQueue from './priority_queue.js';
+import mapManager from './map_manager.js';
 
-const P_DIJKSTRA_NOT_FOUND = 0;
-const P_DIJKSTRA_FINISHED  = 1;
-const P_DIJKSTRA_ADD_PATH  = 2;
-const P_INCLUDE_INTERIOR   = 1;
-const P_INCLUDE_FINISHED   = 2;
-
-
+//------------------------------------------------
 tile.adjacent = function (instanceData, closed){
     var adjacentArray = [];
     for(var posY = instanceData.y-1; posY <= instanceData.y+1; posY++){
@@ -262,6 +260,7 @@ genericTileTypes['>'].adjacent = function (instanceData, closed){
     return adjacentArray;
 };
 
+//------------------------------------------------
 const nodeCleanup = function (){
     this.source = null;
     this.prevNode = null;
@@ -277,7 +276,6 @@ const pathNode = function (source, prevNode, parentG, parentH, parentsNodesTrave
     this.cleanup = nodeCleanup;
     return this;
 };
-
 const pathDist = function (coords1, skipDense){
     var coords2 = this;
     /*return Math.max(
@@ -325,6 +323,11 @@ const pathDist = function (coords1, skipDense){
     }
     return hDist;
 };
+const pathWeightCompare = function (a, b){
+    return a.f - b.f;
+};
+
+//------------------------------------------------
 const findTarget = function (start, faction){
     start = {
         x: start.x,
@@ -372,7 +375,6 @@ const findTarget = function (start, faction){
     }
     return null;
 };
-
 const findPath = function (start, end, limit){
     var isActor = (start.type == TYPE_ACTOR);
     end = {
@@ -400,7 +402,6 @@ const findPath = function (start, end, limit){
     }
     return pathArray;
 };
-
 const getDijkstra = function (start, range){
     start = {
         x: start.x,
@@ -411,7 +412,6 @@ const getDijkstra = function (start, range){
     };
     return dijkstraRange(start, pathDist, range);
 };
-
 const getDijkstraContents = function (start, range){
     var rangeContents = [];
     var rangeTiles = getDijkstra(start, range);
@@ -426,12 +426,6 @@ const getDijkstraContents = function (start, range){
     }
     return rangeContents;
 }
-
-
-const pathWeightCompare = function (a, b){
-    return a.f - b.f;
-};
-
 const aStar = function (start, end, dist, maxNodes, maxNodeDepth, minTargetDist, minNodeDist){
     // Create heap for open nodes, list for closed nodes, and variable for final path.
     var open = new PriorityQueue(pathWeightCompare);
@@ -614,3 +608,15 @@ const dijkstraRange = function (start, dist, maxRange){
     }
     return path;
 };
+
+//-- Package and Export --------------------------
+const pathFinder = {
+    findTarget: findTarget,
+    findPath: findPath,
+    getDijkstra: getDijkstra,
+    getDijkstraContents: getDijkstraContents,
+    aStar: aStar,
+    dijkstra: dijkstra,
+    dijkstraRange: dijkstraRange,
+}
+export default pathFinder;

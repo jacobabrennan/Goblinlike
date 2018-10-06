@@ -27,11 +27,15 @@
 
 ==============================================================================*/
 
-mapManager.generateLevel = (function (){
-//== Map Generator Namespace ===================================================
+//-- Dependencies --------------------------------
+import mapManager from './map_manager.js';
+import level from './level.js';
+import modelLibrary from './model_library.js';
+import {genericTileTypes} from './tiles.js';
+import companion from './companion.js';
 
-
-const accessFunction = function (depth, options){
+//------------------------------------------------
+mapManager.generateLevel = function (depth, options){
     /**
         This function proceedurally generates a new level with the supplied
         parameters:
@@ -164,7 +168,7 @@ const protoLevel = {
         var cRoom;
         if(this.rooms.length === 1){ cRoom = this.rooms[0];}
         else{
-            crIndex = randomInterval(1, this.rooms.length-1);
+            let crIndex = randomInterval(1, this.rooms.length-1);
             cRoom = this.rooms[crIndex];
         }
         // Place stairs, down and up.
@@ -330,7 +334,7 @@ const protoLevel = {
     getDirectionRotate(oldDirection, rotateDirection){
         // Functional
         var oldDegrees = 0;
-        //var rotateDegrees = 0;
+        var rotateDegrees = 0;
         switch(oldDirection){
             case EAST     : oldDegrees =   0; break;
             case NORTHEAST: oldDegrees =  45; break;
@@ -680,8 +684,3 @@ const protoLevel = {
         return true;
     }
 };
-
-
-//== Close generator namespace =================================================
-    return accessFunction;
-})();

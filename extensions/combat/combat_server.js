@@ -1,298 +1,299 @@
 
     
 // === Combat System ===========================================================
-// TODO: Document this mess.
 
-// Damage Types (bit flags):
-const DAMAGE_PHYSICAL = 1;
-const DAMAGE_FIRE =  2;
-const DAMAGE_ACID =  4;
-const DAMAGE_MAGIC =  8;
-const DAMAGE_0000000000010000 = 16;
-const DAMAGE_0000000000100000 = 32;
-const DAMAGE_0000000000000000 =  0;
+//-- Dependencies --------------------------------
+import {movable} from '../../server/mappables.js';
+import item from '../../server/item.js';
+import actor from '../../server/actor.js';
+import person from '../../server/person.js';
+import gameManager from '../../server/game_manager.js';
+import mapManager from '../../server/map_manager.js';
 
-(function (){
+
+//== Extend Actor ==============================================================
+
+//-- New Properties ------------------------------
+actor.hp = undefined;
+actor.baseHp = undefined;
+actor.maxHp = function (){
+    return this.baseHp;
+};
+actor.baseAttack = 1;
+
+//-- Redefined Methods ---------------------------
+actor.initializer = (function (parentFunction){
+    return function (){
+        this.hp = this.maxHp();
+        parentFunction.apply(this, arguments);
+        return this;
+    };
+})(actor.initializer);
+
+//-- New Methods ---------------------------------
+actor.adjustHp = function (amount){
     /**
-     *  extend Actor
-     **/
-    // Redefined Properties
-    // New Properties
-    actor.hp = undefined;
-    actor.baseHp = undefined;
-    actor.maxHp = function (){
-        return this.baseHp;
-    };
-    actor.baseAttack = 1;
-    // Redefined Functions
-    actor.initializer = (function (parentFunction){
-        return function (){
-            this.hp = this.maxHp();
-            parentFunction.apply(this, arguments);
-            return this;
-        };
-    })(actor.initializer);
-    // New Functions
-    actor.adjustHp = function (amount){
-        /**
-            Modifies the health points (HP) of the actor from both healing and
-                taking damage. Hp should not be set outside of this function.
-            Initiates death if HP drops below critical existence threshold (0).
-            Bounds HP between critical existence threshold and actor's Max HP.
-            Returns the actual change in HP, positive indicates healing.
-         **/
-        var oldHp = this.hp;
-        this.hp = Math.max(0, Math.min(this.maxHp(), this.hp+amount));
-        var deltaHp = this.hp - oldHp;
-        // TODO: Find a good way to tell the player the results of their attack.
-        if(deltaHp < 0){
-            this.sound('pain', 7, this)//, 'The '+this.name+' cries out in pain!');
-        } else if(deltaHp === 0){
-        } else{
-        }
-        // --
-        if(this.hp <= 0){
-            this.sound('death', 10, this, 'The '+this.name+' dies!');
-            this.die();
-        }
-        return deltaHp;
-    };
-    actor.die = function (){
-        /**
-            TODO
-            Remove actor from world
-            Award Exp
-            Drop items
-            Inform actors in view of death
-            Assure garbage collection
-            Etc.
-         **/
-        // TODO: Find a way to inform the attacker, even if they can't hear.
-        this.dead = true;
-        this.dispose();
-    };
-    actor.hurt = function (damage, damageType, attacker, proxy){
-        /**
-            This function is the entry point whenever the actor takes damage
-                from any source. From here all other aspects associated with
-                taking damage are organized, such as defense, adjusting hp,
-                and death.
-            Damage is the amount of damage attempted, damage type is one of the
-                damage type constants, attacker the (optional) actor who
-                initiated the attack, and proxy is the (optional) weapon the
-                attacker used in their attack.
-            It returns the amount of damage actually done, positive indicates
-                a loss of HP.
-         **/
-        if(!damageType){ damageType = DAMAGE_PHYSICAL;}
-        var damageDone = damage;
-        if(this.equipment){
-            for(var placement in this.equipment){
-                if(this.equipment.hasOwnProperty(placement)){
-                    var equipped = this.equipment[placement];
-                    if(!equipped || !equipped.defend){ continue;}
-                    damageDone -= equipped.defend(
-                        damageDone, damageType, attacker, proxy
-                    );
-                }
+        Modifies the health points (HP) of the actor from both healing and
+            taking damage. Hp should not be set outside of this function.
+        Initiates death if HP drops below critical existence threshold (0).
+        Bounds HP between critical existence threshold and actor's Max HP.
+        Returns the actual change in HP, positive indicates healing.
+        **/
+    var oldHp = this.hp;
+    this.hp = Math.max(0, Math.min(this.maxHp(), this.hp+amount));
+    var deltaHp = this.hp - oldHp;
+    // TODO: Find a good way to tell the player the results of their attack.
+    if(deltaHp < 0){
+        this.sound('pain', 7, this)//, 'The '+this.name+' cries out in pain!');
+    } else if(deltaHp === 0){
+    } else{
+    }
+    // --
+    if(this.hp <= 0){
+        this.sound('death', 10, this, 'The '+this.name+' dies!');
+        this.die();
+    }
+    return deltaHp;
+};
+actor.die = function (){
+    /**
+        TODO
+        Remove actor from world
+        Award Exp
+        Drop items
+        Inform actors in view of death
+        Assure garbage collection
+        Etc.
+        **/
+    // TODO: Find a way to inform the attacker, even if they can't hear.
+    this.dead = true;
+    this.dispose();
+};
+actor.hurt = function (damage, damageType, attacker, proxy){
+    /**
+        This function is the entry point whenever the actor takes damage
+            from any source. From here all other aspects associated with
+            taking damage are organized, such as defense, adjusting hp,
+            and death.
+        Damage is the amount of damage attempted, damage type is one of the
+            damage type constants, attacker the (optional) actor who
+            initiated the attack, and proxy is the (optional) weapon the
+            attacker used in their attack.
+        It returns the amount of damage actually done, positive indicates
+            a loss of HP.
+        **/
+    if(!damageType){ damageType = DAMAGE_PHYSICAL;}
+    var damageDone = damage;
+    if(this.equipment){
+        for(var placement in this.equipment){
+            if(this.equipment.hasOwnProperty(placement)){
+                var equipped = this.equipment[placement];
+                if(!equipped || !equipped.defend){ continue;}
+                damageDone -= equipped.defend(
+                    damageDone, damageType, attacker, proxy
+                );
             }
         }
-        damageDone = Math.max(0, damageDone);
-        if(damageDone > 0){
-            damageDone = -this.adjustHp(-damage);
-        }
-        return damageDone;
-    };
-    actor.attack = function (target){
-        /**
-         *  This function initiates an attempt to hurt an enemy actor via
-         *      physical means, such as melee or bow attacks.
-         *  Target is an enemy actor to attack, and weapon is an (optional)
-         *      item to use in the attack. If weapon is not supplied, a melee
-         *      attack will be initiated using the actor's base stats.
-         *  It returns the amount of damage actually done, positive indicates
-         *      a loss of HP.
-         **/
-        // Create Attack Info Message
-        var theHero = gameManager.currentGame.hero
-        var sourceName = (this === theHero)? 'You attack' : this.name+' attacks';
-        var targetName = (target === theHero)? 'you' : target.name;
-        var message = sourceName+' '+targetName;
-        if(theHero){ theHero.inform(message);}
-        //
-        var damageDone;
-        // If a weapon is equipped, attack with that.
-        var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
-        if(weapon && weapon.attack){
-            damageDone = weapon.attack(this, target);
-        // Else, attack with your hands.
-        } else{
-            var damage = this.baseAttack;
-            var damageType = DAMAGE_PHYSICAL;
-            damageDone = target.hurt(damage, damageType, this);
-        }
-        // Return that actual damage done.
-        return damageDone;
-    };
-    // End extend actor
-    
+    }
+    damageDone = Math.max(0, damageDone);
+    if(damageDone > 0){
+        damageDone = -this.adjustHp(-damage);
+    }
+    return damageDone;
+};
+actor.attack = function (target){
     /**
-     *  Extend person
+     *  This function initiates an attempt to hurt an enemy actor via
+     *      physical means, such as melee or bow attacks.
+     *  Target is an enemy actor to attack, and weapon is an (optional)
+     *      item to use in the attack. If weapon is not supplied, a melee
+     *      attack will be initiated using the actor's base stats.
+     *  It returns the amount of damage actually done, positive indicates
+     *      a loss of HP.
      **/
-    person.lastHeal = 0;
-    person.initializer = (function (parentFunction){
-        return function (){
-            parentFunction.apply(this, arguments);
-            this.update('hp');
-            this.update('maxHp');
-            return this;
-        };
-    })(person.initializer);
-    person.packageUpdates = (function (parentFunction){
-        return function (){
-            /**
-                This function creates a data package containing information about
-                    aspects of the person that have changed since the person's last
-                    turn.
-                It returns said package.
-             **/
-            var updatePackage = parentFunction.apply(this, arguments);
-            if(!this.updates){
-                return updatePackage;
-            }
-            this.updates.forEach(function (changeKey){
-                switch(changeKey){
-                    /*  For the following cases, an attribute is appended to the
-                        object at the top level. */
-                    case 'hp'   : updatePackage.hp    = this.hp;      return;
-                    case 'maxHp': updatePackage.maxHp = this.maxHp(); return;
-                }
-            }, this);
+    // Create Attack Info Message
+    var theHero = gameManager.currentGame.hero
+    var sourceName = (this === theHero)? 'You attack' : this.name+' attacks';
+    var targetName = (target === theHero)? 'you' : target.name;
+    var message = sourceName+' '+targetName;
+    if(theHero){ theHero.inform(message);}
+    //
+    var damageDone;
+    // If a weapon is equipped, attack with that.
+    var weapon = this.equipment? this.equipment[EQUIP_MAINHAND] : undefined;
+    if(weapon && weapon.attack){
+        damageDone = weapon.attack(this, target);
+    // Else, attack with your hands.
+    } else{
+        var damage = this.baseAttack;
+        var damageType = DAMAGE_PHYSICAL;
+        damageDone = target.hurt(damage, damageType, this);
+    }
+    // Return that actual damage done.
+    return damageDone;
+};
+
+
+//== Extend Person =============================================================
+
+//-- New Properties ------------------------------
+person.lastHeal = 0;
+
+//-- Redefined Methods ---------------------------
+person.initializer = (function (parentFunction){
+    return function (){
+        parentFunction.apply(this, arguments);
+        this.update('hp');
+        this.update('maxHp');
+        return this;
+    };
+})(person.initializer);
+person.packageUpdates = (function (parentFunction){
+    return function (){
+        /**
+            This function creates a data package containing information about
+                aspects of the person that have changed since the person's last
+                turn.
+            It returns said package.
+            **/
+        var updatePackage = parentFunction.apply(this, arguments);
+        if(!this.updates){
             return updatePackage;
-        };
-    })(person.packageUpdates);
-    person.adjustHp = (function (parentFunction){
-        return function (){
-            var result = parentFunction.apply(this, arguments);
-            if(result){
-                this.update('hp');
+        }
+        this.updates.forEach(function (changeKey){
+            switch(changeKey){
+                /*  For the following cases, an attribute is appended to the
+                    object at the top level. */
+                case 'hp'   : updatePackage.hp    = this.hp;      return;
+                case 'maxHp': updatePackage.maxHp = this.maxHp(); return;
             }
-            return result;
-        };
-    })(person.adjustHp);
-    person.takeTurn = (function (parentFunction){
-        return function (){
-            /**
-                This function causes the actor to perform their turn taking
-                behavior, such as moving about the map, attacking, or alerting
-                the player, possibly over the network, to issue a command.
-                
-                The game will halt until callback is called. All behavior
-                associated with this object taking a turn must take place
-                between the initial call to takeTurn, and the call to callback.
-                
-                It does not return anything.
-             **/
-            if(this.hp == this.maxHp()){
+        }, this);
+        return updatePackage;
+    };
+})(person.packageUpdates);
+person.adjustHp = (function (parentFunction){
+    return function (){
+        var result = parentFunction.apply(this, arguments);
+        if(result){
+            this.update('hp');
+        }
+        return result;
+    };
+})(person.adjustHp);
+person.takeTurn = (function (parentFunction){
+    return function (){
+        /**
+            This function causes the actor to perform their turn taking
+            behavior, such as moving about the map, attacking, or alerting
+            the player, possibly over the network, to issue a command.
+            
+            The game will halt until callback is called. All behavior
+            associated with this object taking a turn must take place
+            between the initial call to takeTurn, and the call to callback.
+            
+            It does not return anything.
+            **/
+        if(this.hp == this.maxHp()){
+            this.lastHeal = gameManager.currentTime();
+        } else{
+            var healWait = gameManager.currentTime() - this.lastHeal;
+            if(healWait >= this.healDelay()){
+                this.adjustHp(1);
                 this.lastHeal = gameManager.currentTime();
-            } else{
-                var healWait = gameManager.currentTime() - this.lastHeal;
-                if(healWait >= this.healDelay()){
-                    this.adjustHp(1);
-                    this.lastHeal = gameManager.currentTime();
-                }
             }
-            return parentFunction.apply(this, arguments);
-        };
-    })(person.takeTurn);
-    person.throwItem = function (theItem, direction){
-        var throwOptions = {
-            thrower: this,
-            range: this.strength
-        };
-        if(theItem.stackable && theItem.stackCount > 1){
-            var singleAmmo = theItem.unstack();
-            if(singleAmmo){
-                theItem = singleAmmo;
-            }
-            this.update('equipment');
         }
-        this.inventoryRemove(theItem);
-        var damageDone = theItem.project(direction, throwOptions);
-        return damageDone;
+        return parentFunction.apply(this, arguments);
     };
-    person.commandFire = function (options){
-        /**
-            This command from the player directs the person to fire their equipped
-            weapon in the specified direction.
-            
-            Structure of options:
-            {
-                direction: CONSTANT, // NORTH, SOUTHEAST, etc.
-            }
-         **/
-        // Check if the user has a fireable item equipped.
-        var theWeapon = this.equipment[EQUIP_MAINHAND];
-        if(!theWeapon){
-            this.inform('You need to Equip a bow or wand first.');
-            this.endTurn();
-            return;
+})(person.takeTurn);
+
+//-- New Methods ---------------------------------
+person.throwItem = function (theItem, direction){
+    var throwOptions = {
+        thrower: this,
+        range: this.strength
+    };
+    if(theItem.stackable && theItem.stackCount > 1){
+        var singleAmmo = theItem.unstack();
+        if(singleAmmo){
+            theItem = singleAmmo;
         }
-        if((typeof theWeapon.shoot) != 'function'){
-            this.inform('You cannot "Fire" the '+theWeapon.description()+'.');
-            this.inform('(Only Bows and Wands can be fired.)');
-            this.endTurn();
-            return;
+        this.update('equipment');
+    }
+    this.inventoryRemove(theItem);
+    var damageDone = theItem.project(direction, throwOptions);
+    return damageDone;
+};
+person.commandFire = function (options){
+    /**
+        This command from the player directs the person to fire their equipped
+        weapon in the specified direction.
+        
+        Structure of options:
+        {
+            direction: CONSTANT, // NORTH, SOUTHEAST, etc.
         }
-        // Fire the item.
-        theWeapon.shoot(this, options.direction);
-        // End turn.
+        **/
+    // Check if the user has a fireable item equipped.
+    var theWeapon = this.equipment[EQUIP_MAINHAND];
+    if(!theWeapon){
+        this.inform('You need to Equip a bow or wand first.');
         this.endTurn();
-    };
-    person.commandThrow = function (options){
-        /**
-            This command from the player directs the person to throw the specified
-            item from inventory in the specified direction.
-            
-            Structure of options:
-            {
-                itemId: uniqueId, // as per mapManager.idManager.assignId
-                direction: CONSTANT, // NORTH, SOUTHEAST, etc.
-            }
-         **/
-        var theItem;
-        // Attempt to find the item by ID in inventory.
-        var itemId = options.itemId;
-        if(itemId !== undefined){
-            var testItem = mapManager.idManager.get(itemId);
-            if(testItem && this.inventory.indexOf(testItem) != -1){
-                /* This indexOf test prevents a type of cheating where the user
-                   would specify the id of an item /not/ in inventory. */
-                theItem = testItem;
-            }
-        }
-        if(!theItem){
-            this.inform('You cannot find the item in your inventory.');
-            this.endTurn();
-            return;
-        }
-        // Throw the item.
-        this.inform('You throw the '+theItem.description()+'.');
-        this.throwItem(theItem, options.direction);
-        // End turn.
+        return;
+    }
+    if((typeof theWeapon.shoot) != 'function'){
+        this.inform('You cannot "Fire" the '+theWeapon.description()+'.');
+        this.inform('(Only Bows and Wands can be fired.)');
         this.endTurn();
-    };
-    // End extend person
-})();
+        return;
+    }
+    // Fire the item.
+    theWeapon.shoot(this, options.direction);
+    // End turn.
+    this.endTurn();
+};
+person.commandThrow = function (options){
+    /**
+        This command from the player directs the person to throw the specified
+        item from inventory in the specified direction.
+        
+        Structure of options:
+        {
+            itemId: uniqueId, // as per mapManager.idManager.assignId
+            direction: CONSTANT, // NORTH, SOUTHEAST, etc.
+        }
+        **/
+    var theItem;
+    // Attempt to find the item by ID in inventory.
+    var itemId = options.itemId;
+    if(itemId !== undefined){
+        var testItem = mapManager.idManager.get(itemId);
+        if(testItem && this.inventory.indexOf(testItem) != -1){
+            /* This indexOf test prevents a type of cheating where the user
+                would specify the id of an item /not/ in inventory. */
+            theItem = testItem;
+        }
+    }
+    if(!theItem){
+        this.inform('You cannot find the item in your inventory.');
+        this.endTurn();
+        return;
+    }
+    // Throw the item.
+    this.inform('You throw the '+theItem.description()+'.');
+    this.throwItem(theItem, options.direction);
+    // End turn.
+    this.endTurn();
+};
 
 
-//== Define Weapons ============================================================
-// TODO: Refactor projectiles. It's a real mess, really.
+/*== Define Weapons ============================================================
+    TODO: Refactor projectiles. It's a real mess, really.*/
+
+//-- Basic Weapon --------------------------------
 const weapon = Object.extend(item, {
     // Redefined Properties
     character: '/',
     placement: EQUIP_MAINHAND,
-    // Redefined Methods
     // New Properties
     damageType: DAMAGE_PHYSICAL,
     baseDamage: 1,
@@ -320,6 +321,8 @@ const weapon = Object.extend(item, {
         return damageDone;
     }
 });
+
+//-- Bow Weapon Type -----------------------------
 const bow = Object.extend(item, {
     // Redefined Properties
     character: '}',
@@ -380,6 +383,7 @@ const bow = Object.extend(item, {
     }
 });
 
+//-- Item Projecting Behavior --------------------
 item.project = function (direction, options){
     // Returns damage done, if any.
     delete this.projectDamageDone;
@@ -455,6 +459,8 @@ weapon.bump = function (obstruction){
     }
     return movable.bump.apply(this, arguments);
 };
+
+//-- Projectiles ---------------------------------
 const projectile = Object.extend(weapon, {
     placement: EQUIP_OFFHAND,
     ephemeral: true,
@@ -577,20 +583,23 @@ const projectile = Object.extend(weapon, {
 });
 
 
-//== Define Armor ==============================================================
+//== Armor (redefine item to work as armor) ====================================
 
-(function (base){
-    base.defense = 0;
-    base.evade = 0;
-    base.defend = function (damage, damageType, attacker, proxy){
-        var defended = 0;
-        if(damageType & DAMAGE_PHYSICAL){
-            if(this.evade && Math.random() < this.evade){
-                defended = damage;
-            } else if(this.defense){
-                defended += Math.max(0, gaussRandom(this.defense, 1));
-            }
+item.defense = 0;
+item.evade = 0;
+item.defend = function (damage, damageType, attacker, proxy){
+    var defended = 0;
+    if(damageType & DAMAGE_PHYSICAL){
+        if(this.evade && Math.random() < this.evade){
+            defended = damage;
+        } else if(this.defense){
+            defended += Math.max(0, gaussRandom(this.defense, 1));
         }
-        return defended;
-    };
-})(item);
+    }
+    return defended;
+};
+
+
+//== Exports ===================================================================
+
+export {weapon, bow, projectile};

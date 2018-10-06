@@ -12,6 +12,10 @@
  *      
  *===========================================================================*/
 
+//-- Dependencies --------------------------------
+import actor from './actor.js';
+
+//-- Implementaton -------------------------------
 const person = Object.extend(actor, {
     // Redefined properties
     character: '@',
@@ -291,3 +295,6 @@ const person = Object.extend(actor, {
         return totalWeight;
     }
 });
+
+//-- Export --------------------------------------
+export default person;

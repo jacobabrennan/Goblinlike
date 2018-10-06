@@ -102,3 +102,5 @@ class PriorityQueue {
         return (this.leaves.indexOf(aThing) !== -1);
     }
 }
+
+export default PriorityQueue;

@@ -1,7 +1,12 @@
 
 
-//== Sound =====================================================================
+//== Sound - Extend Actor ======================================================
 
+//-- Dependencies --------------------------------
+import actor from './actor.js';
+import mapManager from './map_manager.js';
+
+//-- Add Hooks -----------------------------------
 actor.sound = function (tamber, amplitude, source, message){
     if(!this.x || !this.y|| !this.levelId){ return;}
     //var hearers = getDijkstraContents(this, amplitude);

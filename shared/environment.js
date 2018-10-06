@@ -4,7 +4,10 @@
     Constants
   ===========================================================================*/
 
-    // Misc. Configuration:
+//-- Scaffolding, Remove -------------------------
+const fakeNetwork = {};
+
+//-- Misc. Configuration: ------------------------
 const debug = false;
 const VERSION = '1.1.5';
 const displaySize = 21;
@@ -13,18 +16,18 @@ const HIGHLIGHT = 'highlight';
 const COLOR_INSTRUCTION = '#00f';
 let TILE_SIZE = 8;
 let FONT_SIZE = 8;
-// Work around Chrome's font blurring.
 if('WebkitAppearance' in document.documentElement.style){
+    // Work around Chrome's font blurring.
     TILE_SIZE = 24;
     FONT_SIZE = 24;
 }
-//
 const FINAL_DEPTH = 7;
 const INTRO_TITLE = 'You descend into darkness';
 const INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
 const GOBLIN_SCORE = 100;
 const URL_SCORE_REPORT = 'http://jacobabrennan.com:7231/scores';
-    // Directions:
+
+//-- Directions: ---------------------------------
 const WAIT      = 0;
 const NORTH     = 1;
 const SOUTH     = 2;
@@ -36,7 +39,8 @@ const SOUTHEAST = 6;
 const SOUTHWEST = 10;
 const UP        = 16;
 const DOWN      = 32;
-    // Action Commands:
+
+//-- Action Commands: ----------------------------
 const COMMAND_CANCEL      = 64;
 const COMMAND_USE         = 65;
 const COMMAND_NEWGAME     = 66;
@@ -58,12 +62,14 @@ const COMMAND_ENTER       = 81;
 const COMMAND_NONE        = 82;
 const COMMAND_CAMP        = 83;
 const COMMAND_ATTACK      = 84;
-    // Commands from server.
+
+//-- Commands from server. -----------------------
 const COMMAND_SENSE   = 100;
 const COMMAND_TURN    = 101;
 const COMMAND_GAMEOVER= 102;
 const COMMAND_WIN     = 103;
-    // Targeting system:
+
+//-- Targeting system: ---------------------------
 const TARGET_SELF = 1; // Allow the self to be targetted. Will skip selection if this is the only flag set.
 const TARGET_FRIEND = 2; // Allow targeting of friendly actors.
 const TARGET_ENEMY = 4; // Allow enemies to be targetted.
@@ -74,24 +80,52 @@ const TARGET_FURNITURE = 16; // Allow to target furniture.
 const TARGET_RANGE = 32; // Allow targets in range, not just those in view.
 const TARGET_DIRECTION = 64; // The player will be prompted to select a direction.
 const RANGE_VIEW = -1; // Targeting will use the actors view range.
-    // Containable object types:
+
+//-- Containable object types: -------------------
 const TYPE_CONTAINABLE = 1;
 const TYPE_ITEM = 2;
 const TYPE_ACTOR = 3;
 const TYPE_TRAP = 4;
-    // Actor Factions (bit flags):
+
+//-- Actor Factions (bit flags): -----------------
 const FACTION_GOBLIN = 1;
 const FACTION_PLAYER = FACTION_GOBLIN;
 const FACTION_ENEMY = 2;
-    // Companion AI modes:
+
+//-- Companion AI modes: -------------------------
 const MODE_FOLLOW = 1;
 const MODE_ATTACK = 2;
 const MODE_RETREAT = 3;
 const MODE_SCAVENGE = 4;
-    // Genders:
+
+//-- Genders: ------------------------------------
 const GENDER_MALE = 'm';
 const GENDER_FEMALE = 'f';
 const GENDER_NONBINARY = 'nb';
+
+//-- Equipment placements: -----------------------
+const EQUIP_MAINHAND = 'main';
+const EQUIP_OFFHAND = 'off';
+const EQUIP_BODY = 'body';
+const EQUIP_HEAD = 'head';
+const EQUIP_NECK = 'neck';
+const EQUIP_FINGER = 'finger';
+
+//-- Damage Types (bit flags) --------------------
+const DAMAGE_PHYSICAL = 1;
+const DAMAGE_FIRE =  2;
+const DAMAGE_ACID =  4;
+const DAMAGE_MAGIC =  8;
+const DAMAGE_0000000000010000 = 16;
+const DAMAGE_0000000000100000 = 32;
+const DAMAGE_0000000000000000 =  0;
+
+//-- Path Finding ----------------------------------
+const P_DIJKSTRA_NOT_FOUND = 0;
+const P_DIJKSTRA_FINISHED  = 1;
+const P_DIJKSTRA_ADD_PATH  = 2;
+const P_INCLUDE_INTERIOR   = 1;
+const P_INCLUDE_FINISHED   = 2;
 
 
 /*===========================================================================

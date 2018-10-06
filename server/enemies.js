@@ -1,5 +1,16 @@
-(function (){ // Open new namespace for enemies.
-//==============================================================================
+
+
+//== Enemies ===================================================================
+
+//-- Dependencies --------------------------------
+import actor from './actor.js';
+import modelLibrary from './model_library.js';
+import mapManager from './map_manager.js';
+import gameManager from './game_manager.js';
+import pathFinder from './path_finder.js';
+
+
+//== Basic Enemy Definition ====================================================
 
 const enemy = Object.extend(actor, {
     generationId: undefined,
@@ -168,6 +179,8 @@ const enemy = Object.extend(actor, {
         return true;
     }
 });
+
+//-- Enemy Behaviors -----------------------------
 const behaviorErratic = function (){
     var direction = pick(
         NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
@@ -247,7 +260,7 @@ enemy.simplePursue = function (target, simpleThreshold){
         return this.move(stepDir);
     }
     // Otherwise, use aStar to make sure you can get close in and attack.
-    var path = findPath(this, target);
+    var path = pathFinder.findPath(this, target);
     if(!(path && path.length)){ return false;}
     var nextStep = path.shift();
     stepDir = directionTo(this.x, this.y, nextStep.x, nextStep.y);
@@ -280,20 +293,20 @@ const behaviorNormal = enemy.behavior = function (){
     if(this.sedentary){ return;}
     // If target in storage, move toward it. Pathfind on failure.
     target = this.targetId? mapManager.idManager.get(this.targetId) : null;
-    path = this.targetPath? this.targetPath : null;
+    let path = this.targetPath? this.targetPath : null;
     if(target && (!path || !path.length)){
         this.targetPath = null;
         success = this.move(
             directionTo(this.x, this.y, target.x, target.y));
         if(!success){
-            path = findPath(this, target);
+            path = pathFinder.findPath(this, target);
             this.targetPath = path;
         }
         return;
     }
     // If there's no target or no path, do complex pathfinding. :(
     if(!target || !path){
-        var targetData = findTarget(this, this.faction);
+        var targetData = pathFinder.findTarget(this, this.faction);
         var forgotten = this.forgetful? (Math.random() < 1/this.forgetful) : 0;
         if(targetData && (!forgotten || this.checkView(targetData.target))){
             target = targetData.target;
@@ -318,309 +331,319 @@ const behaviorNormal = enemy.behavior = function (){
     this.move(direction);
 };
 
-const blobPrototype = (function (){
-    const blobBody = Object.extend(enemy, {
-        headId: undefined,
-        rewardExperience: 0,
-        initializer(options){
-            enemy.initializer.apply(this, arguments);
-            var head = options.head;
-            this.headId = head.id;
-            this.name = head.name;
-            this.faction = head.faction;
-            this.baseAttack = head.baseAttack;
-            this.dieExtension = head.dieExtension; // TODO: refactor this.
-            if(head.bodyCharacter){
-                this.character = head.bodyCharacter;
-            }
-            if(head.bodyColor){
-                this.color = head.bodyColor;
-            }
-            if(head.bodyBackground){
-                this.background = head.bodyBackground;
-            }
-            return this;
-        },
-        activate(){},
-        attackNearby(){
-            if(!(this.levelId && this.x && this.y)){ return;}
-            var rangeContent = mapManager.getRangeContents(
-                this.x, this.y, this.levelId, 1);
-            var target;
-            while(!target && rangeContent.length){
-                var rI = randomInterval(0, rangeContent.length-1);
-                var rTarget = rangeContent[rI];
-                rangeContent.splice(rI,1);
-                if(rTarget.faction&this.faction){ continue;}
-                if(rTarget.type != TYPE_ACTOR){ continue;}
-                target = rTarget;
-                break;
-            }
-            if(target){
-                this.attack(target);
-            }
-        },
-        bump(){
-            return actor.bump.apply(this, arguments);
-        },
-        hurt(){
-            var head = mapManager.idManager.get(this.headId);
-            return head.hurt.apply(head, arguments);
-        },
-        pack(){
-            // Prevent multiple copies from showing up in the look list.
-            var sensoryData = enemy.pack.apply(this, arguments);
-            var head = mapManager.idManager.get(this.headId);
-            if(!head){ return sensoryData;}
-            sensoryData.id = head.id;
-            return sensoryData;
-        },
-        move(direction){
-            if(!(this.x && this.y && this.levelId) || (Math.random() < 1/4)){
-                var dirs = [NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,
-                    SOUTHEAST,SOUTHWEST];
-                while(dirs.length){
-                    var dir = dirs.shift();
-                    var head = mapManager.idManager.get(this.headId);
-                    if(!head){ return false;}
-                    var dCoords = getStepCoords(head.x, head.y, dir);
-                    this.place(dCoords.x, dCoords.y, head.levelId);
-                }
-                return true;
-            } else{
-                return enemy.move.apply(this, arguments);
-            }
-        },
-        die(){
-            if(this.dieExtension){
-                this.dieExtension.apply(this, arguments);
-            }
-            return enemy.die.apply(this, arguments);
-        }
-    });
-    return Object.extend(enemy, {
-        character: 'B',
-        bodyCharacter: 'B',
-        bodyColor: undefined,
-        bodyBackground: undefined,
-        bodyMass: 4,
-        turnDelay: 2,
-        dieExtension: undefined, // Refactor this.
-        initializer(options){
-            enemy.initializer.apply(this, arguments);
-            this.body = [];
-            for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
-                // Skip one, to include head in mass. Makes hp calc easier.
-                var segment = blobBody.initializer.call(
-                    Object.create(blobBody),
-                    {head: this}
-                );
-                this.body[bodyI] = segment;
-            }
-            return this;
-        },
-        bump(obstruction){
-            if(this.body.indexOf(obstruction) >= 0){
-                mapManager.swapPlaces(this, obstruction);
-            }
-            return actor.bump.apply(this, arguments);
-        },
-        hurt(){
-            var result = enemy.hurt.apply(this, arguments);
-            var maxBody = this.hp / (this.maxHp()/this.bodyMass);
-            while(this.body.length > maxBody){
-                var segment = this.body.shift();
-                segment.die();
-            }
-            return result;
-        },
-        move(direction){
-            var success = enemy.move.apply(this, arguments);
-            this.body.forEach(function (segment){
-                var moveDirection = directionTo(
-                    segment.x, segment.y, this.x, this.y);
-                var success = segment.move(moveDirection);
-                var dirVert = moveDirection & (NORTH|SOUTH);
-                var dirHor  = moveDirection & (EAST |WEST );
-                if(!success){
-                    var primaryDir = dirVert;
-                    var secondaryDir = dirHor;
-                    if(Math.abs(this.x-segment.x) > Math.abs(this.y-segment.y)){
-                        primaryDir = dirHor;
-                        secondaryDir = dirVert;
-                    }
-                    success = (segment.move(primaryDir) ||
-                        segment.move(secondaryDir));
-                }
-            }, this);
-            return success;
-        },
-        place(){
-            var fromTheVoid = !(this.x && this.y && this.levelId);
-            var success = enemy.place.apply(this, arguments);
-            if(fromTheVoid){
-                for(var bodyI = 0; bodyI < this.body.length; bodyI++){
-                    var bodySegment = this.body[bodyI];
-                    bodySegment.move();
-                }
-            }
-            return success;
-        },
-        dispose(){
-            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
-                var bodySegment = this.body[bodyI];
-                bodySegment.dispose();
-            }
-            enemy.dispose.apply(this, arguments);
-        },
-        behavior(){
-            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
-                var bodySegment = this.body[bodyI];
-                bodySegment.attackNearby();
-            }
-            return behaviorNormal.apply(this, arguments);
-        }
-    });
-})();
-const snakePrototype = (function (){
-    const snakeBody = Object.extend(enemy, {
-        headId: undefined,
-        initializer(options){
-            enemy.initializer.apply(this, arguments);
-            var head = options.head;
-            this.headId = head.id;
-            this.name = head.name;
-            this.faction = head.faction;
-            if(head.bodyCharacter){
-                this.character = head.bodyCharacter;
-            }
-            if(head.bodyColor){
-                this.color = head.bodyColor;
-            }
-            if(head.bodyBackground){
-                this.background = head.bodyBackground;
-            }
-            return this;
-        },
-        activate(){},
-        attackNearby(){
-            if(!(this.levelId && this.x && this.y)){ return;}
-            var rangeContent = mapManager.getRangeContents(
-                this.x, this.y, this.levelId, 1);
-            var target;
-            while(!target && rangeContent.length){
-                var rI = randomInterval(0, rangeContent.length-1);
-                var rTarget = rangeContent[rI];
-                rangeContent.splice(rI,1);
-                if(rTarget.faction&this.faction){ continue;}
-                if(rTarget.type != TYPE_ACTOR){ continue;}
-                target = rTarget;
-                break;
-            }
-            if(target){
-                this.attack(target);
-            }
-        },
-        hurt(){
-            var head = mapManager.idManager.get(this.headId);
-            return head.hurt.apply(head, arguments);
-        },
-        pack(){
-            // Prevent multiple copies from showing up in the look list.
-            var sensoryData = enemy.pack.apply(this, arguments);
-            var head = mapManager.idManager.get(this.headId);
-            if(!head){ return sensoryData;}
-            sensoryData.id = head.id;
-            return sensoryData;
-        }
-    });
-    return Object.extend(enemy, {
-        bodyCharacter: 'o',
-        bodyColor: undefined,
-        bodyBackground: undefined,
-        bodyLength: 4,
-        placements: undefined,
-        initializer(options){
-            enemy.initializer.apply(this, arguments);
-            this.body = [];
-            this.placements = [];
-            for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
-                var segment = snakeBody.initializer.call(
-                    Object.create(snakeBody),
-                    {head: this}
-                );
-                this.body[bodyI] = segment;
-            }
-            return this;
-        },
-        move(direction){
-            var oldPlacement = {
-                x: this.x,
-                y: this.y,
-                levelId: this.levelId
-            };
-            var success = enemy.move.apply(this, arguments);
-            if(!success){
-                var offsetX = 0;
-                var offsetY = 0;
-                if(direction & NORTH){ offsetY++;} else if(direction & SOUTH){ offsetY--;}
-                if(direction & EAST ){ offsetX++;} else if(direction & WEST ){ offsetX--;}
-                var destination = {
-                    x: this.x+offsetX,
-                    y: this.y+offsetY
-                };
-                var swapPlace;
-                var swapIndex;
-                for(var placeI = 0; placeI < this.placements.length; placeI++){
-                    var placement = this.placements[placeI];
-                    if(destination.x == placement.x && destination.y == placement.y){
-                        swapPlace = placement;
-                        swapIndex = placeI;
-                        break;
-                    }
-                }
-                if(swapPlace){
-                    this.placements.splice(swapIndex, 1);
-                    var segment = this.body[swapIndex];
-                    segment.unplace();
-                    success = enemy.move.apply(this, arguments);
-                }
-            }
-            if(success){
-                this.placements.unshift(oldPlacement);
-                if(this.placements.length > this.bodyLength){
-                    this.placements.splice(this.bodyLength);
-                }
-                for(var placeI2 = 0; placeI2 < this.placements.length; placeI2++){
-                    var placement2 = this.placements[placeI2];
-                    var segment2 = this.body[placeI2];
-                    if(placement2 && segment2){
-                        segment2.place(
-                            placement2.x, placement2.y, placement2.levelId
-                        );
-                    }
-                }
-            }
-            return success;
-        },
-        dispose(){
-            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
-                var bodySegment = this.body[bodyI];
-                bodySegment.dispose();
-            }
-            enemy.dispose.apply(this, arguments);
-        },
-        behavior(){
-            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
-                var bodySegment = this.body[bodyI];
-                bodySegment.attackNearby();
-            }
-            behaviorNormal.apply(this, arguments);
-        }
-    });
-})();
 
-//==============================================================================
+//== Enemy Archetype: Blob =====================================================
+
+//-- Body Part -----------------------------------
+const blobBody = Object.extend(enemy, {
+    headId: undefined,
+    rewardExperience: 0,
+    initializer(options){
+        enemy.initializer.apply(this, arguments);
+        var head = options.head;
+        this.headId = head.id;
+        this.name = head.name;
+        this.faction = head.faction;
+        this.baseAttack = head.baseAttack;
+        this.dieExtension = head.dieExtension; // TODO: refactor this.
+        if(head.bodyCharacter){
+            this.character = head.bodyCharacter;
+        }
+        if(head.bodyColor){
+            this.color = head.bodyColor;
+        }
+        if(head.bodyBackground){
+            this.background = head.bodyBackground;
+        }
+        return this;
+    },
+    activate(){},
+    attackNearby(){
+        if(!(this.levelId && this.x && this.y)){ return;}
+        var rangeContent = mapManager.getRangeContents(
+            this.x, this.y, this.levelId, 1);
+        var target;
+        while(!target && rangeContent.length){
+            var rI = randomInterval(0, rangeContent.length-1);
+            var rTarget = rangeContent[rI];
+            rangeContent.splice(rI,1);
+            if(rTarget.faction&this.faction){ continue;}
+            if(rTarget.type != TYPE_ACTOR){ continue;}
+            target = rTarget;
+            break;
+        }
+        if(target){
+            this.attack(target);
+        }
+    },
+    bump(){
+        return actor.bump.apply(this, arguments);
+    },
+    hurt(){
+        var head = mapManager.idManager.get(this.headId);
+        return head.hurt.apply(head, arguments);
+    },
+    pack(){
+        // Prevent multiple copies from showing up in the look list.
+        var sensoryData = enemy.pack.apply(this, arguments);
+        var head = mapManager.idManager.get(this.headId);
+        if(!head){ return sensoryData;}
+        sensoryData.id = head.id;
+        return sensoryData;
+    },
+    move(direction){
+        if(!(this.x && this.y && this.levelId) || (Math.random() < 1/4)){
+            var dirs = [NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,
+                SOUTHEAST,SOUTHWEST];
+            while(dirs.length){
+                var dir = dirs.shift();
+                var head = mapManager.idManager.get(this.headId);
+                if(!head){ return false;}
+                var dCoords = getStepCoords(head.x, head.y, dir);
+                this.place(dCoords.x, dCoords.y, head.levelId);
+            }
+            return true;
+        } else{
+            return enemy.move.apply(this, arguments);
+        }
+    },
+    die(){
+        if(this.dieExtension){
+            this.dieExtension.apply(this, arguments);
+        }
+        return enemy.die.apply(this, arguments);
+    }
+});
+
+//-- Archetype -----------------------------------
+const blobPrototype = Object.extend(enemy, {
+    character: 'B',
+    bodyCharacter: 'B',
+    bodyColor: undefined,
+    bodyBackground: undefined,
+    bodyMass: 4,
+    turnDelay: 2,
+    dieExtension: undefined, // Refactor this.
+    initializer(options){
+        enemy.initializer.apply(this, arguments);
+        this.body = [];
+        for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
+            // Skip one, to include head in mass. Makes hp calc easier.
+            var segment = blobBody.initializer.call(
+                Object.create(blobBody),
+                {head: this}
+            );
+            this.body[bodyI] = segment;
+        }
+        return this;
+    },
+    bump(obstruction){
+        if(this.body.indexOf(obstruction) >= 0){
+            mapManager.swapPlaces(this, obstruction);
+        }
+        return actor.bump.apply(this, arguments);
+    },
+    hurt(){
+        var result = enemy.hurt.apply(this, arguments);
+        var maxBody = this.hp / (this.maxHp()/this.bodyMass);
+        while(this.body.length > maxBody){
+            var segment = this.body.shift();
+            segment.die();
+        }
+        return result;
+    },
+    move(direction){
+        var success = enemy.move.apply(this, arguments);
+        this.body.forEach(function (segment){
+            var moveDirection = directionTo(
+                segment.x, segment.y, this.x, this.y);
+            var success = segment.move(moveDirection);
+            var dirVert = moveDirection & (NORTH|SOUTH);
+            var dirHor  = moveDirection & (EAST |WEST );
+            if(!success){
+                var primaryDir = dirVert;
+                var secondaryDir = dirHor;
+                if(Math.abs(this.x-segment.x) > Math.abs(this.y-segment.y)){
+                    primaryDir = dirHor;
+                    secondaryDir = dirVert;
+                }
+                success = (segment.move(primaryDir) ||
+                    segment.move(secondaryDir));
+            }
+        }, this);
+        return success;
+    },
+    place(){
+        var fromTheVoid = !(this.x && this.y && this.levelId);
+        var success = enemy.place.apply(this, arguments);
+        if(fromTheVoid){
+            for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+                var bodySegment = this.body[bodyI];
+                bodySegment.move();
+            }
+        }
+        return success;
+    },
+    dispose(){
+        for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+            var bodySegment = this.body[bodyI];
+            bodySegment.dispose();
+        }
+        enemy.dispose.apply(this, arguments);
+    },
+    behavior(){
+        for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+            var bodySegment = this.body[bodyI];
+            bodySegment.attackNearby();
+        }
+        return behaviorNormal.apply(this, arguments);
+    }
+});
+    
+
+//== Enemy Archetype: Snake ====================================================
+
+//-- Body Part -----------------------------------
+const snakeBody = Object.extend(enemy, {
+    headId: undefined,
+    initializer(options){
+        enemy.initializer.apply(this, arguments);
+        var head = options.head;
+        this.headId = head.id;
+        this.name = head.name;
+        this.faction = head.faction;
+        if(head.bodyCharacter){
+            this.character = head.bodyCharacter;
+        }
+        if(head.bodyColor){
+            this.color = head.bodyColor;
+        }
+        if(head.bodyBackground){
+            this.background = head.bodyBackground;
+        }
+        return this;
+    },
+    activate(){},
+    attackNearby(){
+        if(!(this.levelId && this.x && this.y)){ return;}
+        var rangeContent = mapManager.getRangeContents(
+            this.x, this.y, this.levelId, 1);
+        var target;
+        while(!target && rangeContent.length){
+            var rI = randomInterval(0, rangeContent.length-1);
+            var rTarget = rangeContent[rI];
+            rangeContent.splice(rI,1);
+            if(rTarget.faction&this.faction){ continue;}
+            if(rTarget.type != TYPE_ACTOR){ continue;}
+            target = rTarget;
+            break;
+        }
+        if(target){
+            this.attack(target);
+        }
+    },
+    hurt(){
+        var head = mapManager.idManager.get(this.headId);
+        return head.hurt.apply(head, arguments);
+    },
+    pack(){
+        // Prevent multiple copies from showing up in the look list.
+        var sensoryData = enemy.pack.apply(this, arguments);
+        var head = mapManager.idManager.get(this.headId);
+        if(!head){ return sensoryData;}
+        sensoryData.id = head.id;
+        return sensoryData;
+    }
+});
+
+//-- Archetype -----------------------------------
+const snakePrototype = Object.extend(enemy, {
+    bodyCharacter: 'o',
+    bodyColor: undefined,
+    bodyBackground: undefined,
+    bodyLength: 4,
+    placements: undefined,
+    initializer(options){
+        enemy.initializer.apply(this, arguments);
+        this.body = [];
+        this.placements = [];
+        for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
+            var segment = snakeBody.initializer.call(
+                Object.create(snakeBody),
+                {head: this}
+            );
+            this.body[bodyI] = segment;
+        }
+        return this;
+    },
+    move(direction){
+        var oldPlacement = {
+            x: this.x,
+            y: this.y,
+            levelId: this.levelId
+        };
+        var success = enemy.move.apply(this, arguments);
+        if(!success){
+            var offsetX = 0;
+            var offsetY = 0;
+            if(direction & NORTH){ offsetY++;} else if(direction & SOUTH){ offsetY--;}
+            if(direction & EAST ){ offsetX++;} else if(direction & WEST ){ offsetX--;}
+            var destination = {
+                x: this.x+offsetX,
+                y: this.y+offsetY
+            };
+            var swapPlace;
+            var swapIndex;
+            for(var placeI = 0; placeI < this.placements.length; placeI++){
+                var placement = this.placements[placeI];
+                if(destination.x == placement.x && destination.y == placement.y){
+                    swapPlace = placement;
+                    swapIndex = placeI;
+                    break;
+                }
+            }
+            if(swapPlace){
+                this.placements.splice(swapIndex, 1);
+                var segment = this.body[swapIndex];
+                segment.unplace();
+                success = enemy.move.apply(this, arguments);
+            }
+        }
+        if(success){
+            this.placements.unshift(oldPlacement);
+            if(this.placements.length > this.bodyLength){
+                this.placements.splice(this.bodyLength);
+            }
+            for(var placeI2 = 0; placeI2 < this.placements.length; placeI2++){
+                var placement2 = this.placements[placeI2];
+                var segment2 = this.body[placeI2];
+                if(placement2 && segment2){
+                    segment2.place(
+                        placement2.x, placement2.y, placement2.levelId
+                    );
+                }
+            }
+        }
+        return success;
+    },
+    dispose(){
+        for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+            var bodySegment = this.body[bodyI];
+            bodySegment.dispose();
+        }
+        enemy.dispose.apply(this, arguments);
+    },
+    behavior(){
+        for(var bodyI = 0; bodyI < this.body.length; bodyI++){
+            var bodySegment = this.body[bodyI];
+            bodySegment.attackNearby();
+        }
+        behaviorNormal.apply(this, arguments);
+    }
+});
+
+
+//== Model Library (All Enemy Types) ===========================================
 
 modelLibrary.registerModel('enemy', Object.extend(enemy, { // white rat
     // Id:
@@ -1043,9 +1066,14 @@ modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
         return enemy.die.apply(this, arguments);
     },
 }));
+
+
+//== Exports ===================================================================
+
+export default enemy;
+
+
 //==============================================================================
-    // Close namespace.
-})();
 /*
 CQ Enemies:
 Boar, Bug, Bird, Skull, Spine, Mummy, Vampire, Bat, ????, Ghost, Djinn, Mage,

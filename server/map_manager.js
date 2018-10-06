@@ -6,6 +6,11 @@
  *
  *===========================================================================*/
 
+//-- Dependencies --------------------------------
+import modelLibrary from './model_library.js';
+import gameManager from './game_manager.js';
+
+//-- Implementation ------------------------------
 const mapManager = {
     /**
         This object keeps track of all levels in the game and allows them
@@ -307,3 +312,5 @@ const mapManager = {
         }
     }
 };
+
+export default mapManager;

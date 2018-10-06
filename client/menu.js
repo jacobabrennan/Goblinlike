@@ -13,6 +13,8 @@
 //-- Imports -------------------------------------
 import client from './client.js';
 import driver from './driver.js';
+// To Do: Refactor the following:
+import mapManager from '../server/map_manager.js'
 
 //------------------------------------------------
 const menu = Object.extend(driver, {

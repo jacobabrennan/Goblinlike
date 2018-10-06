@@ -15,8 +15,10 @@
 // TODO: Add a beastiary, as per "and information about enemies encountered".
 // TODO: Complete comments for sub-objects.
 
-//-- Imports -------------------------------------
+//-- Dependencies --------------------------------
 import client from './client.js';
+import gameManager from '../../server/game_manager.js';
+import mapManager from '../../server/map_manager.js';
 
 //------------------------------------------------
 const memory = {

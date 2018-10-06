@@ -1,7 +1,11 @@
 
 
-// TODO: Document file.
+//== TODO: Document file =======================================================
 
+//-- Dependencies --------------------------------
+import mapManager from './map_manager.js';
+
+//-- Mappables -----------------------------------
 const mappable = {
     /**
      *  Mappable is a prototype from which all other objects that appear on the
@@ -161,3 +165,6 @@ const movable = Object.extend(containable, {
         return success;
     }
 });
+
+//-- Exports -------------------------------------
+export {mappable, containable, movable};
