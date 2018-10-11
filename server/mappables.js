@@ -12,6 +12,7 @@ const mappable = {
      *      map are derived.
      *  It is a prototype and must be further derived and instanced before use.
      **/
+    // Configurable
     character: '?',
     color: undefined,
     background: undefined,
@@ -22,19 +23,27 @@ const mappable = {
          *      by removing it from the map and nulling out all references
          *      managed by this object.
          **/
+    },
+    toJSON() {
+        let result = {};
+        if(this.generationType){ // Applied by modelLibrary
+            result.generationType = this.generationType; 
+        }
+        return result;
     }
 };
 const containable = Object.extend(mappable, {
-    // TODO: Document.
-    levelId: undefined,
+    // Configurable
+    name: 'something',
     x: undefined,
     y: undefined,
-    name: 'something',
-    id: undefined,
-    nextContent: undefined,
-        // Tile contents implemented as linked list.
+    // Nonconfigurable
     type: TYPE_CONTAINABLE,
     viewText: 'You know nothing about this.',
+    // Internal
+    levelId: undefined,
+    id: undefined,
+    nextContent: undefined, // Tile contents implemented as linked list.
     initializer(levelId){
         // TODO: Document.
         this.levelId = levelId;
@@ -53,6 +62,15 @@ const containable = Object.extend(mappable, {
         this.unplace();
         this.levelId = undefined;
         mapManager.idManager.cancelId(this.id);
+    },
+    toJSON() {
+        let result = mappable.toJSON.apply(this, ...arguments);
+        let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
+        for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
+            let indexedKey = saveKeys[saveIndex];
+            result[indexedKey] = this[indexedKey];
+        }
+        return result;
     },
     place(x, y, levelId){
         /**

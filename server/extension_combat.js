@@ -29,6 +29,14 @@ actor.initializer = (function (parentFunction){
         return this;
     };
 })(actor.initializer);
+actor.toJSON = (function (parentFunction){
+    return function (){
+        let result = parentFunction.apply(this, arguments);
+        result.hp = this.hp;
+        result.baseHp = this.baseHp;
+        return result;
+    }
+})(actor.toJSON);
 
 //-- New Methods ---------------------------------
 actor.adjustHp = function (amount){
@@ -148,6 +156,13 @@ person.initializer = (function (parentFunction){
         return this;
     };
 })(person.initializer);
+person.toJSON = (function (parentFunction){
+    return function (){
+        let result = parentFunction.apply(this, arguments);
+        result.lastHeal = this.lastHeal;
+        return result;
+    }
+})(person.toJSON);
 person.packageUpdates = (function (parentFunction){
     return function (){
         /**

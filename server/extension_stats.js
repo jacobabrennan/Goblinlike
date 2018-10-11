@@ -12,11 +12,95 @@ import person from './person.js';
 person.viewRange = 10;
 
 //-- New Properties ------------------------------
-person.vitality = undefined;
-person.strength = undefined;
-person.wisdom = undefined;
-person.charisma = undefined;
+person.vitality   = undefined;
+person.strength   = undefined;
+person.wisdom     = undefined;
+person.charisma   = undefined;
 person.experience = undefined;
+
+//-- Redefined Methods ---------------------------
+person.initializer = (function (parentFunction){
+    return function (options){
+        this.setLevel(1);
+        this.experience = 0;
+        var statTotal = 28; // TODO: Magic Number!
+        if(options){
+            this.name     = options.name    ;
+            this.vitality = options.vitality;
+            this.strength = options.strength;
+            this.wisdom   = options.wisdom  ;
+            this.charisma = options.charisma;
+        } else{
+            this.vitality = 1;
+            this.strength = 1;
+            this.wisdom = 1;
+            this.charisma = 1;
+            statTotal -= 4; // Total of innitial population of 1s.
+            while(statTotal){
+                switch(Math.floor(Math.random()*4)){
+                    case 0:
+                        if(this.vitality >= 10){ continue;}
+                        this.vitality++;
+                        break;
+                    case 1:
+                        if(this.strength >= 10){ continue;}
+                        this.strength++;
+                        break;
+                    case 2:
+                        if(this.wisdom >= 10){ continue;}
+                        this.wisdom++;
+                        break;
+                    case 3:
+                        if(this.charisma >= 10){ continue;}
+                        this.charisma++;
+                        break;
+                }
+                statTotal--;
+            }
+        }
+        parentFunction.apply(this, arguments);
+        return this;
+    };
+})(person.initializer);
+person.toJSON = (function (parentFunction){
+    return function (){
+        let result = parentFunction.apply(this, arguments);
+        result.vitality   = this.vitality  ;
+        result.strength   = this.strength  ;
+        result.wisdom     = this.wisdom    ;
+        result.charisma   = this.charisma  ;
+        result.experience = this.experience;
+        return result;
+    }
+})(person.toJSON);
+person.packageUpdates = (function (parentFunction){
+    return function (){
+        /**
+            This function creates a data package containing information
+            about aspects of the person that have changed since the person's
+            last turn.
+            
+            It returns said package.
+            **/
+        var updatePackage = parentFunction.apply(this, arguments);
+        if(!this.updates){
+            return updatePackage;
+        }
+        this.updates.forEach(function (changeKey){
+            switch(changeKey){
+                /*  For the following cases, an attribute is appended to the
+                    object at the top level. */
+                case 'experience': updatePackage.experience = this.experience; return;
+                case 'level': updatePackage.level = this.level; return;
+                case 'vitality': updatePackage.vitality = this.vitality; return;
+                case 'strength': updatePackage.strength = this.strength; return;
+                case 'wisdom': updatePackage.wisdom = this.wisdom; return;
+                case 'charisma': updatePackage.charisma = this.charisma; return;
+            }
+        }, this);
+        return updatePackage;
+    };
+})(person.packageUpdates);
 
 //-- New Methods ---------------------------------
 person.maxHp = function (){
@@ -104,76 +188,3 @@ person.setLevel = function (newLevel){
     this.update('inventory');
     this.update('equipment');
 };
-
-//-- Redefined Methods ---------------------------
-person.initializer = (function (parentFunction){
-    return function (options){
-        this.setLevel(1);
-        this.experience = 0;
-        var statTotal = 28; // TODO: Magic Number!
-        if(options){
-            this.name     = options.name    ;
-            this.vitality = options.vitality;
-            this.strength = options.strength;
-            this.wisdom   = options.wisdom  ;
-            this.charisma = options.charisma;
-        } else{
-            this.vitality = 1;
-            this.strength = 1;
-            this.wisdom = 1;
-            this.charisma = 1;
-            statTotal -= 4; // Total of innitial population of 1s.
-            while(statTotal){
-                switch(Math.floor(Math.random()*4)){
-                    case 0:
-                        if(this.vitality >= 10){ continue;}
-                        this.vitality++;
-                        break;
-                    case 1:
-                        if(this.strength >= 10){ continue;}
-                        this.strength++;
-                        break;
-                    case 2:
-                        if(this.wisdom >= 10){ continue;}
-                        this.wisdom++;
-                        break;
-                    case 3:
-                        if(this.charisma >= 10){ continue;}
-                        this.charisma++;
-                        break;
-                }
-                statTotal--;
-            }
-        }
-        parentFunction.apply(this, arguments);
-        return this;
-    };
-})(person.initializer);
-person.packageUpdates = (function (parentFunction){
-    return function (){
-        /**
-            This function creates a data package containing information
-            about aspects of the person that have changed since the person's
-            last turn.
-            
-            It returns said package.
-            **/
-        var updatePackage = parentFunction.apply(this, arguments);
-        if(!this.updates){
-            return updatePackage;
-        }
-        this.updates.forEach(function (changeKey){
-            switch(changeKey){
-                /*  For the following cases, an attribute is appended to the
-                    object at the top level. */
-                case 'experience': updatePackage.experience = this.experience; return;
-                case 'level': updatePackage.level = this.level; return;
-                case 'vitality': updatePackage.vitality = this.vitality; return;
-                case 'strength': updatePackage.strength = this.strength; return;
-                case 'wisdom': updatePackage.wisdom = this.wisdom; return;
-                case 'charisma': updatePackage.charisma = this.charisma; return;
-            }
-        }, this);
-        return updatePackage;
-    };
-})(person.packageUpdates);

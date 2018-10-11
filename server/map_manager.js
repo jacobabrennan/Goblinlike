@@ -1,10 +1,6 @@
 
 
-/*===========================================================================
- *
- * TODO: Document.
- *
- *===========================================================================*/
+/*== Map Manager ============================================================ */
 
 //-- Dependencies --------------------------------
 import modelLibrary from './model_library.js';
@@ -20,6 +16,18 @@ const mapManager = {
      **/
     levels: {},
     depths: [],
+    toJSON() {
+        let result = {
+            ids: this.idManager.toJSON(),
+            levels: []
+        };
+        let levelIds = Object.keys(this.levels);
+        for(let levelIndex = 0; levelIndex < levelIds.length; levelIndex++){
+            let indexedLevel = this.levels[levelIds[levelIndex]];
+            result.levels.push(indexedLevel.toJSON());
+        }
+        return result;
+    },
     reset() {
         // TODO: document.
         this.idManager.reset();
@@ -180,137 +188,154 @@ const mapManager = {
         else{         content1.place(oldX, oldY, oldId);}
         return success;
     },
-/*==== Id Manager ===========================================================*/
-    idManager: {
-        // TODO: Document.
-        ids: [],
-        recycledIds: [],
-        reset: function (){
-            this.recycledIds = [];
-            this.unusedColors = this.totalColors;
-            this.potionColors = {};
-            this.scrolls = {};
-            this.scrollNames = {};
-            this.unusedMetals = this.totalMetals;
-            for(var id = 0; id < this.ids.length; id++){
-                var idObject = this.ids[id];
-                if(idObject && idObject.dispose){
-                    idObject.dispose();
-                }
-            }
-            this.ids = [];
-        },
-        assignId(thing) {
-            // TODO: Document.
-            var newId;
-            if(this.recycledIds.length){
-                newId = this.recycledIds.shift();
+};
+
+
+/*==== Id Manager ============================================================*/
+mapManager.idManager = {
+    // TODO: Document.
+    ids: [],
+    recycledIds: [],
+    toJSON() {
+        let result = this.ids.map(aMappable => {
+            if(!aMappable){ return undefined;}
+            if(aMappable.generationId){
+                console.log(aMappable.generationId)
             } else{
-                newId = this.ids.length;
+                console.log(aMappable);
             }
-            this.ids[newId] = thing;
-            return newId;
-        },
-        cancelId(id) {
-            // TODO: Document.
-            var identifiedThing = this.ids[id];
-            if(!identifiedThing){ return;}
-            this.ids[id] = null;
-            var oldIndex = this.recycledIds.indexOf(id);
-            if(oldIndex){ return;}
-            this.recycledIds.push(id);
-        },
-        get(id) {
-            // TODO: Document.
-            return this.ids[id];
-        },
-        //=== Unidentified Item Descriptions ===========
-        totalColors: [
-          //'123456 Potion*99',
-            'Red'   ,'Orange','Yellow','Green' ,
-            'Violet','Cyan'  ,'Blue'  ,'Purple',
-            'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
-            'Murky' ,'Clear' ,'Chunky','Fizzy'
-        ],
-        unusedColors: [
-          //'123456 Potion*99',
-            'Red'   ,'Orange','Yellow', 'Green',
-            'Aqua'  ,'Cyan'  ,'Blue'  ,'Purple',
-            'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
-            'Murky' ,'Clear' ,'Chunky','Fizzy'
-        ],
-        totalMetals: [
-            'tin','nickle','copper','iron','miþril','gold',
-            'silver','bronze','alum','steel'
-        ],
-        unusedMetals: [
-            'tin','nickle','copper','iron','miþril','gold',
-            'silver','bronze','alum','steel'
-        ],
-        potionColors: {}, // Item.name : color
-        wandMetals: {}, // Item.name : metal
-        scrolls: {}, // item.name : scroll name
-        scrollNames: {}, // scroll name : item.name
-        describeScroll(item) {
-            if(
-                gameManager.currentGame &&
-                gameManager.currentGame.hero.lore() >= item.lore
-            ){
-                return item.name;
+            return aMappable.toJSON();
+        });
+        return result;
+    },
+    reset: function (){
+        this.recycledIds = [];
+        this.unusedColors = this.totalColors;
+        this.potionColors = {};
+        this.scrolls = {};
+        this.scrollNames = {};
+        this.unusedMetals = this.totalMetals;
+        for(var id = 0; id < this.ids.length; id++){
+            var idObject = this.ids[id];
+            if(idObject && idObject.dispose){
+                idObject.dispose();
             }
-            var scrollName = this.scrolls[item.name];
-            if(!scrollName){
-                var tries = 100;
-                while(!scrollName && tries-- >0){
-                    var randomName = sWerd.scroll();
-                    if(!this.scrollNames[randomName]){
-                        scrollName = randomName;
-                    }
-                }
-                this.scrolls[item.name] = scrollName;
-                this.scrollNames[scrollName] = item;
-            }
-            return scrollName+' scroll';
-        },
-        describePotion(item) {
-            if(
-                gameManager.currentGame &&
-                gameManager.currentGame.hero.lore() >= item.lore
-            ){
-                return item.name;
-            }
-            var potionColor = this.potionColors[item.name];
-            if(!potionColor){
-                var randomIndex = randomInterval(0, this.unusedColors.length);
-                var randomColor = this.unusedColors.splice(randomIndex, 1);
-                randomColor = randomColor[0];
-                this.potionColors[item.name] = randomColor;
-                potionColor = randomColor;
-            }
-            return potionColor+' potion';
-        },
-        describeWand(item) {
-            if(
-                gameManager.currentGame &&
-                gameManager.currentGame.hero.lore() >= item.lore
-            ){
-                var returnName = item.name;
-                if(item.charges !== undefined){
-                    returnName += '('+item.charges+')';
-                }
-                return returnName;
-            }
-            var wandMetal = this.wandMetals[item.name];
-            if(!wandMetal){
-                var randomIndex = randomInterval(0, this.unusedMetals.length);
-                var randomMetal = this.unusedMetals.splice(randomIndex, 1);
-                randomMetal = randomMetal[0];
-                this.wandMetals[item.name] = randomMetal;
-                wandMetal = randomMetal;
-            }
-            return wandMetal+' wand';
         }
+        this.ids = [];
+    },
+    assignId(thing) {
+        // TODO: Document.
+        var newId;
+        if(this.recycledIds.length){
+            newId = this.recycledIds.shift();
+        } else{
+            newId = this.ids.length;
+        }
+        this.ids[newId] = thing;
+        return newId;
+    },
+    cancelId(id) {
+        // TODO: Document.
+        var identifiedThing = this.ids[id];
+        if(!identifiedThing){ return;}
+        this.ids[id] = null;
+        var oldIndex = this.recycledIds.indexOf(id);
+        if(oldIndex){ return;}
+        this.recycledIds.push(id);
+    },
+    get(id) {
+        // TODO: Document.
+        return this.ids[id];
+    },
+    //=== Unidentified Item Descriptions ===========
+    totalColors: [
+        //'123456 Potion*99',
+        'Red'   ,'Orange','Yellow','Green' ,
+        'Violet','Cyan'  ,'Blue'  ,'Purple',
+        'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
+        'Murky' ,'Clear' ,'Chunky','Fizzy'
+    ],
+    unusedColors: [
+        //'123456 Potion*99',
+        'Red'   ,'Orange','Yellow', 'Green',
+        'Aqua'  ,'Cyan'  ,'Blue'  ,'Purple',
+        'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
+        'Murky' ,'Clear' ,'Chunky','Fizzy'
+    ],
+    totalMetals: [
+        'tin','nickle','copper','iron','miþril','gold',
+        'silver','bronze','alum','steel'
+    ],
+    unusedMetals: [
+        'tin','nickle','copper','iron','miþril','gold',
+        'silver','bronze','alum','steel'
+    ],
+    potionColors: {}, // Item.name : color
+    wandMetals: {}, // Item.name : metal
+    scrolls: {}, // item.name : scroll name
+    scrollNames: {}, // scroll name : item.name
+    describeScroll(item) {
+        if(
+            gameManager.currentGame &&
+            gameManager.currentGame.hero.lore() >= item.lore
+        ){
+            return item.name;
+        }
+        var scrollName = this.scrolls[item.name];
+        if(!scrollName){
+            var tries = 100;
+            while(!scrollName && tries-- >0){
+                var randomName = sWerd.scroll();
+                if(!this.scrollNames[randomName]){
+                    scrollName = randomName;
+                }
+            }
+            this.scrolls[item.name] = scrollName;
+            this.scrollNames[scrollName] = item;
+        }
+        return scrollName+' scroll';
+    },
+    describePotion(item) {
+        if(
+            gameManager.currentGame &&
+            gameManager.currentGame.hero.lore() >= item.lore
+        ){
+            return item.name;
+        }
+        var potionColor = this.potionColors[item.name];
+        if(!potionColor){
+            var randomIndex = randomInterval(0, this.unusedColors.length);
+            var randomColor = this.unusedColors.splice(randomIndex, 1);
+            randomColor = randomColor[0];
+            this.potionColors[item.name] = randomColor;
+            potionColor = randomColor;
+        }
+        return potionColor+' potion';
+    },
+    describeWand(item) {
+        if(
+            gameManager.currentGame &&
+            gameManager.currentGame.hero.lore() >= item.lore
+        ){
+            var returnName = item.name;
+            if(item.charges !== undefined){
+                returnName += '('+item.charges+')';
+            }
+            return returnName;
+        }
+        var wandMetal = this.wandMetals[item.name];
+        if(!wandMetal){
+            var randomIndex = randomInterval(0, this.unusedMetals.length);
+            var randomMetal = this.unusedMetals.splice(randomIndex, 1);
+            randomMetal = randomMetal[0];
+            this.wandMetals[item.name] = randomMetal;
+            wandMetal = randomMetal;
+        }
+        return wandMetal+' wand';
     }
 };
+
+
+//== Exports ===================================================================
 
 export default mapManager;

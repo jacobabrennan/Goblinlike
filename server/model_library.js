@@ -6,6 +6,7 @@ const modelLibrary = {
     models: {},
     modelWeights: {},
     registerModel(modelType, newPrototype){
+        newPrototype.generationType = modelType;
         var generationId = newPrototype.generationId;
         var typeModels = this.models[modelType];
         var typeWeights = this.modelWeights[modelType];

@@ -49,6 +49,10 @@ const hero = Object.extend(person, {
         this.inventory = [];
         return this;
     },
+    /*toJSON() {
+        let result = person.toJSON.apply(this, arguments);
+        return result;
+    },*/
     die(){
         this.inform('');
         this.inform('You have died.');

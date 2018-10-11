@@ -22,6 +22,7 @@ const person = Object.extend(actor, {
     faction: FACTION_GOBLIN,
     name: 'person',
     color: '#0f0',
+    colorNatural: undefined,
     // New properties
     gender: undefined,
     updates: undefined,
@@ -39,6 +40,7 @@ const person = Object.extend(actor, {
          **/
         actor.initializer.apply(this, arguments);
         this.name = sWerd.name();
+        this.colorNatural = this.color;
         // Select Gender
         if(Math.random()*7 <= 1){
             this.gender = GENDER_NONBINARY;
@@ -53,6 +55,13 @@ const person = Object.extend(actor, {
         this.update('viewRange');
         this.inventory = [];
         return this;
+    },
+    toJSON() {
+        let result = actor.toJSON.apply(this, ...arguments);
+        result.gender = this.gender;
+        result.inventory = this.inventory.map(item => item.id);
+        result.colorNatural = this.colorNatural;
+        return result;
     },
     place(){
         var success = actor.place.apply(this, arguments);

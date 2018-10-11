@@ -92,12 +92,6 @@ const FACTION_GOBLIN = 1;
 const FACTION_PLAYER = FACTION_GOBLIN;
 const FACTION_ENEMY = 2;
 
-//-- Companion AI modes: -------------------------
-const MODE_FOLLOW = 1;
-const MODE_ATTACK = 2;
-const MODE_RETREAT = 3;
-const MODE_SCAVENGE = 4;
-
 //-- Genders: ------------------------------------
 const GENDER_MALE = 'm';
 const GENDER_FEMALE = 'f';

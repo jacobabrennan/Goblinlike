@@ -25,7 +25,7 @@ class level {
         this.tileContentsGrid = [];
         return this;
     }
-    dispose(){
+    dispose() {
         var disposeOrder = function (oldContent){
             oldContent.dispose();
         };
@@ -41,7 +41,13 @@ class level {
         mapManager.cancelLevel(this);
         this.id = null;
     }
-    getTile(x, y){
+    toJSON() {
+        let result = {
+            id: this.id
+        };
+        return result;
+    }
+    getTile(x, y) {
         /**
             This function is used to get the tile referenced by a the given coordinates.
             Tiles are shared objects, and one tile object can be referenced
@@ -56,7 +62,7 @@ class level {
         var compoundIndex = y*this.width + x;
         return this.tileGrid[compoundIndex];
     }
-    placeTile(x, y, tile){
+    placeTile(x, y, tile) {
         /**
             This function is used to place a tile at specific coordinates on
                 this level.
@@ -71,7 +77,7 @@ class level {
         this.tileGrid[compoundIndex] = tile;
         return true;
     }
-    getTileContents(x, y, onlyFirst){
+    getTileContents(x, y, onlyFirst) {
         /**
             This function is used to obtain an array of objects contained by
                 the tile referenced at the supplied coordinates. Optionally,
@@ -104,7 +110,7 @@ class level {
         }
         return contents;
     }
-    placeContainable(x, y, content){
+    placeContainable(x, y, content) {
         /**
             This function is used to place or move containable objects on the
                 map. It takes into account the density of tiles and their
@@ -188,7 +194,7 @@ class level {
         }
         return true;
     }
-    unplaceContainable(content){
+    unplaceContainable(content) {
         /**
             This function removes the containable from the level. This allows
                 it to be placed in the player's inventory, into a shop, a
@@ -296,7 +302,7 @@ class level {
         coordinates or contents, you'd first have to reverse engineer the x and
         y coordinates from the returned array's indexes.
      */
-    getRangeContents(x, y, range){
+    getRangeContents(x, y, range) {
         /**
             This function compiles an array of all containables within range of
             the given coordinates. The grid includes all coordinates within the
@@ -318,7 +324,7 @@ class level {
         // Return the finished contents array.
         return contents;
     }
-    getRangeActors(x, y, range){
+    getRangeActors(x, y, range) {
         /**
             This function compiles an array of all actors within range of the
             given coordinates. The grid includes all coordinates within the
@@ -342,7 +348,7 @@ class level {
         // Return the finished actors array.
         return actors;
     }
-    packageSetup(){
+    packageSetup() {
         /**
             This function creates a data package to send to clients,
                 potentially over a network, to alert them to certain level
@@ -393,7 +399,7 @@ class level {
         };
         return update;
     }
-    packageView(x, y, range){
+    packageView(x, y, range) {
         /**
             This function creates a "sensory data" package to transmit to
                 clients, potentially over a network. This package contains

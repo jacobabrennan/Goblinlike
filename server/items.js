@@ -9,9 +9,6 @@ import {weapon, bow, projectile} from './extension_combat.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
-//-- Extend Item ---------------------------------
-item.generationWeight = 1;
-
 
 //== Base Prototypes (wands, rings, etc.) ======================================
 
@@ -21,10 +18,6 @@ const wand = Object.extend(item, {
     placement: EQUIP_MAINHAND,
     targetClass: TARGET_DIRECTION,
     lore: 10,
-    // Redefined Methods
-    description(){
-        return mapManager.idManager.describeWand(this);
-    },
     // New Properties
     charges: 5,
     range: 15,
@@ -39,6 +32,15 @@ const wand = Object.extend(item, {
             return projectile.attack.apply(this, arguments);
         }
     }),
+    // Redefined Methods
+    description(){
+        return mapManager.idManager.describeWand(this);
+    },
+    toJSON() {
+        let result = item.toJSON.apply(this, arguments);
+        result.charges = this.charges;
+        return result;
+    },
     // New Methods
     effect(user, targetData){
         if(!targetData.direction){

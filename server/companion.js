@@ -146,8 +146,7 @@ const companion = Object.extend(person, {
     faction: FACTION_GOBLIN,
     color: '#5c3',
     companion: true,
-    mode: MODE_FOLLOW,
-    initializer(){
+    initializer() {
         person.initializer.apply(this, arguments);
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
@@ -181,13 +180,20 @@ const companion = Object.extend(person, {
         gameManager.currentGame.companionInfo.push(this);
         return this;
     },
-    adjustExperience(amount){
+    toJSON() {
+        let result = person.toJSON.apply(this, arguments);
+        if(this.goal){
+            result.goal = this.goal.toJSON();
+        }
+        return result;
+    },
+    adjustExperience(amount) {
         /**
         **/
         gameManager.currentGame.hero.adjustExperience(amount);
         return;
     },
-    activate(){
+    activate() {
         /**
          *  This function actives the enemy, basically "waking it up". It is
          *  usually called when the player comes into view, makes loud noises
@@ -209,11 +215,11 @@ const companion = Object.extend(person, {
         }
         this.active = true;
     },
-    hurt(){
+    hurt() {
         this.activate();
         return person.hurt.apply(this, arguments);
     },
-    hear(tamber, amplitude, source, message){
+    hear(tamber, amplitude, source, message) {
         if(source && (source != this) && (source.faction & this.faction)){
             switch(tamber){
                 case 'terror': this.adjustMoral(1); break;
@@ -225,7 +231,7 @@ const companion = Object.extend(person, {
         }
         return person.hear.apply(this, arguments);
     },
-    dispose(){
+    dispose() {
         if(!this.dead){
             this.lost = true;
         }
@@ -237,14 +243,14 @@ const companion = Object.extend(person, {
         }
         return person.dispose.apply(this, arguments);
     },
-    bumped(bumper){
+    bumped(bumper) {
         if(bumper.companion && bumper.terrified && !this.terrified){
             mapManager.swapPlaces(this, bumper);
         } else{
             person.bumped.apply(this, arguments);
         }
     },
-    unequip(oldItem){
+    unequip(oldItem) {
         var success = person.unequip.apply(this, arguments);
         if(success){
             success = this.inventoryRemove(oldItem);
@@ -255,11 +261,11 @@ const companion = Object.extend(person, {
         }
         return false;
     },
-    camp(){
+    camp() {
         this.camping = gameManager.currentGame.hero.camping;
         return this.camping;
     },
-    behavior(){
+    behavior() {
         var result = false;
         if(this.terrified){
             result = this.pursueSafety();
@@ -280,13 +286,13 @@ const companion = Object.extend(person, {
         }
         return;
     },
-    pursueHero(){
+    pursueHero() {
         this.setGoal(GoalHero);
     },
-    pursueEnemy(){
+    pursueEnemy() {
         this.setGoal(GoalEnemy);
     },
-    pursueSafety(){
+    pursueSafety() {
         /**
             Each actor exerts a vector force on the companion. The terrified
             companion will then pursue a course in that direction, effectively
@@ -327,7 +333,7 @@ const companion = Object.extend(person, {
         }
         return success;
     },
-    desperation(){
+    desperation() {
         /**
             Attack any nearby enemy.
         **/
@@ -353,7 +359,7 @@ const companion = Object.extend(person, {
             return false;
         }
     },
-    pursueLoot(){
+    pursueLoot() {
         var viewContents = this.getViewContents();
         var targetLoot;
         var highDesire = 0;
@@ -375,7 +381,7 @@ const companion = Object.extend(person, {
         if(!targetLoot){ return;}
         this.setGoal(GoalLoot, targetLoot);
     },
-    itemDesire(theItem){
+    itemDesire(theItem) {
         var desire = 0;
         var desireMultiplier = 1;
         // Check wand, and charges.
@@ -451,14 +457,14 @@ const companion = Object.extend(person, {
         // Return desire.
         return desire * desireMultiplier;
     },
-    setGoal(goalType, goalTarget){
+    setGoal(goalType, goalTarget) {
         if(!goalType){
             this.goal = null;
             return;
         }
         this.goal = new goalType(goalTarget);
     },
-    pursueGoal: function(){
+    pursueGoal: function() {
         if(!this.goal){ return false;}
         var success = this.goal.behavior(this);
         if(!success){ this.setGoal();}
@@ -473,6 +479,9 @@ class Goal {
     }
     behavior(controllee){
         return false;
+    }
+    toJSON() {
+        return {};
     }
 }
 class GoalLoot extends Goal {

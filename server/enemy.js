@@ -49,6 +49,13 @@ const enemy = Object.extend(actor, {
     sedentary: false,
         // True if the enemy does not move.
     // Redefined methods:
+    toJSON() {
+        let result = actor.toJSON.apply(this, arguments);
+        result.generationId = this.generationId;
+        result.active = this.active;
+        result.breedRate = this.breedRate;
+        return result;
+    },
     takeTurn(callback){
         /**
             This function causes the actor to perform their turn taking
@@ -349,7 +356,6 @@ const blobBody = Object.extend(enemy, {
         this.name = head.name;
         this.faction = head.faction;
         this.baseAttack = head.baseAttack;
-        this.dieExtension = head.dieExtension; // TODO: refactor this.
         if(head.bodyCharacter){
             this.character = head.bodyCharacter;
         }
@@ -360,6 +366,11 @@ const blobBody = Object.extend(enemy, {
             this.background = head.bodyBackground;
         }
         return this;
+    },
+    toJSON() {
+        let result = enemy.toJSON.apply(this, arguments);
+        result.headId = this.headId;
+        return result;
     },
     activate(){},
     attackNearby(){
@@ -410,12 +421,6 @@ const blobBody = Object.extend(enemy, {
         } else{
             return enemy.move.apply(this, arguments);
         }
-    },
-    die(){
-        if(this.dieExtension){
-            this.dieExtension.apply(this, arguments);
-        }
-        return enemy.die.apply(this, arguments);
     }
 });
 
@@ -427,7 +432,7 @@ const blobArchetype = Object.extend(enemy, {
     bodyBackground: undefined,
     bodyMass: 4,
     turnDelay: 2,
-    dieExtension: undefined, // Refactor this.
+    body: undefined,
     initializer(options){
         enemy.initializer.apply(this, arguments);
         this.body = [];
@@ -440,6 +445,11 @@ const blobArchetype = Object.extend(enemy, {
             this.body[bodyI] = segment;
         }
         return this;
+    },
+    toJSON() {
+        let result = enemy.toJSON.apply(this, arguments);
+        result.body = this.body.map(segment => segment.id);
+        return result;
     },
     bump(obstruction){
         if(this.body.indexOf(obstruction) >= 0){
@@ -527,6 +537,11 @@ const snakeBody = Object.extend(enemy, {
         }
         return this;
     },
+    toJSON() {
+        let result = enemy.toJSON.apply(this, arguments);
+        result.head = this.headId;
+        return result;
+    },
     activate(){},
     attackNearby(){
         if(!(this.levelId && this.x && this.y)){ return;}
@@ -579,6 +594,11 @@ const snakeArchetype = Object.extend(enemy, {
             this.body[bodyI] = segment;
         }
         return this;
+    },
+    toJSON() {
+        let result = enemy.toJSON.apply(this, arguments);
+        result.body = this.body.map(segment => segment.id);
+        return result;
     },
     move(direction){
         var oldPlacement = {
@@ -665,6 +685,7 @@ for(let modelIndex = 0; modelIndex < enemyModels.length; modelIndex++){
 modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
     // Id:
     generationId: 'emperor wight',
+    generationType: 'special',
     name: 'Emperor Wight',
     // Display:
     character: "W",

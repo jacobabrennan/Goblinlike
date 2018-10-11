@@ -99,7 +99,7 @@ const protoLevel = {
             this.placeStairsDown = options.placeStairsDown;}
         var assignedId = options.id;
         if(assignedId === undefined){
-            assignedId = 'Random Level: '+(1000+Math.floor(Math.random()*9000));
+            assignedId = 'Depth: '+this.depth;
         }
         // Generate blank map block.
         this.mapText = '';

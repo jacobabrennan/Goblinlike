@@ -127,6 +127,16 @@ class Game {
         this.currentTime = 0;
         this.companionInfo = [];
     }
+
+    //-- Saving & Loading ----------------------------
+    toJSON() {
+        let result = {
+            map: mapManager.toJSON()
+        };
+        return result;
+    }
+
+    //------------------------------------------------
     start(options) {
         let newLevel = mapManager.generateLevel(1);
         this.hero = Object.instantiate(hero, options);

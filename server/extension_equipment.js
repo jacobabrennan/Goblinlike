@@ -54,6 +54,18 @@ person.initializer = (function (parentFunction){
         return this;
     };
 })(person.initializer);
+person.toJSON = (function (parentFunction){
+    return function (){
+        let result = parentFunction.apply(this, arguments);
+        let equipmentKeys = Object.keys(this.equipment);
+        result.equipment = [];
+        for(let keyIndex = 0; keyIndex < equipmentKeys.length; keyIndex++){
+            let equippedItem = this.equipment[equipmentKeys[keyIndex]];
+            result.equipment.push(equippedItem);
+        }
+        return result;
+    }
+})(person.toJSON);
 person.packageUpdates = (function (parentFunction){
     return function (){
         /**

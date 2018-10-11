@@ -38,6 +38,11 @@ const actor = Object.extend(movable, {
         gameManager.cancelActor(this);
         movable.dispose.apply(this, arguments);
     },
+    toJSON() {
+        let result = movable.toJSON.apply(this, ...arguments);
+        result.nextTurn = this.nextTurn;
+        return result;
+    },
     takeTurn(callback){
         /**
             This function causes the actor to perform their turn taking

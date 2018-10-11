@@ -21,6 +21,8 @@ const item = Object.extend(movable, {
     type: TYPE_ITEM,
     dense: false,
     // New Properties
+    generationId: undefined,
+    generationWeight: 1,
     targetClass: TARGET_SELF,
     targetRange: RANGE_VIEW,
     stackable: false,
@@ -28,8 +30,17 @@ const item = Object.extend(movable, {
     consumable: false,
     loreLevel: 0,
     weight: 1,
-    effect(user, targetData){},
     effectFlags: 0,
+    // Redefined Methods
+    toJSON() {
+        let result = movable.toJSON.apply(this, arguments);
+        if(this.stackable){
+            result.stackCount = this.stackCount;
+        }
+        return result;
+    },
+    // New Methods
+    effect(user, targetData){},
     use(user, targetData){
         /**
             Structure of targetData:
