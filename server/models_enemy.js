@@ -1,28 +1,27 @@
-//-- Dependencies --------------------------------
-import {enemy, blobPrototype, snakePrototype} from './enemy.js';
-import modelLibrary from './model_library.js';
+
 
 //== Model Library (All Enemy Types) ===========================================
 
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // white rat
-    // Id:
-    generationId: 'white rat',
-    generationWeight: 5,
-    name: 'White Rat',
-    // Display:
-    character: "r",
-    // Stats:
-    rewardExperience: 5,
-    vigilance: 0,
-    erratic: 1/2,
-    baseHp: 1,
-    // Behavior:
-    breedRate: 1/8,
-    skills: ["attack"],
-    // Description:
-    viewText: 'You see a small white rodent.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // giant ant
+const enemyModels = [
+    { // white rat
+        // Id:
+        generationId: 'white rat',
+        generationWeight: 5,
+        name: 'White Rat',
+        // Display:
+        character: "r",
+        // Stats:
+        rewardExperience: 5,
+        vigilance: 0,
+        erratic: 1/2,
+        baseHp: 1,
+        // Behavior:
+        breedRate: 1/8,
+        skills: ["attack"],
+        // Description:
+        viewText: 'You see a small white rodent.'
+    },
+    { // giant ant
     // Id:
     generationId: 'giant ant',
     generationWeight: 10,
@@ -37,8 +36,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // giant ant
     // Behavior:
     // Description:
     viewText: 'You see a giant ant about the size of a wolf.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // cave beetle
+    },
+    { // cave beetle
     // Id:
     generationId: 'cave beetle',
     generationWeight: 10,
@@ -58,29 +57,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // cave beetle
     opensDoors: 1/4,
     // Description:
     viewText: 'You see a large armored beetle about the size of a bear. It menaces with sharp pincers.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(snakePrototype, { // centepede
-    // Id:
-    generationId: 'centipede',
-    generationWeight: 20,
-    name: 'Centipede',
-    // Display:
-    character: 'c',
-    //color: '',
-    bodyCharacter: 'o',
-    //bodyColor: '#a53',
-    bodyBackground: undefined,
-    // Stats:
-    rewardExperience: 20,
-    //turnDelay: 1/2,
-    baseHp: 15,
-    erratic: 1/4,
-    // Behavior:
-    bodyLength: 3,
-    // Description:
-    viewText: 'You see a long centipede, large enough to block the narrow halls of the dwarven city.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // floating eye
+    },
+    { // floating eye
     // Id:
     generationId: 'floating eye',
     generationWeight: 18,
@@ -97,8 +75,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // floating eye
     skills: ["glare","attack"],
     // Description:
     viewText: 'You see a large eyeball. It bobs up and down slowly.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // ksuzzy
+    },
+    { // ksuzzy
     // Id:
     generationId: 'ksuzzy',
     generationWeight: 18,
@@ -112,11 +90,33 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // ksuzzy
     baseHp: 3,
     // Behavior:
     sedentary: true,
-    behavior: enemy.behaviorErratic,
+    behavior: 'behaviorErratic',
     // Description:
     viewText: "You see a small blob with many small eyes on stalks rising from it's body. It squirms slowly through a puddle of acid."
-}));*/
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // yellow mold
+    },
+    { // centepede
+        enemyArchetype: 'snake',
+        // Id:
+        generationId: 'centipede',
+        generationWeight: 20,
+        name: 'Centipede',
+        // Display:
+        character: 'c',
+        //color: '',
+        bodyCharacter: 'o',
+        //bodyColor: '#a53',
+        bodyBackground: undefined,
+        // Stats:
+        rewardExperience: 20,
+        //turnDelay: 1/2,
+        baseHp: 15,
+        erratic: 1/4,
+        // Behavior:
+        bodyLength: 3,
+        // Description:
+        viewText: 'You see a long centipede, large enough to block the narrow halls of the dwarven city.'
+    },
+    { // yellow mold
     // Id:
     generationId: 'yellow mold',
     generationWeight: 30,
@@ -137,8 +137,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // yellow mold
     skills: ["attack"],
     // Description:
     viewText: 'You see a mass of dense yellow mold covering the walls and floor. It seems to be growing at an alarming rate.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // minor imp
+    },
+    { // minor imp
     // Id:
     generationId: 'minor imp',
     generationWeight: 30,
@@ -157,8 +157,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // minor imp
     skills: ["teleport","attack"],
     // Description:
     viewText: 'You see a minor imp, one of the lowest of demons. This dwarven city must have once housed a wizard or two.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // skeletal dwarf
+    },
+    { // skeletal dwarf
     // Id:
     generationId: 'skeletal dwarf',
     generationWeight: 40,
@@ -175,8 +175,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // skeletal dwarf
     opensDoors: 1,
     // Description:
     viewText: "You see a skeletal dwarf, one of the citizens of this city raised from the dead. It's vacant eye sockets seem to be fixed directly on you."
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // zombie dwarf
+    },
+    { // zombie dwarf
     // Id:
     generationId: 'zombie dwarf',
     generationWeight: 45,
@@ -194,8 +194,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // zombie dwarf
     opensDoors: 1,
     // Description:
     viewText: 'You see a zombie dwarf, a mighty warrior of this city raised from the dead.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // black rat
+    },
+    { // black rat
     // Id:
     generationId: 'black rat',
     generationWeight: 50,
@@ -215,8 +215,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // black rat
     skills: ["attack"],
     // Description:
     viewText: 'You see a large black rat.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // red beetle
+    },
+    { // red beetle
     // Id:
     generationId: 'red beetle',
     generationWeight: 50,
@@ -238,30 +238,31 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // red beetle
     skills: ["breath fire", "attack"],
     // Description:
     viewText: "You see a large armored red beetle. Tendrils of smoke escape from the corners of it's crooked mouth."
-}));
-modelLibrary.registerModel('enemy', Object.extend(blobPrototype, { // yellow blob
-    // Id:
-    generationId: 'yellow blob',
-    generationWeight: 40,
-    name: 'Yellow Blob',
-    // Display:
-    color: "#990",
-    background: "#440",
-    bodyColor: "#990",
-    bodyBackground: "#440",
-    // Stats:
-    rewardExperience: 50,
-    //turnDelay: 1/2,
-    baseHp: 50,
-    baseAttack: 4,
-    erratic: 1/4,
-    forgetful: 5,
-    // Behavior:
-    bodyMass: 9,
-    // Description:
-    viewText: "You see a large yellow blob. It is gelatinous and jiggles and convulses constantly."
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // imp
+    },
+    { // yellow blob
+        enemyArchetype: 'blob',
+        // Id:
+        generationId: 'yellow blob',
+        generationWeight: 40,
+        name: 'Yellow Blob',
+        // Display:
+        color: "#990",
+        background: "#440",
+        bodyColor: "#990",
+        bodyBackground: "#440",
+        // Stats:
+        rewardExperience: 50,
+        //turnDelay: 1/2,
+        baseHp: 50,
+        baseAttack: 4,
+        erratic: 1/4,
+        forgetful: 5,
+        // Behavior:
+        bodyMass: 9,
+        // Description:
+        viewText: "You see a large yellow blob. It is gelatinous and jiggles and convulses constantly."
+    },
+    { // imp
     // Id:
     generationId: 'imp',
     generationWeight: 55,
@@ -280,8 +281,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // imp
     skills: ["teleport","attack"],
     // Description:
     viewText: "You see an imp. These artificial creatures of magic are filled with malice."
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // blue mold
+    },
+    { // blue mold
     // Id:
     generationId: 'blue mold',
     generationWeight: 60,
@@ -302,8 +303,8 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // blue mold
     skills: ["attack"],
     // Description:
     viewText: "You see a mass of blue mold. Acid drips from all parts of it, and it seems to be growing at an alarming rate."
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // phantom
+    },
+    { // phantom
     // Id:
     generationId: 'phantom',
     generationWeight: 65,
@@ -316,34 +317,35 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // phantom
     erratic: 2/3,
     turnDelay: 2/3,
     baseHp: 50,
-    behavior: enemy.behaviorDirect,
+    behavior: 'behaviorDirect',
     // Behavior:
     skills: ['attack', 'wail'],
     // Description:
     viewText: 'You see a shadowy figure shifting through the air. The hairs on your neck stand on end as you think you hear a shrill voice inches away from your ear.'
-}));
-modelLibrary.registerModel('enemy', Object.extend(blobPrototype, { // blue blob
-    // Id:
-    generationId: 'blue blob',
-    generationWeight: 80,
-    name: 'Blue Blob',
-    // Display:
-    color: '#4cf',
-    background: "#08a",
-    bodyColor: "#4cf",
-    bodyBackground: "#08a",
-    // Stats:
-    rewardExperience: 80,
-    baseHp: 90,
-    baseAttack: 4,
-    erratic: 1/4,
-    forgetful: 5,
-    // Behavior:
-    bodyMass: 16,
-    // Description:
-    viewText: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."
-}));
-modelLibrary.registerModel('enemy', Object.extend(enemy, { // bloodshot eye
+    },
+    { // blue blob
+        enemyArchetype: 'blob',
+        // Id:
+        generationId: 'blue blob',
+        generationWeight: 80,
+        name: 'Blue Blob',
+        // Display:
+        color: '#4cf',
+        background: "#08a",
+        bodyColor: "#4cf",
+        bodyBackground: "#08a",
+        // Stats:
+        rewardExperience: 80,
+        baseHp: 90,
+        baseAttack: 4,
+        erratic: 1/4,
+        forgetful: 5,
+        // Behavior:
+        bodyMass: 16,
+        // Description:
+        viewText: "You see a large blue blob. There are bones and corroded pieces of dwarven armor floating in it's gelatinous body. It is dripping acid."
+    },
+    { // bloodshot eye
     // Id:
     generationId: 'bloodshot eye',
     generationWeight: 80,
@@ -360,60 +362,30 @@ modelLibrary.registerModel('enemy', Object.extend(enemy, { // bloodshot eye
     skills: ["glare", "sap", "attack"],
     // Description:
     viewText: "You see a large bloodshot eyeball. It's ceaseless gaze chills you to the bone."
-}));
-modelLibrary.registerModel('enemy', Object.extend(snakePrototype, { // worm
-    // Id:
-    generationId: 'worm',
-    generationWeight: 90,
-    name: 'Giant Worm',
-    // Display:
-    character: 'w',
-    color: '#a0a',
-    bodyCharacter: 'o',
-    bodyColor: '#a0a',
-    bodyBackground: undefined,
-    // Stats:
-    rewardExperience: 90,
-    turnDelay: 2,
-    baseHp: 100,
-    baseAttack: 10,
-    //erratic: 1,
-    // Behavior:
-    bodyLength: 7,
-    // Description:
-    viewText: "You see a giant worm. It's massive bulk blocks the halls completely."
-}));
-modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
-    // Id:
-    generationId: 'emperor wight',
-    name: 'Emperor Wight',
-    // Display:
-    character: "W",
-    color: "#fd9",
-    // Stats:
-    baseAttack: 8,
-    rewardExperience: 400,
-    forgetful: 15,
-    baseHp: 150,
-    // Behavior:
-    breedRate: 8,
-    breedRateDecay: 1/2,
-    opensDoors: 1,
-    erratic: 3/4,
-    turnDelay: 1/2,
-    vigilance: 10,
-    skills: ['attack', 'attack', 'attack', 'wail', 'wail', 'breed'],
-    // Description:
-    viewText: "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.",
-    breed(){
-        this.breedId = pick('skeletal dwarf', 'zombie dwarf');
-        var result = enemy.breed.apply(this, arguments);
-        return result;
     },
-    die(){
-        //var crown = modelLibrary.getModel('special', 'crown');
-        //crown.place(this.x, this.y);
-        gameManager.currentGame.win();
-        return enemy.die.apply(this, arguments);
-    },
-}));
+    { // worm
+        enemyArchetype: 'snake',
+        // Id:
+        generationId: 'worm',
+        generationWeight: 90,
+        name: 'Giant Worm',
+        // Display:
+        character: 'w',
+        color: '#a0a',
+        bodyCharacter: 'o',
+        bodyColor: '#a0a',
+        bodyBackground: undefined,
+        // Stats:
+        rewardExperience: 90,
+        turnDelay: 2,
+        baseHp: 100,
+        baseAttack: 10,
+        //erratic: 1,
+        // Behavior:
+        bodyLength: 7,
+        // Description:
+        viewText: "You see a giant worm. It's massive bulk blocks the halls completely."
+    }
+];
+
+export default enemyModels;

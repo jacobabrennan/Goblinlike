@@ -420,7 +420,7 @@ const blobBody = Object.extend(enemy, {
 });
 
 //-- Archetype -----------------------------------
-const blobPrototype = Object.extend(enemy, {
+const blobArchetype = Object.extend(enemy, {
     character: 'B',
     bodyCharacter: 'B',
     bodyColor: undefined,
@@ -561,7 +561,7 @@ const snakeBody = Object.extend(enemy, {
 });
 
 //-- Archetype -----------------------------------
-const snakePrototype = Object.extend(enemy, {
+const snakeArchetype = Object.extend(enemy, {
     bodyCharacter: 'o',
     bodyColor: undefined,
     bodyBackground: undefined,
@@ -647,9 +647,60 @@ const snakePrototype = Object.extend(enemy, {
 });
 
 
+//== Generate Enemy Library from Data ==========================================
+
+import enemyModels from './models_enemy.js';
+const enemyArchetypes = {
+    blob: blobArchetype,
+    snake: snakeArchetype
+};
+for(let modelIndex = 0; modelIndex < enemyModels.length; modelIndex++){
+    let indexedModel = enemyModels[modelIndex]
+    if(indexedModel.behavior){
+        indexedModel.behavior = enemy[indexedModel.behavior];
+    }
+    let enemyArchetype = enemyArchetypes[indexedModel.enemyArchetype] || enemy;
+    modelLibrary.registerModel('enemy', Object.extend(enemyArchetype, indexedModel));
+}
+modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
+    // Id:
+    generationId: 'emperor wight',
+    name: 'Emperor Wight',
+    // Display:
+    character: "W",
+    color: "#fd9",
+    // Stats:
+    baseAttack: 8,
+    rewardExperience: 400,
+    forgetful: 15,
+    baseHp: 150,
+    // Behavior:
+    breedRate: 8,
+    breedRateDecay: 1/2,
+    opensDoors: 1,
+    erratic: 3/4,
+    turnDelay: 1/2,
+    vigilance: 10,
+    skills: ['attack', 'attack', 'attack', 'wail', 'wail', 'breed'],
+    // Description:
+    viewText: "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.",
+    breed(){
+        this.breedId = pick('skeletal dwarf', 'zombie dwarf');
+        var result = enemy.breed.apply(this, arguments);
+        return result;
+    },
+    die(){
+        //var crown = modelLibrary.getModel('special', 'crown');
+        //crown.place(this.x, this.y);
+        gameManager.currentGame.win();
+        return enemy.die.apply(this, arguments);
+    },
+}));
+
+
 //== Exports ===================================================================
 
-export {enemy, snakePrototype, blobPrototype};
+export {enemy, snakeArchetype, blobArchetype};
 
 
 //==============================================================================
