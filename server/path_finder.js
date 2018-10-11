@@ -337,6 +337,8 @@ const findTarget = function (start, faction){
         tile: mapManager.getTile(start.x, start.y, start.levelId),
         faction: faction
     };
+    // Cancel out if start is not on the map.
+    if(!start.tile){ return null;}
     /*var minDist = function (coords1){
         return dist.call(this, coords1, false);
     };*/

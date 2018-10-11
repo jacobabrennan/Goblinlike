@@ -14,8 +14,12 @@ import './server/items.js';
 import './server/map_generator.js';
 
 //-- Scaffolding (Remove) --------------------------
+import mapManager from './server/map_manager.js';
+import modelLibrary from './server/model_library.js';
 fakeNetwork.client = client;
 fakeNetwork.gameManager = gameManager;
+fakeNetwork.mapManager = mapManager;
+fakeNetwork.modelLibrary = modelLibrary;
 
 //-- Launch Game ---------------------------------
 client.setup({
