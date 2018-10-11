@@ -9,9 +9,10 @@ import gameManager from './server/game_manager.js';
 import './server/view.js';
 import './server/skills.js';
 import './server/sound.js';
-import './server/enemies.js';
+import './server/enemy.js';
 import './server/items.js';
 import './server/map_generator.js';
+import './server/models_enemy.js';
 
 //-- Scaffolding (Remove) --------------------------
 import mapManager from './server/map_manager.js';
