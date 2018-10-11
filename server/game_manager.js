@@ -15,13 +15,13 @@ import hero from './hero.js';
 //-- Implementation ------------------------------
 const gameManager = {
     currentGame: undefined,
-    newGame: function (options){
+    newGame(options) {
         if(this.currentGame){ return false;}
         this.currentGame = new Game();
         this.currentGame.start(options);
         return this.currentGame;
     },
-    gameOver: function (){
+    gameOver() {
         getClient().reportScores()
         var oldGame = this.currentGame;
         this.currentGame = null;
@@ -30,7 +30,7 @@ const gameManager = {
         mapManager.reset();
         this.currentGame = undefined;
     },
-    win: function (){
+    win() {
         var lastLevel = mapManager.getDepth(FINAL_DEPTH);
         if(!lastLevel){ // Wrapping for testing
             lastLevel = l();
@@ -60,7 +60,7 @@ const gameManager = {
         this.currentGame = undefined;
     },
     // Time Management passthrough functions:
-    currentTime: function (){
+    currentTime() {
         /**
          *  This is a passthrough function to retrieve the time from the
          *      timeManager.
@@ -71,7 +71,7 @@ const gameManager = {
         }
         return this.currentGame.currentTime;
     },
-    setTime: function (timeStamp){
+    setTime(timeStamp) {
         /**
          *  Sets the current time on the current game.
          *  Does not return anything.
@@ -79,22 +79,22 @@ const gameManager = {
         if(!this.currentGame){ return;}
         this.currentGame.currentTime = timeStamp;
     },
-    registerActor: function (){
+    registerActor() {
         // This is a passthrough function to the timeManager.
         return timeManager.registerActor.apply(timeManager, arguments);
     },
-    cancelActor: function (){
+    cancelActor() {
         // This is a passthrough function to the timeManager.
         return timeManager.cancelActor.apply(timeManager, arguments);
     },
-    registerEvent: function (eventFunction, delay){
+    registerEvent(eventFunction, delay) {
         return timeManager.registerEvent.apply(timeManager, arguments);
     },
-    turn: function (){
+    turn() {
         // This is a passthrough function to the timeManager.
         return timeManager.turn.apply(timeManager, arguments);
     },
-    clientCommand: function (command, options){
+    clientCommand(command, options) {
         if(command == COMMAND_NEWGAME){
             var name     = options.name || '';
             var vitality = options.vitality || 0;
@@ -135,13 +135,13 @@ class Game {
         this.hero.update('levelId');
         // TODO: Refactor this with actual networking.
         this.hero.intelligence = {
-            sendMessage: function (command, options){
+            sendMessage(command, options) {
                 getClient().networking.recieveMessage(command, options);
             },
-            sense: function (sensoryData){
+            sense(sensoryData) {
                 this.sendMessage(COMMAND_SENSE, sensoryData);
             },
-            takeTurn: function (theMover){
+            takeTurn(theMover) {
                 // Compile sensory data about the player's view.
                 let currentLevel = mapManager.getLevel(theMover.levelId);
                 let viewData;
@@ -166,7 +166,7 @@ class Game {
                 };
                 this.sendMessage(COMMAND_TURN, turnData);
             },
-            camp: function (theMover){
+            camp(theMover) {
                 // Compile data about recent changes to the person.
                 let selfData = theMover.packageUpdates();
                 theMover.updates = undefined;
@@ -181,10 +181,10 @@ class Game {
                     theMover.endTurn();
                 }, delay);
             },
-            gameOver: function (deathData){
+            gameOver(deathData) {
                 this.sendMessage(COMMAND_GAMEOVER, deathData);
             },
-            win: function (winData){
+            win(winData) {
                 this.sendMessage(COMMAND_WIN, winData);
             }
         };
