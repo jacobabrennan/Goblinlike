@@ -14,8 +14,8 @@ const displaySize = 21;
 const DEFAULT_MAP_SIZE = 48;
 const HIGHLIGHT = 'highlight';
 const COLOR_INSTRUCTION = '#00f';
-let TILE_SIZE = 8;
-let FONT_SIZE = 8;
+let TILE_SIZE = 16;
+let FONT_SIZE = 16;
 if('WebkitAppearance' in document.documentElement.style){
     // Work around Chrome's font blurring.
     TILE_SIZE = 24;

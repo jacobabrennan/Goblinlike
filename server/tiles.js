@@ -19,6 +19,7 @@ const tile = Object.extend(mappable, {
             as other objects derived from the same ancestor also have ids with
             different implementations. */
     character: '.',
+    graphic: undefined,
     dense: true,
     opaque: true,
     enter(content){
@@ -69,7 +70,8 @@ var genericTileTypes = {
     '#': Object.extend(tile, { // Wall
         id: 'wall',
         character: '#',
-        background: '#111'
+        background: '#111',
+        graphic: 'wall'
     }),
     '.': Object.extend(tile, { // Floor
         id: 'floor',
@@ -77,8 +79,9 @@ var genericTileTypes = {
         dense: false,
         opaque: false,
         color: '#444',
-        background: '#111'
-        //background: '#111'
+        background: '#111',
+        //background: '#111',
+        graphic: 'floor'
     }),
     ' ': Object.extend(tile, { // Hall
         id: 'hall',
@@ -86,8 +89,9 @@ var genericTileTypes = {
         dense: false,
         opaque: false,
         color: '#222',
-        background: '#000'
-        //background: '#111'
+        background: '#000',
+        //background: '#111',
+        graphic: 'hall'
     }),
     '+': Object.extend(tile, { // Door
         id: 'door',
@@ -95,6 +99,7 @@ var genericTileTypes = {
         dense: true,
         color: '#fc0',
         background: '#111',
+        graphic: 'door',
         toggleDoor(x, y, theActor, force){
             var levelId;
             if(theActor.levelId){
@@ -122,6 +127,7 @@ var genericTileTypes = {
         opaque: false,
         color: '#fc0',
         background: '#111',
+        graphic: 'doorOpen',
         toggleDoor(x, y, theActor){
             var levelId;
             if(theActor.levelId){
@@ -150,6 +156,7 @@ var genericTileTypes = {
         opaque: false,
         color: '#000',
         background: '#111',
+        graphic: 'doorBroken',
         toggleDoor(x, y, theActor){
             return false;
         }
@@ -161,6 +168,7 @@ var genericTileTypes = {
         color: '#000',
         dense: false,
         opaque: false,
+        graphic: 'stairsDown',
         climb(content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth+1, true);
@@ -216,6 +224,7 @@ var genericTileTypes = {
         color: '#000',
         dense: false,
         opaque: false,
+        graphic: 'stairsUp',
         climb(content){
             var currentLevel = mapManager.getLevel(content.levelId);
             var newLevel = mapManager.getDepth(currentLevel.depth-1);

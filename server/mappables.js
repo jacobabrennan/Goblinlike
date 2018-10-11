@@ -16,6 +16,7 @@ const mappable = {
     color: undefined,
     background: undefined,
     dense: false,
+    graphic: undefined,
     dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
@@ -131,7 +132,8 @@ const containable = Object.extend(mappable, {
             id: this.id,
             name: this.name,
             character: this.character,
-            dense: this.dense
+            dense: this.dense,
+            graphic: this.graphic
         };
         if(this.description){
             sensoryData.name = this.description();

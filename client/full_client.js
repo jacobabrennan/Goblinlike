@@ -5,6 +5,8 @@
 //-- Imports -------------------------------------
 import client from './client.js';
     // driver.js
+import './resource_library.js';
+client.resourceLibrary.setupGraphics(() => {})
 import './skin.js';
 import './title.js';
 import './gameplay.js';

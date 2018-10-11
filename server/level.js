@@ -365,6 +365,7 @@ class level {
                         opaque: boolean,
                         color: "#HEX", // optional
                         background: "#HEX" // optional
+                        graphic: 'resourceId' // optional
                     },
                     ... // And More tile models.
                 }
@@ -380,7 +381,8 @@ class level {
                 dense: indexedTileType.dense,
                 opaque: indexedTileType.opaque,
                 color: indexedTileType.color,
-                background: indexedTileType.background
+                background: indexedTileType.background,
+                graphic: indexedTileType.graphic
             };
             tileTypesData[indexedTileType.id] = tileData;
         }
@@ -486,7 +488,8 @@ class level {
                         dense: offsetTile.dense,
                         opaque: offsetTile.opaque,
                         color: offsetTile.color,
-                        background: offsetTile.background
+                        background: offsetTile.background,
+                        graphic: offsetTile.graphic
                     };
                     tileTypesInView[offsetTile.id] = tileTypeData;
                 }

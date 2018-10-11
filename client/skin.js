@@ -91,6 +91,8 @@ client.skin = Object.extend(driver, {
 
 //-- Draw Functions ------------------------------------------------------------
     fillRect(x, y, width, height, color){
+        width = width || 1;
+        height = height || 1;
         this.context.fillStyle = color || '#000';
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
         y = (displaySize) - y;
@@ -102,7 +104,7 @@ client.skin = Object.extend(driver, {
         fillY -= fillHeight;
         this.context.fillRect(x*TILE_SIZE, fillY, fillWidth, fillHeight);
     },
-    drawCharacter: function(x, y, character, color, background, font){
+    drawCharacter(x, y, character, color, background, font){
         if(color == HIGHLIGHT){ color = this.highlightColor;}
         y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
         y = (displaySize) - y;
@@ -190,6 +192,17 @@ client.skin = Object.extend(driver, {
         for(var posX = 0; posX < totalLength; posX++){
             this.registerCommand(x+posX, y, command);
         }
+    },
+    drawGraphic(x, y, graphic, background){
+        // Fix Coordinates
+        y -= 1; // Offset y coordinate by 1, as line 1 is the status bar.
+        // Display Background
+        background = background || '#000';
+        //this.fillRect(x, y);
+        // Display Graphic
+        const resource = client.resource('graphic', graphic);
+        if(!resource){ return;}
+        resource.draw(x*TILE_SIZE, y*TILE_SIZE-2);
     },
 
 //-- Command Handling ----------------------------------------------------------

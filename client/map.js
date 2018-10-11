@@ -75,55 +75,87 @@ client.drivers.gameplay.drivers.map = Object.extend(driver, {
             var offsetY = y - Math.floor(this.displayHeight/2) + posY;
             for(var posX = 0; posX < this.displayWidth; posX++){
                 var offsetX = x - Math.floor(this.displayWidth/2) + posX;
-                var indexedTile = level.getTile(offsetX, offsetY);
-                var character = ' ';
-                var charBackground = null;
-                var charColor = null;
-                if(indexedTile){
-                    var tileModel = level.tileTypes[indexedTile.id];
-                    if(tileModel){
-                        character = tileModel.character || character;
-                        charColor = tileModel.color || charColor;
-                        charBackground = tileModel.background || charBackground;
-                    } else{
-                        character = 'x';
-                        charColor = '#f00';
-                    }
-                    if(indexedTile.timeStamp < currentTime){
-                        charColor = '#00F';
-                        charBackground = '#000';
-                    } else{
-                        var cL = indexedTile.contents? indexedTile.contents.length : 0;
-                        var contentChar = null;
-                        var contentColor = null;
-                        var contentBack = null;
-                        for(var tI = 0; tI < cL; tI++){
-                            let indexedC = indexedTile.contents[tI];
-                            if(!contentChar){ contentChar = indexedC.character;}
-                            if(!contentColor){
-                                contentColor = indexedC.color;
-                                if(!contentColor && contentChar){
-                                    contentColor = '#fff';
-                                }
-                            }
-                            if(!contentBack){ contentBack = indexedC.background;}
-                            if(contentChar && contentColor && contentBack){
-                                break;
-                            }
-                        }
-                        if(contentChar){ character = contentChar;}
-                        if(contentColor){ charColor = contentColor;}
-                        if(contentBack){ charBackground = contentBack;}
-                    }
-                }
-                this.drawText(posX, posY, character, charColor, charBackground);
+                this.drawLocation(posX, posY, offsetX, offsetY, level, currentTime);
             }
         }
         var result = driver.display.apply(this, arguments);
         return result;
     },
-    drawText(x, y, character, color, background){
+    drawText(x, y, character, color, background) {
         x += displaySize;
         client.skin.drawCharacter(x, y, character, color, background);
+    },
+    drawGraphic(x, y, graphic, background){
+        x += displaySize;
+        client.skin.drawGraphic(x, y, graphic, background);
+    },
+    drawLocation(mapX, mapY, offsetX, offsetY, level, currentTime) {
+        //
+        let character = ' ';
+        let charBackground = null;
+        let charColor = null;
+        let drawGraphic = null;
+        // Get Tile at location. If it doesn't exist (beyond map data), draw black.
+        const indexedTile = level.getTile(offsetX, offsetY);
+        if(!indexedTile){
+            this.drawText(mapX, mapY, character, charColor, charBackground);
+            return;
+        }
+        // Get tileModel. Draw error text if it doesn't exist.
+        const tileModel = level.tileTypes[indexedTile.id];
+        if(tileModel){
+            character      = tileModel.character  || character     ;
+            charColor      = tileModel.color      || charColor     ;
+            charBackground = tileModel.background || charBackground;
+            drawGraphic    = tileModel.graphic    || drawGraphic   ;
+            //console.log(tileModel.id, tileModel)
+        } else{
+            character = 'x';
+            charColor = '#f00';
+            this.drawText(mapX, mapY, character, charColor, charBackground);
+            return;
+        }
+        // Handling drawing tiles from older memories (not in view)
+        if(indexedTile.timeStamp < currentTime){
+            charColor = '#00F';
+            charBackground = '#000';
+            if(drawGraphic){
+                this.drawGraphic(mapX, mapY, drawGraphic+'-memory', charBackground);
+            } else{
+                this.drawText(mapX, mapY, character, charColor, charBackground);
+            }
+            return;
+        }
+        // Get letter, foreground color, and background color from contents.
+        let contentChar    = null;
+        let contentColor   = null;
+        let contentBack    = null;
+        let contentGraphic = null;
+        let cL = indexedTile.contents? indexedTile.contents.length : 0;
+        for(let tI = 0; tI < cL; tI++){
+            let indexedC = indexedTile.contents[tI];
+            if(!contentChar   ){ contentChar    = indexedC.character ;}
+            if(!contentBack   ){ contentBack    = indexedC.background;}
+            if(!contentGraphic){ contentGraphic = indexedC.graphic   ;}
+            if(!contentColor  ){ contentColor   = indexedC.color     ;
+                if(!contentColor && contentChar){
+                                 contentColor   = '#fff'             ;
+                }
+            }
+            if(contentBack && contentGraphic){
+                break;
+            }
+        }
+        if(contentChar   ){ character      = contentChar   ;
+                            drawGraphic    = null          ;}
+        if(contentColor  ){ charColor      = contentColor  ;}
+        if(contentBack   ){ charBackground = contentBack   ;}
+        if(contentGraphic){ drawGraphic    = contentGraphic;}
+        // Draw full tile.
+        if(drawGraphic){
+            this.drawGraphic(mapX, mapY, drawGraphic, charBackground);
+        } else{
+            this.drawText(mapX, mapY, character, charColor, charBackground);
+        }
     }
 });
