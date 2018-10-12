@@ -131,7 +131,10 @@ class Game {
     //-- Saving & Loading ----------------------------
     toJSON() {
         let result = {
-            map: mapManager.toJSON()
+            map: mapManager.toJSON(),
+            time: this.currentTime,
+            hero: this.hero.id,
+            companion: this.companionInfo.map(companion => companion.id)
         };
         return result;
     }

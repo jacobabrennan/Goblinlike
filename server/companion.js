@@ -182,9 +182,9 @@ const companion = Object.extend(person, {
     },
     toJSON() {
         let result = person.toJSON.apply(this, arguments);
-        if(this.goal){
-            result.goal = this.goal.toJSON();
-        }
+        if(this.goal){ result.goal = this.goal.toJSON();}
+        if(this.dead){ result.dead = this.dead;}
+        if(this.lost){ result.lost = this.lost;}
         return result;
     },
     adjustExperience(amount) {

@@ -866,7 +866,7 @@ lL - Lich
 mM - mold, Mummy
 nN - 
 oO - 
-pP - 
+pP - Phantom
 qQ - 
 rR - rat
 sS - snake, skull, scorpion, skeleton

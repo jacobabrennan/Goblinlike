@@ -1,10 +1,6 @@
 
 
-/*===========================================================================
- *
- *  TODO: Document.
- *
- *===========================================================================*/
+//== Level =====================================================================
 
 //-- Dependencies --------------------------------
 import gameManager from './game_manager.js';
@@ -43,8 +39,34 @@ class level {
     }
     toJSON() {
         let result = {
-            id: this.id
+            id: this.id,
+            depth: this.depth,
+            width: this.width,
+            height: this.height,
         };
+        if(this.stairsUpCoords  ){ result.stairsUpCoords   = Object.create(this.stairsUpCoords  );}
+        if(this.stairsDownCoords){ result.stairsDownCoords = Object.create(this.stairsDownCoords);}
+        // Format indexTable
+        let tileModels = Object.keys(this.tileTypes).map(key => this.tileTypes[key])
+        let tileHash = {};
+        tileModels.forEach((tileModel, index) => {
+            tileHash[tileModel.id] = index;
+        });
+        let keyLength = Math.floor(1+Math.log10(tileModels.length-1));
+        let keyHash = {};
+        let keyStrings = tileModels.map(tileModel => {
+            let key = `${tileHash[tileModel.id]}`;
+            while(key.length < keyLength){ key += ' ';}
+            keyHash[key] = tileModel.id;
+            return key;
+        });
+        let indexTable = this.tileGrid.map(tile => keyStrings[tileHash[tile.id]]);
+        result.tileGrid = {
+            keyString: indexTable.join(''),
+            tileKeys: keyHash
+        }
+        console.log(result.tileGrid)
+        //
         return result;
     }
     getTile(x, y) {
