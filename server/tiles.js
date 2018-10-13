@@ -3,28 +3,21 @@
 //== Tiles =====================================================================
 
 //-- Dependencies --------------------------------
-import {mappable} from './mappables.js';
+import {Mappable} from './mappables.js';
 import mapManager from './map_manager.js';
 
 //-- Implementaton -------------------------------
-const tile = Object.extend(mappable, {
+class Tile extends Mappable {
     /**
      *  Tiles are the basic unit of map layout. Tiles determine the layout of
-     *      the map, and how other mappables move about and interact with the
+     *      the map, and how other Mappables move about and interact with the
      *      game map in the most basic ways. They also determine line of sight.
      *  This is a prototype, and must be instanced before use.
      **/
-    id: undefined,
-        /*  TODO: ID needs to be renamed or refactored, as it confuses matters
-            as other objects derived from the same ancestor also have ids with
-            different implementations. */
-    character: '.',
-    dense: true,
-    opaque: true,
     enter(content){
         /**
          *  This function determines whether content is allowed to enter the
-         *      tile. It handles density checks. It is also a hook for further
+         *      genericTile. It handles density checks. It is also a hook for further
          *      derived tiles, such as tiles that let actors enter, but not
          *      items.
          *  Density of contained objects is handled elsewhere.
@@ -37,21 +30,29 @@ const tile = Object.extend(mappable, {
             }
         // Movement is allowed, return true.
         return true;
-    },
+    }
     entered(content){
         /**
          *  Entered is a hook for further derived tiles. It is called whenever
-         *      a movable enters a tile, after movement is finished. It is not
+         *      a Movable enters a tile, after movement is finished. It is not
          *      called after placement, or after containables like items are
          *      placed. It can be used to create, for examples, traps that
          *      spring when the user steps on them.
          *  It does not return anything.
          **/
     }
-});
+}
+Tile.prototype.id = undefined;
+    /*  TODO: ID needs to be renamed or refactored, as it confuses matters
+        as other objects derived from the same ancestor also have ids with
+        different implementations. */
+Tile.prototype.character = '.';
+Tile.prototype.dense = true;
+Tile.prototype.opaque = true;
 
+let genericTile = new Tile();
 var genericTileTypes = {
-    '!': Object.extend(tile, { // Testing Marker
+    '!': Object.extend(genericTile, { // Testing Marker
         id: 'test',
         character: 'x',
         dense: false,
@@ -60,18 +61,18 @@ var genericTileTypes = {
         background: '#200'
         //background: '#111'
     }),
-    '%': Object.extend(tile, { // Undefined
+    '%': Object.extend(genericTile, { // Undefined
         id: 'undefined',
         character: '%',
         color: '#08F',
         background: '#111'
     }),
-    '#': Object.extend(tile, { // Wall
+    '#': Object.extend(genericTile, { // Wall
         id: 'wall',
         character: '#',
         background: '#111'
     }),
-    '.': Object.extend(tile, { // Floor
+    '.': Object.extend(genericTile, { // Floor
         id: 'floor',
         character: '.',
         dense: false,
@@ -80,7 +81,7 @@ var genericTileTypes = {
         background: '#111'
         //background: '#111'
     }),
-    ' ': Object.extend(tile, { // Hall
+    ' ': Object.extend(genericTile, { // Hall
         id: 'hall',
         character: '.',
         dense: false,
@@ -89,7 +90,7 @@ var genericTileTypes = {
         background: '#000'
         //background: '#111'
     }),
-    '+': Object.extend(tile, { // Door
+    '+': Object.extend(genericTile, { // Door
         id: 'door',
         character: '+',
         dense: true,
@@ -115,7 +116,7 @@ var genericTileTypes = {
             return true;
         }
     }),
-    "'": Object.extend(tile, { // Door (Open)
+    "'": Object.extend(genericTile, { // Door (Open)
         id: 'doorOpen',
         character: "'",
         dense: false,
@@ -143,7 +144,7 @@ var genericTileTypes = {
             return true;
         }
     }),
-    '"': Object.extend(tile, { // Door (Open)
+    '"': Object.extend(genericTile, { // Door (Open)
         id: 'doorBroken',
         character: "'",
         dense: false,
@@ -154,7 +155,7 @@ var genericTileTypes = {
             return false;
         }
     }),
-    '>': Object.extend(tile, { // Stairs Down
+    '>': Object.extend(genericTile, { // Stairs Down
         id: 'stairs_down',
         character: '>',
         background: '#fc0',
@@ -206,10 +207,10 @@ var genericTileTypes = {
             if(entrant.type != TYPE_ACTOR){
                 return false;
             }
-            return tile.enter.apply(this, arguments);
+            return Tile.prototype.enter.apply(this, arguments);
         }*/
     }),
-    '<': Object.extend(tile, { // Stairs Up
+    '<': Object.extend(genericTile, { // Stairs Up
         id: 'stairs_up',
         character: '<',
         background: '#fc0',
@@ -263,9 +264,9 @@ var genericTileTypes = {
             if(entrant.type != TYPE_ACTOR){
                 return false;
             }
-            return tile.enter.apply(this, arguments);
+            return Tile.prototype.enter.apply(this, arguments);
         }*/
     })
 };
 
-export {tile, genericTileTypes};
+export {Tile, genericTileTypes};

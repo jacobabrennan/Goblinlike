@@ -10,12 +10,12 @@
  *          
  *===========================================================================*/
 //-- Dependencies --------------------------------
-import {movable, containable} from './mappables.js';
+import {Movable, Containable} from './mappables.js';
 import gameManager from './game_manager.js';
 import mapManager from './map_manager.js';
 
 //-- Implementation ------------------------------
-const actor = Object.extend(movable, {
+const actor = Object.extend(new Movable(), {
     // Redefined properties:
     character: '@',
     type: TYPE_ACTOR,
@@ -26,7 +26,7 @@ const actor = Object.extend(movable, {
     nextTurn: 0,
     //
     /*initializer(){
-        movable.initializer.apply(this, arguments);
+        Movable.prototype.initializer.apply(this, arguments);
         return this;
     },*/
     dispose(){
@@ -36,16 +36,16 @@ const actor = Object.extend(movable, {
          *      managed by this object.
          **/
         gameManager.cancelActor(this);
-        movable.dispose.apply(this, arguments);
+        Movable.prototype.dispose.apply(this, arguments);
     },
     toJSON() {
-        let result = movable.toJSON.apply(this, arguments);
+        let result = Movable.prototype.toJSON.apply(this, arguments);
         result.nextTurn = this.nextTurn;
         return result;
     },
     fromJSON(data){
         console.log(this.name)
-        movable.fromJSON.apply(this, arguments);
+        Movable.prototype.fromJSON.apply(this, arguments);
         this.nextTurn = data.nextTurn;
     },
     takeTurn(callback){
@@ -97,7 +97,7 @@ const actor = Object.extend(movable, {
                 type: 'actor';
             }
          **/
-        var sensoryData = containable.pack.apply(this, arguments);
+        var sensoryData = Containable.prototype.pack.apply(this, arguments);
         sensoryData.type = TYPE_ACTOR;
         return sensoryData;
     },

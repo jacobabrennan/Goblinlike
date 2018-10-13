@@ -3,7 +3,7 @@
 // === Combat System ===========================================================
 
 //-- Dependencies --------------------------------
-import {movable} from './mappables.js';
+import {Movable} from './mappables.js';
 import item from './item.js';
 import actor from './actor.js';
 import person from './person.js';
@@ -485,7 +485,7 @@ weapon.bump = function (obstruction){
     if(this.thrower){
         delete this.thrower;
     }
-    return movable.bump.apply(this, arguments);
+    return Movable.prototype.bump.apply(this, arguments);
 };
 
 //-- Projectiles ---------------------------------
@@ -587,7 +587,7 @@ const projectile = Object.extend(weapon, {
             delete this.thrower;
             delete this.damageScale;
         }
-        return movable.bump.apply(this, arguments);
+        return Movable.prototype.bump.apply(this, arguments);
     },
     attack(attacker, target){
         /**

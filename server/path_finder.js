@@ -169,12 +169,12 @@ include - A parameter which determines which datums to return
 */
 
 //-- Dependencies --------------------------------
-import {tile, genericTileTypes} from './tiles.js';
+import {Tile, genericTileTypes} from './tiles.js';
 import PriorityQueue from './priority_queue.js';
 import mapManager from './map_manager.js';
 
 //------------------------------------------------
-tile.adjacent = function (instanceData, closed){
+Tile.prototype.adjacent = function (instanceData, closed){
     var adjacentArray = [];
     for(var posY = instanceData.y-1; posY <= instanceData.y+1; posY++){
         for(var posX = instanceData.x-1; posX <= instanceData.x+1; posX++){
@@ -210,7 +210,7 @@ tile.adjacent = function (instanceData, closed){
 };
 genericTileTypes['+'].pathable = true;
 genericTileTypes['<'].adjacent = function (instanceData, closed){
-    var adjacentArray = tile.adjacent.apply(this, arguments);
+    var adjacentArray = Tile.prototype.adjacent.apply(this, arguments);
     var currentLevel = mapManager.getLevel(instanceData.levelId);
     var currentDepth = currentLevel.depth;
     var higherLevel = mapManager.getDepth(currentDepth-1);
@@ -235,7 +235,7 @@ genericTileTypes['<'].adjacent = function (instanceData, closed){
     return adjacentArray;
 };
 genericTileTypes['>'].adjacent = function (instanceData, closed){
-    var adjacentArray = tile.adjacent.apply(this, arguments);
+    var adjacentArray = Tile.prototype.adjacent.apply(this, arguments);
     var currentLevel = mapManager.getLevel(instanceData.levelId);
     var currentDepth = currentLevel.depth;
     var lowerLevel = mapManager.getDepth(currentDepth+1);

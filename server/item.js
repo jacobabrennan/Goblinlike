@@ -11,10 +11,10 @@
 ==============================================================================*/
 
 //-- Dependencies --------------------------------
-import {movable, containable} from './mappables.js';
+import {Movable, Containable} from './mappables.js';
 
 //-- Implementation ------------------------------
-const item = Object.extend(movable, {
+const item = Object.extend(new Movable(), {
     // Redefined Properties
     character: '~',
     color: '#963',
@@ -33,7 +33,7 @@ const item = Object.extend(movable, {
     effectFlags: 0,
     // Redefined Methods
     toJSON() {
-        let result = movable.toJSON.apply(this, arguments);
+        let result = Movable.prototype.toJSON.apply(this, arguments);
         result.generationId = this.generationId;
         if(this.stackable){
             result.stackCount = this.stackCount;
@@ -41,7 +41,7 @@ const item = Object.extend(movable, {
         return result;
     },
     fromJSON(data){
-        movable.fromJSON.apply(this, arguments);
+        Movable.prototype.fromJSON.apply(this, arguments);
         this.generationId = data.generationId;
         if(data.stackCount){ this.stackCount = data.stackCount;}
     },
@@ -85,7 +85,7 @@ const item = Object.extend(movable, {
                 targetRange: CONSTANT
             }
          **/
-        var sensoryData = containable.pack.apply(this, arguments);
+        var sensoryData = Containable.prototype.pack.apply(this, arguments);
         sensoryData.type = this.type;
         sensoryData.targetClass = this.targetClass;
         sensoryData.targetRange = this.targetRange;

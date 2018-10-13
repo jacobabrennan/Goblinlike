@@ -6,58 +6,48 @@
 import mapManager from './map_manager.js';
 
 //-- Mappables -----------------------------------
-const mappable = {
+class Mappable {
     /**
      *  Mappable is a prototype from which all other objects that appear on the
      *      map are derived.
      *  It is a prototype and must be further derived and instanced before use.
      **/
     // Configurable
-    character: '?',
-    color: undefined,
-    background: undefined,
-    dense: false,
     dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
          *      by removing it from the map and nulling out all references
          *      managed by this object.
          **/
-    },
+    }
     toJSON() {
         let result = {};
         if(this.generationType){ // Applied by modelLibrary
             result.generationType = this.generationType; 
         }
         return result;
-    },
+    }
     fromJSON(data) {
         if(data.generationType){
             this.generationType = data.generationType;
         }
     }
-};
-const containable = Object.extend(mappable, {
-    // Configurable
-    name: 'something',
-    x: undefined,
-    y: undefined,
-    // Nonconfigurable
-    type: TYPE_CONTAINABLE,
-    viewText: 'You know nothing about this.',
-    // Internal
-    levelId: undefined,
-    id: undefined,
-    nextContent: undefined, // Tile contents implemented as linked list.
+}
+Mappable.prototype.character = '?';
+Mappable.prototype.color = undefined;
+Mappable.prototype.background = undefined;
+Mappable.prototype.dense = false;
+
+class Containable extends Mappable {
     initializer(levelId){
         // TODO: Document.
         this.levelId = levelId;
-        if(mappable.initializer){
-            mappable.initializer.call(this);
+        if(Mappable.initializer){
+            Mappable.initializer.call(this);
         }
         this.id = mapManager.idManager.assignId(this);
         return this;
-    },
+    }
     dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
@@ -67,25 +57,25 @@ const containable = Object.extend(mappable, {
         this.unplace();
         this.levelId = undefined;
         mapManager.idManager.cancelId(this.id);
-    },
+    }
     toJSON() {
-        let result = mappable.toJSON.apply(this, arguments);
+        let result = Mappable.toJSON.apply(this, arguments);
         let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
         for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
             let indexedKey = saveKeys[saveIndex];
             result[indexedKey] = this[indexedKey];
         }
         return result;
-    },
+    }
     fromJSON(data) {
-        mappable.fromJSON.apply(this, arguments);
+        Mappable.fromJSON.apply(this, arguments);
         let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
         for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
             let indexedKey = saveKeys[saveIndex];
             this[indexedKey] = data[indexedKey];
         }
         console.log(this.name, this.levelId)
-    },
+    }
     place(x, y, levelId){
         /**
             This function is used to place the object at specific coordinates
@@ -107,13 +97,13 @@ const containable = Object.extend(mappable, {
         var placeLevel = mapManager.getLevel(levelId);
         var success = placeLevel.placeContainable(x, y, this);
         return success;
-    },
+    }
     unplace(){
         /**
-            This function removes the containable from the level. This allows
+            This function removes the Containable from the level. This allows
                 it to be placed in the player's inventory, into a shop, a
                 chest, or prepared for garbage collection, etc.
-            It returns true if the containable is no longer placed on any level
+            It returns true if the Containable is no longer placed on any level
                 (I see no current reason this shouldn't always be true).
          **/
         var success = true;
@@ -124,24 +114,24 @@ const containable = Object.extend(mappable, {
         this.x = undefined;
         this.y = undefined;
         return success;
-    },
+    }
     bump(obstruction){
         /**
             Called when the object attempts to be placed in the same space as
-            another containable object, but fails due to density.
+            another Containable object, but fails due to density.
             
             It does not return anything.
          **/
         obstruction.bumped(this);
-    },
+    }
     bumped(bumper){
         /**
-            Called when another containable object attempts to be placed in the
+            Called when another Containable object attempts to be placed in the
             same space, but fails due to density.
             
             It does not return anything.
          **/
-    },
+    }
     pack(){
         /**
             This function creates a "sensory package" of the object for use by
@@ -172,10 +162,20 @@ const containable = Object.extend(mappable, {
         if(this.background){ sensoryData.background = this.background;}
         return sensoryData;
     }
-});
-const movable = Object.extend(containable, {
-    // TODO: Document.
-    dense: true,
+}
+// Configurable
+Containable.prototype.name = 'something';
+Containable.prototype.x = undefined;
+Containable.prototype.y = undefined;
+// Nonconfigurable
+Containable.prototype.type = TYPE_CONTAINABLE;
+Containable.prototype.viewText = 'You know nothing about this.';
+// Internal
+Containable.prototype.levelId = undefined;
+Containable.prototype.id = undefined;
+Containable.prototype.nextContent = undefined; // Tile contents implemented as linked list.
+
+class Movable extends Containable {
     move(direction){
         /**
             This function is used to move the object in a specific direction,
@@ -196,7 +196,9 @@ const movable = Object.extend(containable, {
         }
         return success;
     }
-});
+}
+// TODO: Document.
+Movable.prototype.dense = true;
 
 //-- Exports -------------------------------------
-export {mappable, containable, movable};
+export {Mappable, Containable, Movable};
