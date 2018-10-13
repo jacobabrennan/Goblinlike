@@ -124,6 +124,7 @@ const P_INCLUDE_FINISHED   = 2;
 
 /*===========================================================================
     Default Object Extentions
+    This is legacy code from before ECMA2015, and needs to be factored out.
   ===========================================================================*/
 
 if(Object.extend){

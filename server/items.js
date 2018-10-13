@@ -311,12 +311,12 @@ let itemModels = [
         viewText: 'You see a wand of fire. This magical item can shoot fireballs at your enemies.'
     },
     /*
-    modelLibrary.registerModel('item', Object.extend(wand, {// Test Wand
+    {// Test Wand
         // Id:
         lore: 30,
         name: 'Wand of Haste',
         generationWeight: 4
-    }));*/
+    },*/
 
     //-- Scrolls -------------------------------------
     {// fire scroll

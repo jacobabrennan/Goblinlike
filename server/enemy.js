@@ -354,11 +354,14 @@ Enemy.prototype.behaviorNormal = Enemy.prototype.behavior = function (){
 //== Enemy Archetype: Blob =====================================================
 
 //-- Body Part -----------------------------------
-const blobBody = Object.extend(new Enemy(), {
-    headId: undefined,
-    rewardExperience: 0,
+class BlobBody extends Enemy {
+    constructor() {
+        super(...arguments);
+        this.headId = undefined;
+        this.rewardExperience = 0;
+    }
     initializer(options){
-        Enemy.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         var head = options.head;
         this.headId = head.id;
         this.name = head.name;
@@ -374,17 +377,17 @@ const blobBody = Object.extend(new Enemy(), {
             this.background = head.bodyBackground;
         }
         return this;
-    },
+    }
     toJSON() {
-        let result = Enemy.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.headId = this.headId;
         return result;
-    },
+    }
     fromJSON(data){
-        Enemy.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         this.headId = result.headId;
-    },
-    activate(){},
+    }
+    activate(){}
     attackNearby(){
         if(!(this.levelId && this.x && this.y)){ return;}
         var rangeContent = mapManager.getRangeContents(
@@ -402,22 +405,22 @@ const blobBody = Object.extend(new Enemy(), {
         if(target){
             this.attack(target);
         }
-    },
+    }
     bump(){
         return Actor.prototype.bump.apply(this, arguments);
-    },
+    }
     hurt(){
         var head = mapManager.idManager.get(this.headId);
         return head.hurt.apply(head, arguments);
-    },
+    }
     pack(){
         // Prevent multiple copies from showing up in the look list.
-        var sensoryData = Enemy.prototype.pack.apply(this, arguments);
+        var sensoryData = super.pack(...arguments);
         var head = mapManager.idManager.get(this.headId);
         if(!head){ return sensoryData;}
         sensoryData.id = head.id;
         return sensoryData;
-    },
+    }
     move(direction){
         if(!(this.x && this.y && this.levelId) || (Math.random() < 1/4)){
             var dirs = [NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,
@@ -431,10 +434,10 @@ const blobBody = Object.extend(new Enemy(), {
             }
             return true;
         } else{
-            return Enemy.prototype.move.apply(this, arguments);
+            return super.move(...arguments);
         }
     }
-});
+}
 
 //-- Archetype -----------------------------------
 class BlobArchetype extends Enemy {
@@ -446,10 +449,8 @@ class BlobArchetype extends Enemy {
         super.initializer(...arguments);
         for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
             // Skip one, to include head in mass. Makes hp calc easier.
-            var segment = blobBody.initializer.call(
-                Object.create(blobBody),
-                {head: this}
-            );
+            var segment = new BlobBody();
+            segment.initializer({head: this});
             this.body[bodyI] = segment;
         }
         return this;
@@ -536,10 +537,13 @@ BlobArchetype.prototype.turnDelay = 2;
 //== Enemy Archetype: Snake ====================================================
 
 //-- Body Part -----------------------------------
-const snakeBody = Object.extend(new Enemy(), {
-    headId: undefined,
+class SnakeBody extends Enemy {
+    constructor() {
+        super(...arguments);
+        this.headId = undefined;
+    }
     initializer(options){
-        Enemy.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         var head = options.head;
         this.headId = head.id;
         this.name = head.name;
@@ -554,17 +558,17 @@ const snakeBody = Object.extend(new Enemy(), {
             this.background = head.bodyBackground;
         }
         return this;
-    },
+    }
     toJSON() {
         let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.head = this.headId;
         return result;
-    },
+    }
     fromJSON(data){
         Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
-    },
-    activate(){},
+    }
+    activate(){}
     attackNearby(){
         if(!(this.levelId && this.x && this.y)){ return;}
         var rangeContent = mapManager.getRangeContents(
@@ -582,11 +586,11 @@ const snakeBody = Object.extend(new Enemy(), {
         if(target){
             this.attack(target);
         }
-    },
+    }
     hurt(){
         var head = mapManager.idManager.get(this.headId);
         return head.hurt.apply(head, arguments);
-    },
+    }
     pack(){
         // Prevent multiple copies from showing up in the look list.
         var sensoryData = Enemy.prototype.pack.apply(this, arguments);
@@ -595,7 +599,7 @@ const snakeBody = Object.extend(new Enemy(), {
         sensoryData.id = head.id;
         return sensoryData;
     }
-});
+}
 
 //-- Archetype -----------------------------------
 class SnakeArchetype extends Enemy {
@@ -607,10 +611,8 @@ class SnakeArchetype extends Enemy {
     initializer(options) {
         super.initializer(...arguments);
         for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
-            var segment = snakeBody.initializer.call(
-                Object.create(snakeBody),
-                {head: this}
-            );
+            var segment = new SnakeBody();
+            segment.initializer({head: this});
             this.body[bodyI] = segment;
         }
         return this;
