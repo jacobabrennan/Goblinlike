@@ -12,7 +12,7 @@ class Mappable {
      *      map are derived.
      *  It is a prototype and must be further derived and instanced before use.
      **/
-    // Configurable
+    initializer() {}
     dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal
@@ -39,14 +39,18 @@ Mappable.prototype.background = undefined;
 Mappable.prototype.dense = false;
 
 class Containable extends Mappable {
+    constructor() {
+        super(...arguments)
+        this.x = undefined;
+        this.y = undefined;
+        this.levelId = undefined;
+        this.id = undefined;
+        this.nextContent = undefined; // Tile contents implemented as linked list.
+    }
     initializer(levelId){
-        // TODO: Document.
+        super.initializer(...arguments);
         this.levelId = levelId;
-        if(Mappable.initializer){
-            Mappable.initializer.call(this);
-        }
         this.id = mapManager.idManager.assignId(this);
-        return this;
     }
     dispose(){
         /**
@@ -57,6 +61,7 @@ class Containable extends Mappable {
         this.unplace();
         this.levelId = undefined;
         mapManager.idManager.cancelId(this.id);
+        super.dispose();
     }
     toJSON() {
         let result = super.toJSON(...arguments);
@@ -165,15 +170,9 @@ class Containable extends Mappable {
 }
 // Configurable
 Containable.prototype.name = 'something';
-Containable.prototype.x = undefined;
-Containable.prototype.y = undefined;
 // Nonconfigurable
 Containable.prototype.type = TYPE_CONTAINABLE;
 Containable.prototype.viewText = 'You know nothing about this.';
-// Internal
-Containable.prototype.levelId = undefined;
-Containable.prototype.id = undefined;
-Containable.prototype.nextContent = undefined; // Tile contents implemented as linked list.
 
 class Movable extends Containable {
     move(direction){
@@ -198,6 +197,7 @@ class Movable extends Containable {
     }
 }
 // TODO: Document.
+Movable.prototype.MMM = true;
 Movable.prototype.dense = true;
 
 //-- Exports -------------------------------------

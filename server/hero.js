@@ -34,7 +34,6 @@ class Hero extends Person {
         this.update('id');
         this.update('name');
         this.update('viewRange');
-        this.inventory = [];
         return this;
     }
     toJSON() {
@@ -54,7 +53,6 @@ class Hero extends Person {
             This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
          **/
-        this.turnActive = false;
         this.nextTurn += this.turnDelay;
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
@@ -422,15 +420,8 @@ class Hero extends Person {
 // Redefined properties
 Hero.prototype.character = 'g';
 Hero.prototype.faction = FACTION_GOBLIN;
-Hero.prototype.name = 'person';
 Hero.prototype.color = '#0f0';
 Hero.prototype.colorNatural = '#0f0';
-// New properties
-Hero.prototype.updates = undefined;
-Hero.prototype.messages = undefined;
-Hero.prototype.inventory = undefined;
-Hero.prototype.turnActive = false;
-Hero.prototype.turnCallback = undefined;
 
 //-- Export --------------------------------------
 export default Hero;

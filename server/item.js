@@ -85,7 +85,8 @@ class Item extends Movable {
         if(!(this.stackable && this.stackCount > 1)){
             return null;
         }
-        var clone1 = this.initializer.call(Object.create(this));
+        var clone1 = new this.constructor();
+        clone1.initializer();
         clone1.unplace();
         clone1.stackCount = 1;
         this.stackCount--;

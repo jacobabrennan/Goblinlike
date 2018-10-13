@@ -18,6 +18,11 @@ import './extension_equipment.js';
 
 class Enemy extends Actor {
     // Redefined methods:
+    constructor() {
+        super(...arguments);
+        this.active = false;
+        this.pathInfo = undefined;
+    }
     toJSON() {
         let result = super.toJSON(...arguments);
         result.generationId = this.generationId;
@@ -173,8 +178,6 @@ Enemy.prototype.rewardExperience = undefined;
 Enemy.prototype.baseAttack = 1;
 Enemy.prototype.faction = FACTION_ENEMY;
 Enemy.prototype.behavior = undefined;
-Enemy.prototype.active = false;
-Enemy.prototype.pathInfo = undefined;
 Enemy.prototype.skills = ["attack"];
 Enemy.prototype.undead = false;
 Enemy.prototype.opensDoors = 0;
@@ -435,9 +438,12 @@ const blobBody = Object.extend(new Enemy(), {
 
 //-- Archetype -----------------------------------
 class BlobArchetype extends Enemy {
-    initializer(options) {
-        Enemy.prototype.initializer.apply(this, arguments);
+    constructor() {
+        super(...arguments);
         this.body = [];
+    }
+    initializer(options) {
+        super.initializer(...arguments);
         for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
             // Skip one, to include head in mass. Makes hp calc easier.
             var segment = blobBody.initializer.call(
@@ -449,22 +455,22 @@ class BlobArchetype extends Enemy {
         return this;
     }
     toJSON() {
-        let result = Enemy.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
     }
     fromJSON(data) {
-        Enemy.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         // TO DO
     }
     bump(obstruction) {
         if(this.body.indexOf(obstruction) >= 0){
             mapManager.swapPlaces(this, obstruction);
         }
-        return Actor.prototype.bump.apply(this, arguments);
+        return super.bump(...arguments);
     }
     hurt() {
-        var result = Enemy.prototype.hurt.apply(this, arguments);
+        var result = super.hurt(...arguments);
         var maxBody = this.hp / (this.maxHp()/this.bodyMass);
         while(this.body.length > maxBody){
             var segment = this.body.shift();
@@ -473,7 +479,7 @@ class BlobArchetype extends Enemy {
         return result;
     }
     move(direction) {
-        var success = Enemy.prototype.move.apply(this, arguments);
+        var success = super.move(...arguments);
         this.body.forEach(function (segment){
             var moveDirection = directionTo(
                 segment.x, segment.y, this.x, this.y);
@@ -495,7 +501,7 @@ class BlobArchetype extends Enemy {
     }
     place() {
         var fromTheVoid = !(this.x && this.y && this.levelId);
-        var success = Enemy.prototype.place.apply(this, arguments);
+        var success = super.place(...arguments);
         if(fromTheVoid){
             for(var bodyI = 0; bodyI < this.body.length; bodyI++){
                 var bodySegment = this.body[bodyI];
@@ -509,7 +515,7 @@ class BlobArchetype extends Enemy {
             var bodySegment = this.body[bodyI];
             bodySegment.dispose();
         }
-        Enemy.prototype.dispose.apply(this, arguments);
+        super.dispose(...arguments);
     }
     behavior() {
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
@@ -525,7 +531,6 @@ BlobArchetype.prototype.bodyColor = undefined;
 BlobArchetype.prototype.bodyBackground = undefined;
 BlobArchetype.prototype.bodyMass = 4;
 BlobArchetype.prototype.turnDelay = 2;
-BlobArchetype.prototype.body = undefined;
     
 
 //== Enemy Archetype: Snake ====================================================
@@ -594,10 +599,13 @@ const snakeBody = Object.extend(new Enemy(), {
 
 //-- Archetype -----------------------------------
 class SnakeArchetype extends Enemy {
-    initializer(options) {
-        Enemy.prototype.initializer.apply(this, arguments);
+    constructor() {
+        super(...arguments);
         this.body = [];
         this.placements = [];
+    }
+    initializer(options) {
+        super.initializer(...arguments);
         for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
             var segment = snakeBody.initializer.call(
                 Object.create(snakeBody),
@@ -685,7 +693,6 @@ SnakeArchetype.prototype.bodyCharacter = 'o';
 SnakeArchetype.prototype.bodyColor = undefined;
 SnakeArchetype.prototype.bodyBackground = undefined;
 SnakeArchetype.prototype.bodyLength = 4;
-SnakeArchetype.prototype.placements = undefined;
 
 
 //== Generate Enemy Library from Data ==========================================
@@ -720,14 +727,14 @@ modelLibrary.registerModel('special', (() => {// emperor wight
     class Wight extends Enemy { // emperor wight
         breed() {
             this.breedId = pick('skeletal dwarf', 'zombie dwarf');
-            var result = Enemy.prototype.breed.apply(this, arguments);
+            var result = super.breed(...arguments);
             return result;
         }
         die() {
             //var crown = modelLibrary.getModel('special', 'crown');
             //crown.place(this.x, this.y);
             gameManager.currentGame.win();
-            return Enemy.die.apply(this, arguments);
+            return super.die(...arguments);
         }
     }
     // Id:

@@ -17,6 +17,10 @@ import Actor from './actor.js';
 
 //-- Implementaton -------------------------------
 class Person extends Actor {
+    constructor() {
+        super(...arguments);
+        this.inventory = [];
+    }
     // Redefined Methods
     initializer() {
         /**
@@ -40,7 +44,6 @@ class Person extends Actor {
         this.update('id');
         this.update('name');
         this.update('viewRange');
-        this.inventory = [];
         return this;
     }
     toJSON() {
@@ -85,7 +88,6 @@ class Person extends Actor {
             It does not return anything.
          **/
         // Setup turn storage.
-        this.turnActive = true;
         this.turnCallback = callback;
         // If camping, skip most intelligence.
         if(this.camp()){
@@ -112,7 +114,6 @@ class Person extends Actor {
             This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
          **/
-        this.turnActive = false;
         this.nextTurn += this.turnDelay;
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
@@ -304,11 +305,9 @@ Person.prototype.name = 'person';
 Person.prototype.color = '#0f0';
 Person.prototype.colorNatural = undefined;
 // New properties
-Person.prototype.gender = undefined;
+Person.prototype.gender = GENDER_NONBINARY;
 Person.prototype.updates = undefined;
 Person.prototype.messages = undefined;
-Person.prototype.inventory = undefined;
-Person.prototype.turnActive = false;
 Person.prototype.turnCallback = undefined;
 
 //-- Export --------------------------------------

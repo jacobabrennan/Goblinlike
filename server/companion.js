@@ -494,6 +494,7 @@ Companion.prototype.color = '#5c3';
 Companion.prototype.companion = true;
 
 //-- Goal Types ----------------------------------
+// TO DO
 class Goal {
     constructor() {
         this.target = undefined;

@@ -14,6 +14,12 @@ class Tile extends Mappable {
      *      game map in the most basic ways. They also determine line of sight.
      *  This is a prototype, and must be instanced before use.
      **/
+    constructor(extension) {
+        super(...arguments);
+        Object.keys(extension).forEach(key => {
+            this[key] = extension[key];
+        });
+    }
     enter(content){
         /**
          *  This function determines whether content is allowed to enter the
@@ -50,9 +56,8 @@ Tile.prototype.character = '.';
 Tile.prototype.dense = true;
 Tile.prototype.opaque = true;
 
-let genericTile = new Tile();
 var genericTileTypes = {
-    '!': Object.extend(genericTile, { // Testing Marker
+    '!': new Tile({ // Testing Marker
         id: 'test',
         character: 'x',
         dense: false,
@@ -61,18 +66,18 @@ var genericTileTypes = {
         background: '#200'
         //background: '#111'
     }),
-    '%': Object.extend(genericTile, { // Undefined
+    '%': new Tile({ // Undefined
         id: 'undefined',
         character: '%',
         color: '#08F',
         background: '#111'
     }),
-    '#': Object.extend(genericTile, { // Wall
+    '#': new Tile({ // Wall
         id: 'wall',
         character: '#',
         background: '#111'
     }),
-    '.': Object.extend(genericTile, { // Floor
+    '.': new Tile({ // Floor
         id: 'floor',
         character: '.',
         dense: false,
@@ -81,7 +86,7 @@ var genericTileTypes = {
         background: '#111'
         //background: '#111'
     }),
-    ' ': Object.extend(genericTile, { // Hall
+    ' ': new Tile({ // Hall
         id: 'hall',
         character: '.',
         dense: false,
@@ -90,7 +95,7 @@ var genericTileTypes = {
         background: '#000'
         //background: '#111'
     }),
-    '+': Object.extend(genericTile, { // Door
+    '+': new Tile({ // Door
         id: 'door',
         character: '+',
         dense: true,
@@ -116,7 +121,7 @@ var genericTileTypes = {
             return true;
         }
     }),
-    "'": Object.extend(genericTile, { // Door (Open)
+    "'": new Tile({ // Door (Open)
         id: 'doorOpen',
         character: "'",
         dense: false,
@@ -144,7 +149,7 @@ var genericTileTypes = {
             return true;
         }
     }),
-    '"': Object.extend(genericTile, { // Door (Open)
+    '"': new Tile({ // Door (Open)
         id: 'doorBroken',
         character: "'",
         dense: false,
@@ -155,7 +160,7 @@ var genericTileTypes = {
             return false;
         }
     }),
-    '>': Object.extend(genericTile, { // Stairs Down
+    '>': new Tile({ // Stairs Down
         id: 'stairs_down',
         character: '>',
         background: '#fc0',
@@ -210,7 +215,7 @@ var genericTileTypes = {
             return Tile.prototype.enter.apply(this, arguments);
         }*/
     }),
-    '<': Object.extend(genericTile, { // Stairs Up
+    '<': new Tile({ // Stairs Up
         id: 'stairs_up',
         character: '<',
         background: '#fc0',

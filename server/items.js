@@ -13,6 +13,10 @@ import gameManager from './game_manager.js';
 //== Base Prototypes (wands, rings, etc.) ======================================
 
 class Wand extends Item {
+    constructor() {
+        super(...arguments);
+        this.charges = 5;
+    }
     // Redefined Methods
     description() {
         return mapManager.idManager.describeWand(this);
@@ -78,7 +82,6 @@ Wand.prototype.placement = EQUIP_MAINHAND;
 Wand.prototype.targetClass = TARGET_DIRECTION;
 Wand.prototype.lore = 10;
 // New Properties
-Wand.prototype.charges = 5;
 Wand.prototype.range = 15;
 Wand.prototype.projectileType = (base => {
     base.damageType = DAMAGE_FIRE;

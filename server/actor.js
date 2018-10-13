@@ -16,6 +16,11 @@ import mapManager from './map_manager.js';
 
 //-- Implementation ------------------------------
 class Actor extends Movable {
+    constructor() {
+        super(...arguments);
+        this.intelligence = undefined;
+        this.nextTurn = 0;
+    }
     /*initializer(){
         super.initializer(...arguments);
         return this;
@@ -104,10 +109,8 @@ class Actor extends Movable {
 Actor.prototype.character = '@';
 Actor.prototype.type = TYPE_ACTOR;
 // Newly defined Properties:
-Actor.prototype.intelligence = undefined;
 Actor.prototype.viewRange = 7;
 Actor.prototype.turnDelay = 1;
-Actor.prototype.nextTurn = 0;
 
 //-- Export --------------------------------------
 export default Actor;
