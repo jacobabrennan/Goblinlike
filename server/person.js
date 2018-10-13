@@ -13,10 +13,10 @@
  *===========================================================================*/
 
 //-- Dependencies --------------------------------
-import actor from './actor.js';
+import Actor from './actor.js';
 
 //-- Implementaton -------------------------------
-const person = Object.extend(actor, {
+const person = Object.extend(new Actor(), {
     // Redefined properties
     character: '@',
     faction: FACTION_GOBLIN,
@@ -38,7 +38,7 @@ const person = Object.extend(actor, {
                 about them immediately.
             Returns a reference to itself.
          **/
-        actor.initializer.apply(this, arguments);
+        Actor.prototype.initializer.apply(this, arguments);
         this.name = sWerd.name();
         this.colorNatural = this.color;
         // Select Gender
@@ -57,21 +57,20 @@ const person = Object.extend(actor, {
         return this;
     },
     toJSON() {
-        let result = actor.toJSON.apply(this, arguments);
+        let result = Actor.prototype.toJSON.apply(this, arguments);
         result.gender = this.gender;
         result.inventory = this.inventory.map(item => item.id);
         result.colorNatural = this.colorNatural;
         return result;
     },
     fromJSON(data) {
-        console.log(this.name)
-        actor.fromJSON.apply(this, arguments);
+        Actor.prototype.fromJSON.apply(this, arguments);
         this.gender = data.gender;
         // TO DO
         this.colorNatural = data.colorNatural;
     },
     place(){
-        var success = actor.place.apply(this, arguments);
+        var success = Actor.prototype.place.apply(this, arguments);
         if(success){
             this.update('y');
             this.update('x');
@@ -140,7 +139,7 @@ const person = Object.extend(actor, {
                     WEST, SOUTHWEST, SOUTH, SOUTHEAST.
             It returns true if the movement is successful, and false otherwise.
          **/
-        var success = actor.move.apply(this, arguments);
+        var success = Actor.prototype.move.apply(this, arguments);
         this.sound('footsteps', 10, this);
         this.getViewContents().forEach(function (theContent){
             if(typeof theContent.activate == 'function'){

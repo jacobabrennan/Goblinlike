@@ -5,7 +5,7 @@
 //-- Dependencies --------------------------------
 import {Movable} from './mappables.js';
 import item from './item.js';
-import actor from './actor.js';
+import Actor from './actor.js';
 import person from './person.js';
 import gameManager from './game_manager.js';
 import mapManager from './map_manager.js';
@@ -14,39 +14,39 @@ import mapManager from './map_manager.js';
 //== Extend Actor ==============================================================
 
 //-- New Properties ------------------------------
-actor.hp = undefined;
-actor.baseHp = undefined;
-actor.maxHp = function (){
+Actor.prototype.hp = undefined;
+Actor.prototype.baseHp = undefined;
+Actor.prototype.maxHp = function (){
     return this.baseHp;
 };
-actor.baseAttack = 1;
+Actor.prototype.baseAttack = 1;
 
 //-- Redefined Methods ---------------------------
-actor.initializer = (function (parentFunction){
+Actor.prototype.initializer = (function (parentFunction){
     return function (){
         this.hp = this.maxHp();
         parentFunction.apply(this, arguments);
         return this;
     };
-})(actor.initializer);
-actor.toJSON = (function (parentFunction){
+})(Actor.prototype.initializer);
+Actor.prototype.toJSON = (function (parentFunction){
     return function (){
         let result = parentFunction.apply(this, arguments);
         result.hp = this.hp;
         result.baseHp = this.baseHp;
         return result;
     }
-})(actor.toJSON);
-actor.fromJSON = (function (parentFunction){
+})(Actor.prototype.toJSON);
+Actor.prototype.fromJSON = (function (parentFunction){
     return function (data){
         parentFunction.apply(this, arguments);
         this.hp = data.hp;
         this.baseHp = data.baseHp;
     }
-})(actor.fromJSON);
+})(Actor.prototype.fromJSON);
 
 //-- New Methods ---------------------------------
-actor.adjustHp = function (amount){
+Actor.prototype.adjustHp = function (amount){
     /**
         Modifies the health points (HP) of the actor from both healing and
             taking damage. Hp should not be set outside of this function.
@@ -70,7 +70,7 @@ actor.adjustHp = function (amount){
     }
     return deltaHp;
 };
-actor.die = function (){
+Actor.prototype.die = function (){
     /**
         TODO
         Remove actor from world
@@ -84,7 +84,7 @@ actor.die = function (){
     this.dead = true;
     this.dispose();
 };
-actor.hurt = function (damage, damageType, attacker, proxy){
+Actor.prototype.hurt = function (damage, damageType, attacker, proxy){
     /**
         This function is the entry point whenever the actor takes damage
             from any source. From here all other aspects associated with
@@ -116,7 +116,7 @@ actor.hurt = function (damage, damageType, attacker, proxy){
     }
     return damageDone;
 };
-actor.attack = function (target){
+Actor.prototype.attack = function (target){
     /**
      *  This function initiates an attempt to hurt an enemy actor via
      *      physical means, such as melee or bow attacks.

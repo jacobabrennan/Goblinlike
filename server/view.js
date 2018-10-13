@@ -8,13 +8,12 @@
 
 //-- Dependencies --------------------------------
 import level from './level.js';
-import actor from './actor.js';
+import Actor from './actor.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
 
 //== Basic Implementation ======================================================
-
 
 class ViewGrid {
     constructor(x, y, levelId, range) {
@@ -266,12 +265,12 @@ level.prototype.getView = function (x, y, range){
 
 //===== Extend Actor =========================================================//
 
-actor.checkView = function (containable){
+Actor.prototype.checkView = function (containable){
     var viewContents = this.getViewContents();
     if(viewContents.indexOf(containable) == -1){ return false;}
     else{ return true;}
 };
-actor.getViewContents = function (){
+Actor.prototype.getViewContents = function (){
     // TODO: Document
     // Check for cached view (deletes at start of every turn).
     if(this.turnViewData){

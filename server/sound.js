@@ -3,11 +3,11 @@
 //== Sound - Extend Actor ======================================================
 
 //-- Dependencies --------------------------------
-import actor from './actor.js';
+import Actor from './actor.js';
 import mapManager from './map_manager.js';
 
 //-- Add Hooks -----------------------------------
-actor.sound = function (tamber, amplitude, source, message){
+Actor.prototype.sound = function (tamber, amplitude, source, message){
     if(!this.x || !this.y|| !this.levelId){ return;}
     //var hearers = getDijkstraContents(this, amplitude);
     var hearers = mapManager.getRangeContents(
@@ -19,6 +19,6 @@ actor.sound = function (tamber, amplitude, source, message){
         }
     }
 };
-actor.hear = function (tamber, amplitude, source, message){
+Actor.prototype.hear = function (tamber, amplitude, source, message){
     
 };

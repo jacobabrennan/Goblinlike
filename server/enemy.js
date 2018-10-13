@@ -3,7 +3,7 @@
 //== Enemies ===================================================================
 
 //-- Dependencies --------------------------------
-import actor from './actor.js';
+import Actor from './actor.js';
 import modelLibrary from './model_library.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
@@ -16,55 +16,24 @@ import './extension_equipment.js';
 
 //== Basic Enemy Definition ====================================================
 
-const enemy = Object.extend(actor, {
-    generationId: undefined,
-    generationWeight: undefined,
-    // Redefined properties:
-    character: 'š',
-    viewRange: 7,
-    turnDelay: 1,
-    // Newly defined Properties:
-    rewardExperience: undefined,
-    baseAttack: 1,
-    faction: FACTION_ENEMY,
-    behavior: undefined,
-    active: false,
-    pathInfo: undefined,
-    skills: ["attack"],
-    undead: false,
-    opensDoors: 0,
-        // Percentage chance to successfully open door.
-    vigilance: 3,
-        // The minimum distance from which the enemy can be activated by sound.
-    forgetful: 2,
-        // How many turns, on average, before the enemy deactivates.
-    erratic: 0,
-        // The percentage of movements that will be random.
-    breedRate: 0,
-        // The percentage chance that the enemy will clone itself on a turn.
-    breedRateDecay: 1,
-        // Each time the enemy breeds, enemy.breedRate *= breedRateDecay
-    breedId: undefined,
-        // The kind of model to breed. Defaults to this.generationId.
-    sedentary: false,
-        // True if the enemy does not move.
+class Enemy extends Actor {
     // Redefined methods:
     toJSON() {
-        let result = actor.toJSON.apply(this, arguments);
+        let result = Actor.prototype.toJSON.apply(this, arguments);
         result.generationId = this.generationId;
         result.active = this.active;
         result.breedRate = this.breedRate;
         return result;
-    },
-    fromJSON(data){
-        actor.fromJSON.apply(this, arguments);
+    }
+    fromJSON(data) {
+        Actor.prototype.fromJSON.apply(this, arguments);
         this.generationId = data.generationId;
         this.active = data.active;
         this.breedRate = data.breedRate;
-    },
-    takeTurn(callback){
+    }
+    takeTurn(callback) {
         /**
-            This function causes the actor to perform their turn taking
+            This function causes the Actor to perform their turn taking
             behavior, such as moving about the map, attacking, or alerting the
             player, possibly over the network, to issue a command.
             
@@ -81,17 +50,17 @@ const enemy = Object.extend(actor, {
         }
         this.nextTurn += this.turnDelay;
         callback(this.active);
-    },
-    die(){
+    }
+    die() {
         var rewardExperience = this.rewardExperience;
-        var result = actor.die.apply(this, arguments);
+        var result = Actor.prototype.die.apply(this, arguments);
         var thePlayer = gameManager.currentGame.hero;
         if(thePlayer){
             thePlayer.adjustExperience(rewardExperience);
         }
         return result;
-    },
-    hear(tamber, amplitude, source, message){
+    }
+    hear(tamber, amplitude, source, message) {
         if(this.active){ return;}
         if(
             source &&
@@ -100,9 +69,9 @@ const enemy = Object.extend(actor, {
         if(source && source.faction && !(source.faction & this.faction)){
             this.activate(source);
         }
-    },
-    move(direction){
-        var success = actor.move.apply(this, arguments);
+    }
+    move(direction) {
+        var success = Actor.prototype.move.apply(this, arguments);
         if(!success){
             var dest = getStepCoords(this.x, this.y, direction);
             var testDoor = mapManager.getTile(dest.x, dest.y, this.levelId);
@@ -115,26 +84,22 @@ const enemy = Object.extend(actor, {
             }
         }
         return success;
-    },
-    hurt: (function (parentFunction){
-        return function (amount){
-            this.activate();
-            return parentFunction.apply(this, arguments);
-        };
-    })(actor.hurt),
-    bump: (function (parentFunction){
-        return function (obs){
-            if(obs.type == TYPE_ACTOR && !(obs.faction & this.faction)){
-                var indexedSkill = modelLibrary.getModel('skill', 'attack');
-                indexedSkill.use(this, obs);
-                return false;
-            } else{
-                return parentFunction.apply(this, arguments);
-            }
-        };
-    })(actor.bump),
+    }
+    hurt(amount) {
+        this.activate();
+        return super.hurt(...arguments);
+    }
+    bump(obs) {
+        if(obs.type == TYPE_ACTOR && !(obs.faction & this.faction)){
+            var indexedSkill = modelLibrary.getModel('skill', 'attack');
+            indexedSkill.use(this, obs);
+            return false;
+        } else{
+            return super.bump(...arguments);
+        }
+    }
     // Newly defined Methods:
-    activate(activator){
+    activate(activator) {
         /**
          *  This function actives the enemy, basically "waking it up". It is
          *  usually called when the player comes into view, makes loud noises
@@ -153,8 +118,8 @@ const enemy = Object.extend(actor, {
         }
         gameManager.registerActor(this);
         this.active = true;
-    },
-    deactivate(){
+    }
+    deactivate() {
         /**
             This function deactives the enemy, basically putting it "to sleep". It is
             usually called when the player goes out of view for a period of time.
@@ -166,8 +131,8 @@ const enemy = Object.extend(actor, {
         if(!this.active){ return;}
         gameManager.cancelActor(this);
         this.active = false;
-    },
-    breed(){
+    }
+    breed() {
         var breedId = this.breedId || this.generationId;
         var selfType = modelLibrary.getModel('enemy', breedId);
         if(!selfType){ return false;}
@@ -195,15 +160,48 @@ const enemy = Object.extend(actor, {
         progeny.breedRate = Math.min(this.breedRate, progeny.breedRate);
         return true;
     }
-});
+}
+Enemy.prototype.generationId = undefined;
+Enemy.prototype.generationWeight = undefined;
+// Redefined properties:
+Enemy.prototype.character = 'š';
+Enemy.prototype.viewRange = 7;
+Enemy.prototype.turnDelay = 1;
+// Newly defined Properties:
+Enemy.prototype.rewardExperience = undefined;
+Enemy.prototype.baseAttack = 1;
+Enemy.prototype.faction = FACTION_ENEMY;
+Enemy.prototype.behavior = undefined;
+Enemy.prototype.active = false;
+Enemy.prototype.pathInfo = undefined;
+Enemy.prototype.skills = ["attack"];
+Enemy.prototype.undead = false;
+Enemy.prototype.opensDoors = 0;
+    // Percentage chance to successfully open door.
+Enemy.prototype.vigilance = 3;
+    // The minimum distance from which the enemy can be activated by sound.
+Enemy.prototype.forgetful = 2;
+    // How many turns, on average, before the enemy deactivates.
+Enemy.prototype.erratic = 0;
+    // The percentage of movements that will be random.
+Enemy.prototype.breedRate = 0;
+    // The percentage chance that the enemy will clone itself on a turn.
+Enemy.prototype.breedRateDecay = 1;
+    // Each time the enemy breeds, enemy.breedRate *= breedRateDecay
+Enemy.prototype.breedId = undefined;
+    // The kind of model to breed. Defaults to this.generationId.
+Enemy.prototype.sedentary = false;
+    // True if the enemy does not move.
+
+
 
 //-- Enemy Behaviors -----------------------------
-enemy.behaviorErratic = function (){
+Enemy.prototype.behaviorErratic = function (){
     var direction = pick(
         NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST);
     this.move(direction);
 };
-enemy.behaviorDirect = function (){
+Enemy.prototype.behaviorDirect = function (){
     var target = this.getViewTarget();
     if(target){
         if(this.trySkill(target)){ return;}
@@ -212,7 +210,7 @@ enemy.behaviorDirect = function (){
     }
     this.move(directionTo(this.x, this.y, target.x, target.y));
 };
-enemy.trySkill = function (target){
+Enemy.prototype.trySkill = function (target){
     // Breed
     if(this.breedRate && Math.random() < this.breedRate){
         this.breed();
@@ -249,7 +247,7 @@ enemy.trySkill = function (target){
     }
     return false;
 };
-enemy.getViewTarget = function (){
+Enemy.prototype.getViewTarget = function (){
     // Find closest enemy in view.
     var testContent = this.getViewContents();
     var closeTarget;
@@ -266,7 +264,7 @@ enemy.getViewTarget = function (){
     // If no enemies, return null.
     return closeTarget;
 };
-enemy.simplePursue = function (target, simpleThreshold){
+Enemy.prototype.simplePursue = function (target, simpleThreshold){
     if(this.sedentary){ return false;}
     var targetDist = distance(this.x, this.y, target.x, target.y);
     if(!simpleThreshold){ simpleThreshold = 3;}
@@ -283,7 +281,7 @@ enemy.simplePursue = function (target, simpleThreshold){
     stepDir = directionTo(this.x, this.y, nextStep.x, nextStep.y);
     return this.move(stepDir);
 };
-enemy.behaviorNormal = enemy.behavior = function (){
+Enemy.prototype.behaviorNormal = Enemy.prototype.behavior = function (){
     /**
         This is an enemy behavior function. It is called every time the enemy is
         given a turn, and determines what the enemy will do with that turn. The
@@ -352,11 +350,11 @@ enemy.behaviorNormal = enemy.behavior = function (){
 //== Enemy Archetype: Blob =====================================================
 
 //-- Body Part -----------------------------------
-const blobBody = Object.extend(enemy, {
+const blobBody = Object.extend(new Enemy(), {
     headId: undefined,
     rewardExperience: 0,
     initializer(options){
-        enemy.initializer.apply(this, arguments);
+        Enemy.prototype.initializer.apply(this, arguments);
         var head = options.head;
         this.headId = head.id;
         this.name = head.name;
@@ -374,12 +372,12 @@ const blobBody = Object.extend(enemy, {
         return this;
     },
     toJSON() {
-        let result = enemy.toJSON.apply(this, arguments);
+        let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.headId = this.headId;
         return result;
     },
     fromJSON(data){
-        enemy.fromJSON.apply(this, arguments);
+        Enemy.prototype.fromJSON.apply(this, arguments);
         this.headId = result.headId;
     },
     activate(){},
@@ -402,7 +400,7 @@ const blobBody = Object.extend(enemy, {
         }
     },
     bump(){
-        return actor.bump.apply(this, arguments);
+        return Actor.prototype.bump.apply(this, arguments);
     },
     hurt(){
         var head = mapManager.idManager.get(this.headId);
@@ -410,7 +408,7 @@ const blobBody = Object.extend(enemy, {
     },
     pack(){
         // Prevent multiple copies from showing up in the look list.
-        var sensoryData = enemy.pack.apply(this, arguments);
+        var sensoryData = Enemy.prototype.pack.apply(this, arguments);
         var head = mapManager.idManager.get(this.headId);
         if(!head){ return sensoryData;}
         sensoryData.id = head.id;
@@ -429,13 +427,13 @@ const blobBody = Object.extend(enemy, {
             }
             return true;
         } else{
-            return enemy.move.apply(this, arguments);
+            return Enemy.prototype.move.apply(this, arguments);
         }
     }
 });
 
 //-- Archetype -----------------------------------
-const blobArchetype = Object.extend(enemy, {
+const blobArchetype = Object.extend(new Enemy(), {
     character: 'B',
     bodyCharacter: 'B',
     bodyColor: undefined,
@@ -444,7 +442,7 @@ const blobArchetype = Object.extend(enemy, {
     turnDelay: 2,
     body: undefined,
     initializer(options){
-        enemy.initializer.apply(this, arguments);
+        Enemy.prototype.initializer.apply(this, arguments);
         this.body = [];
         for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
             // Skip one, to include head in mass. Makes hp calc easier.
@@ -457,22 +455,22 @@ const blobArchetype = Object.extend(enemy, {
         return this;
     },
     toJSON() {
-        let result = enemy.toJSON.apply(this, arguments);
+        let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
     },
     fromJSON(data){
-        enemy.fromJSON.apply(this, arguments);
+        Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
     },
     bump(obstruction){
         if(this.body.indexOf(obstruction) >= 0){
             mapManager.swapPlaces(this, obstruction);
         }
-        return actor.bump.apply(this, arguments);
+        return Actor.prototype.bump.apply(this, arguments);
     },
     hurt(){
-        var result = enemy.hurt.apply(this, arguments);
+        var result = Enemy.prototype.hurt.apply(this, arguments);
         var maxBody = this.hp / (this.maxHp()/this.bodyMass);
         while(this.body.length > maxBody){
             var segment = this.body.shift();
@@ -481,7 +479,7 @@ const blobArchetype = Object.extend(enemy, {
         return result;
     },
     move(direction){
-        var success = enemy.move.apply(this, arguments);
+        var success = Enemy.prototype.move.apply(this, arguments);
         this.body.forEach(function (segment){
             var moveDirection = directionTo(
                 segment.x, segment.y, this.x, this.y);
@@ -503,7 +501,7 @@ const blobArchetype = Object.extend(enemy, {
     },
     place(){
         var fromTheVoid = !(this.x && this.y && this.levelId);
-        var success = enemy.place.apply(this, arguments);
+        var success = Enemy.prototype.place.apply(this, arguments);
         if(fromTheVoid){
             for(var bodyI = 0; bodyI < this.body.length; bodyI++){
                 var bodySegment = this.body[bodyI];
@@ -517,7 +515,7 @@ const blobArchetype = Object.extend(enemy, {
             var bodySegment = this.body[bodyI];
             bodySegment.dispose();
         }
-        enemy.dispose.apply(this, arguments);
+        Enemy.prototype.dispose.apply(this, arguments);
     },
     behavior(){
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
@@ -532,10 +530,10 @@ const blobArchetype = Object.extend(enemy, {
 //== Enemy Archetype: Snake ====================================================
 
 //-- Body Part -----------------------------------
-const snakeBody = Object.extend(enemy, {
+const snakeBody = Object.extend(new Enemy(), {
     headId: undefined,
     initializer(options){
-        enemy.initializer.apply(this, arguments);
+        Enemy.prototype.initializer.apply(this, arguments);
         var head = options.head;
         this.headId = head.id;
         this.name = head.name;
@@ -552,12 +550,12 @@ const snakeBody = Object.extend(enemy, {
         return this;
     },
     toJSON() {
-        let result = enemy.toJSON.apply(this, arguments);
+        let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.head = this.headId;
         return result;
     },
     fromJSON(data){
-        enemy.fromJSON.apply(this, arguments);
+        Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
     },
     activate(){},
@@ -585,7 +583,7 @@ const snakeBody = Object.extend(enemy, {
     },
     pack(){
         // Prevent multiple copies from showing up in the look list.
-        var sensoryData = enemy.pack.apply(this, arguments);
+        var sensoryData = Enemy.prototype.pack.apply(this, arguments);
         var head = mapManager.idManager.get(this.headId);
         if(!head){ return sensoryData;}
         sensoryData.id = head.id;
@@ -594,14 +592,14 @@ const snakeBody = Object.extend(enemy, {
 });
 
 //-- Archetype -----------------------------------
-const snakeArchetype = Object.extend(enemy, {
+const snakeArchetype = Object.extend(new Enemy(), {
     bodyCharacter: 'o',
     bodyColor: undefined,
     bodyBackground: undefined,
     bodyLength: 4,
     placements: undefined,
     initializer(options){
-        enemy.initializer.apply(this, arguments);
+        Enemy.prototype.initializer.apply(this, arguments);
         this.body = [];
         this.placements = [];
         for(var bodyI = 0; bodyI < this.bodyLength; bodyI++){
@@ -614,12 +612,12 @@ const snakeArchetype = Object.extend(enemy, {
         return this;
     },
     toJSON() {
-        let result = enemy.toJSON.apply(this, arguments);
+        let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
     },
     fromJSON(data){
-        enemy.fromJSON.apply(this, arguments);
+        Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
     },
     move(direction){
@@ -628,7 +626,7 @@ const snakeArchetype = Object.extend(enemy, {
             y: this.y,
             levelId: this.levelId
         };
-        var success = enemy.move.apply(this, arguments);
+        var success = Enemy.prototype.move.apply(this, arguments);
         if(!success){
             var offsetX = 0;
             var offsetY = 0;
@@ -652,7 +650,7 @@ const snakeArchetype = Object.extend(enemy, {
                 this.placements.splice(swapIndex, 1);
                 var segment = this.body[swapIndex];
                 segment.unplace();
-                success = enemy.move.apply(this, arguments);
+                success = Enemy.prototype.move.apply(this, arguments);
             }
         }
         if(success){
@@ -677,7 +675,7 @@ const snakeArchetype = Object.extend(enemy, {
             var bodySegment = this.body[bodyI];
             bodySegment.dispose();
         }
-        enemy.dispose.apply(this, arguments);
+        Enemy.prototype.dispose.apply(this, arguments);
     },
     behavior(){
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
@@ -699,12 +697,12 @@ const enemyArchetypes = {
 for(let modelIndex = 0; modelIndex < enemyModels.length; modelIndex++){
     let indexedModel = enemyModels[modelIndex]
     if(indexedModel.behavior){
-        indexedModel.behavior = enemy[indexedModel.behavior];
+        indexedModel.behavior = Enemy.prototype[indexedModel.behavior];
     }
-    let enemyArchetype = enemyArchetypes[indexedModel.enemyArchetype] || enemy;
+    let enemyArchetype = enemyArchetypes[indexedModel.enemyArchetype] || new Enemy();
     modelLibrary.registerModel('enemy', Object.extend(enemyArchetype, indexedModel));
 }
-modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
+modelLibrary.registerModel('special', Object.extend(new Enemy(), { // emperor wight
     // Id:
     generationId: 'emperor wight',
     generationType: 'special',
@@ -729,21 +727,21 @@ modelLibrary.registerModel('special', Object.extend(enemy, { // emperor wight
     viewText: "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.",
     breed(){
         this.breedId = pick('skeletal dwarf', 'zombie dwarf');
-        var result = enemy.breed.apply(this, arguments);
+        var result = Enemy.prototype.breed.apply(this, arguments);
         return result;
     },
     die(){
         //var crown = modelLibrary.getModel('special', 'crown');
         //crown.place(this.x, this.y);
         gameManager.currentGame.win();
-        return enemy.die.apply(this, arguments);
+        return Enemy.die.apply(this, arguments);
     },
 }));
 
 
 //== Exports ===================================================================
 
-export {enemy, snakeArchetype, blobArchetype};
+export {Enemy, snakeArchetype, blobArchetype};
 
 
 //==============================================================================

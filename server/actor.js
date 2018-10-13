@@ -2,9 +2,9 @@
 
 /*===========================================================================
  *
- *  This prototype represents an actor in the game capable of moving about
+ *  This prototype represents an Actor in the game capable of moving about
  *      world and interacting with all other kinds of data objects present on
- *      the map. Most notably, actors can take part in combat.
+ *      the map. Most notably, Actors can take part in combat.
  *  This is a prototype. I must be instantiated and it's initializer called
  *      in order to be used properly.
  *          
@@ -15,16 +15,7 @@ import gameManager from './game_manager.js';
 import mapManager from './map_manager.js';
 
 //-- Implementation ------------------------------
-const actor = Object.extend(new Movable(), {
-    // Redefined properties:
-    character: '@',
-    type: TYPE_ACTOR,
-    // Newly defined Properties:
-    intelligence: undefined,
-    viewRange: 7,
-    turnDelay: 1,
-    nextTurn: 0,
-    //
+class Actor extends Movable {
     /*initializer(){
         Movable.prototype.initializer.apply(this, arguments);
         return this;
@@ -37,20 +28,20 @@ const actor = Object.extend(new Movable(), {
          **/
         gameManager.cancelActor(this);
         Movable.prototype.dispose.apply(this, arguments);
-    },
+    }
     toJSON() {
         let result = Movable.prototype.toJSON.apply(this, arguments);
         result.nextTurn = this.nextTurn;
         return result;
-    },
+    }
     fromJSON(data){
         console.log(this.name)
         Movable.prototype.fromJSON.apply(this, arguments);
         this.nextTurn = data.nextTurn;
-    },
+    }
     takeTurn(callback){
         /**
-            This function causes the actor to perform their turn taking
+            This function causes the Actor to perform their turn taking
                 behavior, such as moving about the map, attacking, or alerting
                 the player, possibly over the network, to issue a command.
             The game will halt until callback is called. All behavior
@@ -59,7 +50,7 @@ const actor = Object.extend(new Movable(), {
             It does not return anything.
          **/
         if(this.intelligence){
-            // Compile Sensory data about the actor's view.
+            // Compile Sensory data about the Actor's view.
             var currentLevel = mapManager.getLevel(this.levelId);
             var viewData;
             if(currentLevel){
@@ -80,7 +71,7 @@ const actor = Object.extend(new Movable(), {
             this.nextTurn += this.turnDelay;
             callback(true);
         }
-    },
+    }
     pack(){
         /**
             This function creates a "sensory package" of the object for use by
@@ -100,15 +91,23 @@ const actor = Object.extend(new Movable(), {
         var sensoryData = Containable.prototype.pack.apply(this, arguments);
         sensoryData.type = TYPE_ACTOR;
         return sensoryData;
-    },
+    }
     inform(body){
         /**
-            This function sends a message to the actor's intelligence. it is a
+            This function sends a message to the Actor's intelligence. it is a
                 stub to be used by the prototypes further derived decendants.
             It doesn't return anything.
          **/
     }
-});
+}
+// Redefined properties:
+Actor.prototype.character = '@';
+Actor.prototype.type = TYPE_ACTOR;
+// Newly defined Properties:
+Actor.prototype.intelligence = undefined;
+Actor.prototype.viewRange = 7;
+Actor.prototype.turnDelay = 1;
+Actor.prototype.nextTurn = 0;
 
 //-- Export --------------------------------------
-export default actor;
+export default Actor;
