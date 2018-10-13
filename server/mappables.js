@@ -30,6 +30,11 @@ const mappable = {
             result.generationType = this.generationType; 
         }
         return result;
+    },
+    fromJSON(data) {
+        if(data.generationType){
+            this.generationType = data.generationType;
+        }
     }
 };
 const containable = Object.extend(mappable, {
@@ -64,13 +69,22 @@ const containable = Object.extend(mappable, {
         mapManager.idManager.cancelId(this.id);
     },
     toJSON() {
-        let result = mappable.toJSON.apply(this, ...arguments);
+        let result = mappable.toJSON.apply(this, arguments);
         let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
         for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
             let indexedKey = saveKeys[saveIndex];
             result[indexedKey] = this[indexedKey];
         }
         return result;
+    },
+    fromJSON(data) {
+        mappable.fromJSON.apply(this, arguments);
+        let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
+        for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
+            let indexedKey = saveKeys[saveIndex];
+            this[indexedKey] = data[indexedKey];
+        }
+        console.log(this.name, this.levelId)
     },
     place(x, y, levelId){
         /**

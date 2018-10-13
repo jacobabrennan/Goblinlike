@@ -182,10 +182,20 @@ const companion = Object.extend(person, {
     },
     toJSON() {
         let result = person.toJSON.apply(this, arguments);
+        result.loadInstruction = 'companion';
+        result.companion = true;
         if(this.goal){ result.goal = this.goal.toJSON();}
         if(this.dead){ result.dead = this.dead;}
         if(this.lost){ result.lost = this.lost;}
         return result;
+    },
+    fromJSON(data){
+        person.fromJSON.apply(this, arguments);
+        if(data.dead){ this.dead = data.dead;}
+        if(data.lost){ this.lost = data.lost;}
+        if(data.goal){
+            // TO DO
+        }
     },
     adjustExperience(amount) {
         /**
@@ -482,6 +492,9 @@ class Goal {
     }
     toJSON() {
         return {};
+    }
+    fromJSON(data){
+        // TO DO
     }
 }
 class GoalLoot extends Goal {

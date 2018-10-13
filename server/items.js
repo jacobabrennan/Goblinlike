@@ -41,6 +41,10 @@ const wand = Object.extend(item, {
         result.charges = this.charges;
         return result;
     },
+    fromJSON(data){
+        item.fromJSON.apply(this, arguments);
+        this.charges = data.charges;
+    },
     // New Methods
     effect(user, targetData){
         if(!targetData.direction){

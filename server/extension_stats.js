@@ -73,6 +73,16 @@ person.toJSON = (function (parentFunction){
         return result;
     }
 })(person.toJSON);
+person.fromJSON = (function (parentFunction){
+    return function (data){
+        parentFunction.apply(this, arguments);
+        this.vitality   = data.vitality  ;
+        this.strength   = data.strength  ;
+        this.wisdom     = data.wisdom    ;
+        this.charisma   = data.charisma  ;
+        this.experience = data.experience;
+    }
+})(person.fromJSON);
 person.packageUpdates = (function (parentFunction){
     return function (){
         /**

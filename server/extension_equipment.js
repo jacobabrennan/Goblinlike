@@ -66,6 +66,12 @@ person.toJSON = (function (parentFunction){
         return result;
     }
 })(person.toJSON);
+person.fromJSON = (function (parentFunction){
+    return function (data){
+        parentFunction.apply(this, arguments);
+        // TO DO
+    }
+})(person.fromJSON);
 person.packageUpdates = (function (parentFunction){
     return function (){
         /**

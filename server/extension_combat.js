@@ -37,6 +37,13 @@ actor.toJSON = (function (parentFunction){
         return result;
     }
 })(actor.toJSON);
+actor.fromJSON = (function (parentFunction){
+    return function (data){
+        parentFunction.apply(this, arguments);
+        this.hp = data.hp;
+        this.baseHp = data.baseHp;
+    }
+})(actor.fromJSON);
 
 //-- New Methods ---------------------------------
 actor.adjustHp = function (amount){
@@ -163,6 +170,12 @@ person.toJSON = (function (parentFunction){
         return result;
     }
 })(person.toJSON);
+person.fromJSON = (function (parentFunction){
+    return function (data){
+        parentFunction.apply(this, arguments);
+        this.lastHeal = data.lastHeal;
+    }
+})(person.fromJSON);
 person.packageUpdates = (function (parentFunction){
     return function (){
         /**

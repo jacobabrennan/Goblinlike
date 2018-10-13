@@ -56,6 +56,12 @@ const enemy = Object.extend(actor, {
         result.breedRate = this.breedRate;
         return result;
     },
+    fromJSON(data){
+        actor.fromJSON.apply(this, arguments);
+        this.generationId = data.generationId;
+        this.active = data.active;
+        this.breedRate = data.breedRate;
+    },
     takeTurn(callback){
         /**
             This function causes the actor to perform their turn taking
@@ -372,6 +378,10 @@ const blobBody = Object.extend(enemy, {
         result.headId = this.headId;
         return result;
     },
+    fromJSON(data){
+        enemy.fromJSON.apply(this, arguments);
+        this.headId = result.headId;
+    },
     activate(){},
     attackNearby(){
         if(!(this.levelId && this.x && this.y)){ return;}
@@ -450,6 +460,10 @@ const blobArchetype = Object.extend(enemy, {
         let result = enemy.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
+    },
+    fromJSON(data){
+        enemy.fromJSON.apply(this, arguments);
+        // TO DO
     },
     bump(obstruction){
         if(this.body.indexOf(obstruction) >= 0){
@@ -542,6 +556,10 @@ const snakeBody = Object.extend(enemy, {
         result.head = this.headId;
         return result;
     },
+    fromJSON(data){
+        enemy.fromJSON.apply(this, arguments);
+        // TO DO
+    },
     activate(){},
     attackNearby(){
         if(!(this.levelId && this.x && this.y)){ return;}
@@ -599,6 +617,10 @@ const snakeArchetype = Object.extend(enemy, {
         let result = enemy.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
+    },
+    fromJSON(data){
+        enemy.fromJSON.apply(this, arguments);
+        // TO DO
     },
     move(direction){
         var oldPlacement = {

@@ -57,11 +57,18 @@ const person = Object.extend(actor, {
         return this;
     },
     toJSON() {
-        let result = actor.toJSON.apply(this, ...arguments);
+        let result = actor.toJSON.apply(this, arguments);
         result.gender = this.gender;
         result.inventory = this.inventory.map(item => item.id);
         result.colorNatural = this.colorNatural;
         return result;
+    },
+    fromJSON(data) {
+        console.log(this.name)
+        actor.fromJSON.apply(this, arguments);
+        this.gender = data.gender;
+        // TO DO
+        this.colorNatural = data.colorNatural;
     },
     place(){
         var success = actor.place.apply(this, arguments);

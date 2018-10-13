@@ -59,6 +59,18 @@ const gameManager = {
         mapManager.reset();
         this.currentGame = undefined;
     },
+    save() {
+        if(!this.currentGame){ return;}
+        let saveJSON = this.currentGame.toJSON();
+        window.localStorage.setItem('gameSave', JSON.stringify(saveJSON));
+    },
+    load() {
+        if(this.currentGame){ return;}
+        let saveJSON = localStorage.getItem('gameSave');
+        saveJSON = JSON.parse(saveJSON);
+        this.currentGame = new Game();
+        this.currentGame.start({gameSave: saveJSON});
+    },
     // Time Management passthrough functions:
     currentTime() {
         /**
@@ -134,75 +146,38 @@ class Game {
             map: mapManager.toJSON(),
             time: this.currentTime,
             hero: this.hero.id,
-            companion: this.companionInfo.map(companion => companion.id)
+            companions: this.companionInfo.map(companion => companion.id)
         };
         return result;
+    }
+    fromJSON(data) {
+        mapManager.fromJSON(data.map);
+        //console.log(mapManager.idManager.ids)
+        console.log(mapManager.idManager.ids[15])
+        console.log(mapManager.idManager.get(15));
+        console.log(data.hero)
+        this.currentTime = data.currentTime;
+        this.hero = mapManager.idManager.get(data.hero);
+        this.companionInfo = data.companions.map(id => mapManager.idManager.get(id));
     }
 
     //------------------------------------------------
     start(options) {
-        let newLevel = mapManager.generateLevel(1);
-        this.hero = Object.instantiate(hero, options);
-        this.hero.place(
-            newLevel.startCoords.x, newLevel.startCoords.y, newLevel.id);
-        this.hero.update('levelId');
-        // TODO: Refactor this with actual networking.
-        this.hero.intelligence = {
-            sendMessage(command, options) {
-                getClient().networking.recieveMessage(command, options);
-            },
-            sense(sensoryData) {
-                this.sendMessage(COMMAND_SENSE, sensoryData);
-            },
-            takeTurn(theMover) {
-                // Compile sensory data about the player's view.
-                let currentLevel = mapManager.getLevel(theMover.levelId);
-                let viewData;
-                if(currentLevel){
-                    viewData = currentLevel.packageView(
-                        theMover.x, theMover.y, theMover.viewRange);
-                }
-                // Compile data about recent changes to the person.
-                let selfData = theMover.packageUpdates();
-                theMover.updates = undefined;
-                // Compile package of new messages.
-                let newMessages;
-                if(theMover.messages && theMover.messages.length){
-                    newMessages = theMover.messages;
-                    theMover.messages = null;
-                }
-                // Create final package and send it to the player.
-                let turnData = {
-                    characterData: selfData,
-                    sensoryData: viewData,
-                    messageData: newMessages
-                };
-                this.sendMessage(COMMAND_TURN, turnData);
-            },
-            camp(theMover) {
-                // Compile data about recent changes to the person.
-                let selfData = theMover.packageUpdates();
-                theMover.updates = undefined;
-                // Create final package and send it to the player.
-                let turnData = {
-                    characterData: selfData,
-                    time: gameManager.currentTime()
-                };
-                let delay = (Math.random() < 1/10)? 10 : 1;
-                this.sendMessage(COMMAND_SENSE, turnData);
-                setTimeout(function (){
-                    theMover.endTurn();
-                }, delay);
-            },
-            gameOver(deathData) {
-                this.sendMessage(COMMAND_GAMEOVER, deathData);
-            },
-            win(winData) {
-                this.sendMessage(COMMAND_WIN, winData);
-            }
-        };
-        //--
-        let levelData = newLevel.packageSetup();
+        let startLevel;
+        // Attempt Load from Save
+        if(options.gameSave){
+            this.fromJSON(options.gameSave);
+            startLevel = mapManager.getLevel(this.hero.levelId);
+        // Generate New Game
+        } else{
+            startLevel = mapManager.generateLevel(1);
+            this.hero = Object.instantiate(hero, options);
+            this.hero.place(
+                startLevel.startCoords.x, startLevel.startCoords.y, startLevel.id);
+            this.hero.update('levelId');
+        }
+        this.hero.intelligence = new HeroIntelligence;
+        let levelData = startLevel.packageSetup();
         gameManager.registerActor(this.hero);
         this.hero.intelligence.sendMessage(COMMAND_NEWGAME, {
             level: levelData
@@ -328,6 +303,62 @@ class Game {
                 case COMMAND_WAIT:    this.hero.commandWait(options);    break;
             }
         }
+    }
+}
+
+// TODO: Refactor this with actual networking.
+class HeroIntelligence {
+    sendMessage(command, options) {
+        getClient().networking.recieveMessage(command, options);
+    }
+    sense(sensoryData) {
+        this.sendMessage(COMMAND_SENSE, sensoryData);
+    }
+    takeTurn(theMover) {
+        // Compile sensory data about the player's view.
+        let currentLevel = mapManager.getLevel(theMover.levelId);
+        let viewData;
+        if(currentLevel){
+            viewData = currentLevel.packageView(
+                theMover.x, theMover.y, theMover.viewRange);
+        }
+        // Compile data about recent changes to the person.
+        let selfData = theMover.packageUpdates();
+        theMover.updates = undefined;
+        // Compile package of new messages.
+        let newMessages;
+        if(theMover.messages && theMover.messages.length){
+            newMessages = theMover.messages;
+            theMover.messages = null;
+        }
+        // Create final package and send it to the player.
+        let turnData = {
+            characterData: selfData,
+            sensoryData: viewData,
+            messageData: newMessages
+        };
+        this.sendMessage(COMMAND_TURN, turnData);
+    }
+    camp(theMover) {
+        // Compile data about recent changes to the person.
+        let selfData = theMover.packageUpdates();
+        theMover.updates = undefined;
+        // Create final package and send it to the player.
+        let turnData = {
+            characterData: selfData,
+            time: gameManager.currentTime()
+        };
+        let delay = (Math.random() < 1/10)? 10 : 1;
+        this.sendMessage(COMMAND_SENSE, turnData);
+        setTimeout(function (){
+            theMover.endTurn();
+        }, delay);
+    }
+    gameOver(deathData) {
+        this.sendMessage(COMMAND_GAMEOVER, deathData);
+    }
+    win(winData) {
+        this.sendMessage(COMMAND_WIN, winData);
     }
 }
 

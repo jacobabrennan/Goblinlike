@@ -39,9 +39,14 @@ const actor = Object.extend(movable, {
         movable.dispose.apply(this, arguments);
     },
     toJSON() {
-        let result = movable.toJSON.apply(this, ...arguments);
+        let result = movable.toJSON.apply(this, arguments);
         result.nextTurn = this.nextTurn;
         return result;
+    },
+    fromJSON(data){
+        console.log(this.name)
+        movable.fromJSON.apply(this, arguments);
+        this.nextTurn = data.nextTurn;
     },
     takeTurn(callback){
         /**

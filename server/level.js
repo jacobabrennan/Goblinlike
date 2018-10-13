@@ -5,6 +5,7 @@
 //-- Dependencies --------------------------------
 import gameManager from './game_manager.js';
 import mapManager from './map_manager.js';
+import {genericTileTypes} from './tiles.js';
 
 //-- Definiton -----------------------------------
 class level {
@@ -62,12 +63,41 @@ class level {
         });
         let indexTable = this.tileGrid.map(tile => keyStrings[tileHash[tile.id]]);
         result.tileGrid = {
+            keyLength: keyLength,
             keyString: indexTable.join(''),
             tileKeys: keyHash
         }
-        console.log(result.tileGrid)
         //
         return result;
+    }
+    fromJSON(data){
+        this.id = data.id;
+        this.depth = data.depth;
+        this.width = data.width;
+        this.height = data.height;
+        if(data.stairsUpCoords  ){ this.stairsUpCoords   = Object.create(data.stairsUpCoords  );}
+        if(data.stairsDownCoords){ this.stairsDownCoords = Object.create(data.stairsDownCoords);}
+        // Create copy of generic type types hash. TODO: Refactor This.
+        var tileTypes = {};
+        for(var key in genericTileTypes){
+            tileTypes[key] = genericTileTypes[key];
+        }
+        this.tileTypes = tileTypes;
+        //
+        let tileModels = Object.keys(tileTypes).map(key => tileTypes[key]);
+        let idHash = {};
+        tileModels.forEach(tileModel => idHash[tileModel.id] = tileModel);
+        //
+        let gridStringLength = data.tileGrid.keyString.length;
+        let keyLength = data.tileGrid.keyLength;
+        let tileGrid = [];
+        for(let keyPos = 0; keyPos < gridStringLength; keyPos += keyLength){
+            let nextKey = data.tileGrid.keyString.substring(keyPos, keyPos+keyLength);
+            let tileId = data.tileGrid.tileKeys[nextKey];
+            let tileModel = idHash[tileId];
+            tileGrid.push(tileModel);
+        }
+        this.tileGrid = tileGrid;
     }
     getTile(x, y) {
         /**

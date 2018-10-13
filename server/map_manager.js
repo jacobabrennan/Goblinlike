@@ -5,6 +5,9 @@
 //-- Dependencies --------------------------------
 import modelLibrary from './model_library.js';
 import gameManager from './game_manager.js';
+import level from './level.js';
+import hero from './hero.js';
+import companion from './companion.js';
 
 //-- Implementation ------------------------------
 const mapManager = {
@@ -27,6 +30,15 @@ const mapManager = {
             result.levels.push(indexedLevel.toJSON());
         }
         return result;
+    },
+    fromJSON(data) {
+        this.idManager.fromJSON(data.ids);
+        data.levels.forEach(levelData => {
+            let newLevel = new level();
+            newLevel.fromJSON(levelData);
+            this.levels[newLevel.id] = newLevel;
+            this.depths[newLevel.depth] = newLevel;
+        });
     },
     reset() {
         // TODO: document.
@@ -199,14 +211,35 @@ mapManager.idManager = {
     toJSON() {
         let result = this.ids.map(aMappable => {
             if(!aMappable){ return undefined;}
-            if(aMappable.generationId){
-                console.log(aMappable.generationId)
-            } else{
-                console.log(aMappable);
-            }
             return aMappable.toJSON();
         });
         return result;
+    },
+    fromJSON(data) {
+        data.forEach(idData => {
+            // Reconstitute from Model Library
+            if(idData.generationId){
+                let instance = Object.instantiate(
+                    modelLibrary.getModel(idData.generationType, idData.generationId)
+                );
+                instance.fromJSON(idData);
+            //
+            } else if(idData.loadInstruction){
+                switch(idData.loadInstruction){
+                    case 'hero': {
+                        let instance = Object.instantiate(hero);
+                        instance.fromJSON(idData);
+                        console.log(hero)
+                        break;
+                    }
+                    case 'companion': {
+                        let instance = Object.instantiate(companion);
+                        instance.fromJSON(idData);
+                        break;
+                    }
+                }
+            }
+        });
     },
     reset: function (){
         this.recycledIds = [];
