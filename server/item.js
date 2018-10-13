@@ -11,13 +11,13 @@
 ==============================================================================*/
 
 //-- Dependencies --------------------------------
-import {Movable, Containable} from './mappables.js';
+import {Movable} from './mappables.js';
 
 //-- Implementation ------------------------------
 class Item extends Movable {
     // Redefined Methods
     toJSON() {
-        let result = Movable.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.generationId = this.generationId;
         if(this.stackable){
             result.stackCount = this.stackCount;
@@ -25,7 +25,7 @@ class Item extends Movable {
         return result;
     }
     fromJSON(data){
-        Movable.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         this.generationId = data.generationId;
         if(data.stackCount){ this.stackCount = data.stackCount;}
     }
@@ -69,7 +69,7 @@ class Item extends Movable {
                 targetRange: CONSTANT
             }
          **/
-        var sensoryData = Containable.prototype.pack.apply(this, arguments);
+        var sensoryData = super.pack(...arguments);
         sensoryData.type = this.type;
         sensoryData.targetClass = this.targetClass;
         sensoryData.targetRange = this.targetRange;

@@ -27,7 +27,7 @@ class Hero extends Person {
                 about them immediately.
             Returns a reference to itself.
          **/
-        Person.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         if(options && options.name){
             this.name = options.name;
         }
@@ -38,7 +38,7 @@ class Hero extends Person {
         return this;
     }
     toJSON() {
-        let result = Person.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.loadInstruction = 'hero';
         return result;
     }
@@ -68,7 +68,7 @@ class Hero extends Person {
                     WEST, SOUTHWEST, SOUTH, SOUTHEAST.
             It returns true if the movement is successful, and false otherwise.
          **/
-        var success = Person.prototype.move.apply(this, arguments);
+        var success = super.move(...arguments);
         /*if(Math.random() < 1/15){
             this.sound('footsteps', 15, this);
         }*/
@@ -107,7 +107,7 @@ class Hero extends Person {
                 turn.
             It return said package. See following comments for structure.
          **/
-        var updatePackage = Person.prototype.packageUpdates.apply(this, arguments);
+        var updatePackage = super.packageUpdates(...arguments);
         if(!updatePackage){
             updatePackage = {};
         }

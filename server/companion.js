@@ -143,7 +143,7 @@ Person.prototype.adjustHp = (function (parentFunction){
 
 class Companion extends Person {
     initializer() {
-        Person.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
         var colorB = randomInterval(0,64);
@@ -177,7 +177,7 @@ class Companion extends Person {
         return this;
     }
     toJSON() {
-        let result = Person.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.loadInstruction = 'companion';
         result.companion = true;
         if(this.goal){ result.goal = this.goal.toJSON();}
@@ -186,7 +186,7 @@ class Companion extends Person {
         return result;
     }
     fromJSON(data){
-        Person.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         if(data.dead){ this.dead = data.dead;}
         if(data.lost){ this.lost = data.lost;}
         if(data.goal){
@@ -223,7 +223,7 @@ class Companion extends Person {
     }
     hurt() {
         this.activate();
-        return Person.prototype.hurt.apply(this, arguments);
+        return super.hurt(...arguments);
     }
     hear(tamber, amplitude, source, message) {
         if(source && (source != this) && (source.faction & this.faction)){
@@ -235,7 +235,7 @@ class Companion extends Person {
                 case 'greeting': this.adjustMoral(10); break;
             }
         }
-        return Person.prototype.hear.apply(this, arguments);
+        return super.hear(...arguments);
     }
     dispose() {
         if(!this.dead){
@@ -247,17 +247,17 @@ class Companion extends Person {
                 gameManager.currentGame.hero.companions.splice(companionI, 1);
             }
         }
-        return Person.prototype.dispose.apply(this, arguments);
+        return super.dispose(...arguments);
     }
     bumped(bumper) {
         if(bumper.companion && bumper.terrified && !this.terrified){
             mapManager.swapPlaces(this, bumper);
         } else{
-            Person.prototype.bumped.apply(this, arguments);
+            super.bumped(...arguments);
         }
     }
     unequip(oldItem) {
-        var success = Person.prototype.unequip.apply(this, arguments);
+        var success = super.unequip(...arguments);
         if(success){
             success = this.inventoryRemove(oldItem);
             if(success){

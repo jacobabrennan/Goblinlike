@@ -17,7 +17,7 @@ import mapManager from './map_manager.js';
 //-- Implementation ------------------------------
 class Actor extends Movable {
     /*initializer(){
-        Movable.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         return this;
     },*/
     dispose(){
@@ -27,16 +27,16 @@ class Actor extends Movable {
          *      managed by this object.
          **/
         gameManager.cancelActor(this);
-        Movable.prototype.dispose.apply(this, arguments);
+        super.dispose(...arguments);
     }
     toJSON() {
-        let result = Movable.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.nextTurn = this.nextTurn;
         return result;
     }
     fromJSON(data){
         console.log(this.name)
-        Movable.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         this.nextTurn = data.nextTurn;
     }
     takeTurn(callback){
@@ -88,7 +88,7 @@ class Actor extends Movable {
                 type: 'actor';
             }
          **/
-        var sensoryData = Containable.prototype.pack.apply(this, arguments);
+        var sensoryData = super.pack(...arguments);
         sensoryData.type = TYPE_ACTOR;
         return sensoryData;
     }

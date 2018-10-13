@@ -19,14 +19,14 @@ import './extension_equipment.js';
 class Enemy extends Actor {
     // Redefined methods:
     toJSON() {
-        let result = Actor.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.generationId = this.generationId;
         result.active = this.active;
         result.breedRate = this.breedRate;
         return result;
     }
     fromJSON(data) {
-        Actor.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         this.generationId = data.generationId;
         this.active = data.active;
         this.breedRate = data.breedRate;
@@ -53,7 +53,7 @@ class Enemy extends Actor {
     }
     die() {
         var rewardExperience = this.rewardExperience;
-        var result = Actor.prototype.die.apply(this, arguments);
+        var result = super.die(...arguments);
         var thePlayer = gameManager.currentGame.hero;
         if(thePlayer){
             thePlayer.adjustExperience(rewardExperience);
@@ -71,7 +71,7 @@ class Enemy extends Actor {
         }
     }
     move(direction) {
-        var success = Actor.prototype.move.apply(this, arguments);
+        var success = super.move(...arguments);
         if(!success){
             var dest = getStepCoords(this.x, this.y, direction);
             var testDoor = mapManager.getTile(dest.x, dest.y, this.levelId);

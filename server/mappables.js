@@ -59,7 +59,7 @@ class Containable extends Mappable {
         mapManager.idManager.cancelId(this.id);
     }
     toJSON() {
-        let result = Mappable.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
         for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
             let indexedKey = saveKeys[saveIndex];
@@ -68,7 +68,7 @@ class Containable extends Mappable {
         return result;
     }
     fromJSON(data) {
-        Mappable.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
         for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
             let indexedKey = saveKeys[saveIndex];

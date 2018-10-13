@@ -25,7 +25,7 @@ class Person extends Actor {
                 about them immediately.
             Returns a reference to itself.
          **/
-        Actor.prototype.initializer.apply(this, arguments);
+        super.initializer(...arguments);
         this.name = sWerd.name();
         this.colorNatural = this.color;
         // Select Gender
@@ -44,20 +44,20 @@ class Person extends Actor {
         return this;
     }
     toJSON() {
-        let result = Actor.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.gender = this.gender;
         result.inventory = this.inventory.map(item => item.id);
         result.colorNatural = this.colorNatural;
         return result;
     }
     fromJSON(data) {
-        Actor.prototype.fromJSON.apply(this, arguments);
+        super.fromJSON(...arguments);
         this.gender = data.gender;
         // TO DO
         this.colorNatural = data.colorNatural;
     }
     place() {
-        var success = Actor.prototype.place.apply(this, arguments);
+        var success = super.place(...arguments);
         if(success){
             this.update('y');
             this.update('x');
@@ -126,7 +126,7 @@ class Person extends Actor {
                     WEST, SOUTHWEST, SOUTH, SOUTHEAST.
             It returns true if the movement is successful, and false otherwise.
          **/
-        var success = Actor.prototype.move.apply(this, arguments);
+        var success = super.move(...arguments);
         this.sound('footsteps', 10, this);
         this.getViewContents().forEach(function (theContent){
             if(typeof theContent.activate == 'function'){
