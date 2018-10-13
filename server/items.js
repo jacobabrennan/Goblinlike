@@ -66,7 +66,8 @@ class Wand extends Item {
             damageScale: 1,
             forceTarget: forceTarget
         };
-        var theProj = Object.instantiate(this.projectileType);
+        var theProj = new this.projectileType();
+        theProj.initializer();
         damageDone = theProj.project(direction, projectileOptions);
         // TODO: Return actual damage done.
         if(damageDone){
@@ -83,17 +84,19 @@ Wand.prototype.targetClass = TARGET_DIRECTION;
 Wand.prototype.lore = 10;
 // New Properties
 Wand.prototype.range = 15;
-Wand.prototype.projectileType = (base => {
-    base.damageType = DAMAGE_FIRE;
-    base.damageSigma = 0;
-    base.baseDamage = 3;
-    base.attack = function (attacker, target) {
-        this.baseDamage = attacker.wisdom+attacker.level;
-        attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
-        return Projectile.prototype.attack.apply(this, arguments);
-    };
-    return base;
-})(new Projectile());
+Wand.prototype.projectileType = (() => {
+    class WandProjectile extends Projectile {
+        attack(attacker, target) {
+            this.baseDamage = attacker.wisdom+attacker.level;
+            attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
+            return super.attack(...arguments);
+        }
+    }
+    WandProjectile.prototype.damageType = DAMAGE_FIRE;
+    WandProjectile.prototype.damageSigma = 0;
+    WandProjectile.prototype.baseDamage = 3;
+    return WandProjectile;
+})();
 
 class Scroll extends Item {
     description() {

@@ -26,15 +26,6 @@ client.drivers.gameplay = Object.extend(driver, {
         // TODO: Document.
         this.drivers.map.setup(configuration);
         this.drivers.menu.setup(configuration);
-        /*
-        for(var I = 0; I < 32; I++){
-            var prototype = itemLibrary.getItemByWeight(randomInterval(1,10));
-            var newItem = Object.instantiate(prototype);
-            //while(!newItem.place(randomInterval(0,31),randomInterval(0,31), G.id)){};
-            this.hero.gainItem(newItem);
-        }
-        this.hero.update('inventory');
-        */
     },
     focused(options){
         this.focus(this.drivers.menu);

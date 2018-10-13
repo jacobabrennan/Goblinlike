@@ -101,29 +101,6 @@ const skillModels = [
         targetClass: TARGET_SELF,
         use(user, target){
             return user.breed();
-            /*var selfType = modelLibrary.getModel('enemy', user.generationId);
-            if(!selfType){ return false;}
-            var oldX = user.x;
-            var oldY = user.y;
-            var oldL = user.levelId;
-            var directions = [
-                NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST];
-            var success;
-            while(!success && directions.length){
-                var rI = randomInterval(0, directions.length-1);
-                var randomDirection = directions[rI];
-                directions.splice(rI, 1);
-                success = user.move(randomDirection);
-            }
-            if(!success){ return false;}
-            var progeny = Object.instantiate(selfType);
-            success = progeny.place(oldX, oldY, oldL);
-            if(!success){
-                progeny.dispose();
-                return false;
-            }
-            progeny.activate();
-            return true;*/
         }
     },
     {// sap

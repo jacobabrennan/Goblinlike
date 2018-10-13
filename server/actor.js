@@ -21,10 +21,6 @@ class Actor extends Movable {
         this.intelligence = undefined;
         this.nextTurn = 0;
     }
-    /*initializer(){
-        super.initializer(...arguments);
-        return this;
-    },*/
     dispose(){
         /**
          *  This function is used to prepare the object for garbage disposal

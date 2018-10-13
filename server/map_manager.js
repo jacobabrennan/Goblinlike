@@ -223,20 +223,17 @@ mapManager.idManager = {
             if(idData.generationId){
                 let instance = modelLibrary.getModel(idData.generationType, idData.generationId);
                 instance = new instance();
-                instance.initializer();
                 instance.fromJSON(idData);
             //
             } else if(idData.loadInstruction){
                 switch(idData.loadInstruction){
                     case 'hero': {
                         let instance = new Hero();
-                        instance.initializer()
                         instance.fromJSON(idData);
                         break;
                     }
                     case 'companion': {
                         let instance = new Companion();
-                        instance.instantiate();
                         instance.fromJSON(idData);
                         break;
                     }

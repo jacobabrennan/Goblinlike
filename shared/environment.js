@@ -126,25 +126,6 @@ const P_INCLUDE_FINISHED   = 2;
     Default Object Extentions
   ===========================================================================*/
 
-if(Object.instantiate){
-    console.log('Cannot attach method "instantiate" to Object.');
-} else{
-    Object.instantiate = function (aPrototype){
-        if(aPrototype.initializer){
-            // Create arguments, minus prototype, to pass to initializer.
-            const cleanArguments = [];
-            for(let argI = 1; argI < arguments.length; argI++){
-                cleanArguments.push(arguments[argI]);
-            }
-            // Call initializer, return new object.
-            return aPrototype.initializer.apply(
-                Object.create(aPrototype),
-                cleanArguments
-            );
-        }
-        return Object.create(aPrototype);
-    };
-}
 if(Object.extend){
     console.log('Cannot attach method "extend" to Object.');
 } else{
