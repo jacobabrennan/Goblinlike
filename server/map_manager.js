@@ -287,14 +287,14 @@ mapManager.idManager = {
         'Red'   ,'Orange','Yellow','Green' ,
         'Violet','Cyan'  ,'Blue'  ,'Purple',
         'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
-        'Murky' ,'Clear' ,'Chunky','Fizzy'
+        'Murky' ,'Clear' ,'Fizzy'
     ],
     unusedColors: [
         //'123456 Potion*99',
         'Red'   ,'Orange','Yellow', 'Green',
-        'Aqua'  ,'Cyan'  ,'Blue'  ,'Purple',
+        'Violet'  ,'Cyan'  ,'Blue'  ,'Purple',
         'Brown' ,'Grey'  ,'White' ,'Hazy'  ,
-        'Murky' ,'Clear' ,'Chunky','Fizzy'
+        'Murky' ,'Clear' ,'Fizzy'
     ],
     totalMetals: [
         'tin','nickle','copper','iron','miþril','gold',
