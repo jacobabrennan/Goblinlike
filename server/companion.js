@@ -158,7 +158,7 @@ class Companion extends Person {
         switch(randomIndex){
             case 0:
             case 1:
-                this.equip(Object.instantiate(modelLibrary.getModel('specials', 'short bow')));
+                this.equip(Object.instantiate(modelLibrary.getModel('item', 'short bow')));
                 this.equip(Object.instantiate(modelLibrary.getModel('item', 'arrow10')));
                 break;
             case 2:
