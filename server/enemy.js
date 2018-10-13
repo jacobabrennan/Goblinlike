@@ -149,7 +149,8 @@ class Enemy extends Actor {
             success = this.move(randomDirection);
         }
         if(!success){ return false;}
-        var progeny = Object.instantiate(selfType);
+        var progeny = new selfType();
+        progeny.initializer();
         success = progeny.place(oldX, oldY, oldL);
         if(!success){
             progeny.dispose();
@@ -433,15 +434,8 @@ const blobBody = Object.extend(new Enemy(), {
 });
 
 //-- Archetype -----------------------------------
-const blobArchetype = Object.extend(new Enemy(), {
-    character: 'B',
-    bodyCharacter: 'B',
-    bodyColor: undefined,
-    bodyBackground: undefined,
-    bodyMass: 4,
-    turnDelay: 2,
-    body: undefined,
-    initializer(options){
+class BlobArchetype extends Enemy {
+    initializer(options) {
         Enemy.prototype.initializer.apply(this, arguments);
         this.body = [];
         for(var bodyI = 0; bodyI < this.bodyMass-1; bodyI++){
@@ -453,23 +447,23 @@ const blobArchetype = Object.extend(new Enemy(), {
             this.body[bodyI] = segment;
         }
         return this;
-    },
+    }
     toJSON() {
         let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
-    },
-    fromJSON(data){
+    }
+    fromJSON(data) {
         Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
-    },
-    bump(obstruction){
+    }
+    bump(obstruction) {
         if(this.body.indexOf(obstruction) >= 0){
             mapManager.swapPlaces(this, obstruction);
         }
         return Actor.prototype.bump.apply(this, arguments);
-    },
-    hurt(){
+    }
+    hurt() {
         var result = Enemy.prototype.hurt.apply(this, arguments);
         var maxBody = this.hp / (this.maxHp()/this.bodyMass);
         while(this.body.length > maxBody){
@@ -477,8 +471,8 @@ const blobArchetype = Object.extend(new Enemy(), {
             segment.die();
         }
         return result;
-    },
-    move(direction){
+    }
+    move(direction) {
         var success = Enemy.prototype.move.apply(this, arguments);
         this.body.forEach(function (segment){
             var moveDirection = directionTo(
@@ -498,8 +492,8 @@ const blobArchetype = Object.extend(new Enemy(), {
             }
         }, this);
         return success;
-    },
-    place(){
+    }
+    place() {
         var fromTheVoid = !(this.x && this.y && this.levelId);
         var success = Enemy.prototype.place.apply(this, arguments);
         if(fromTheVoid){
@@ -509,22 +503,29 @@ const blobArchetype = Object.extend(new Enemy(), {
             }
         }
         return success;
-    },
-    dispose(){
+    }
+    dispose() {
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
             var bodySegment = this.body[bodyI];
             bodySegment.dispose();
         }
         Enemy.prototype.dispose.apply(this, arguments);
-    },
-    behavior(){
+    }
+    behavior() {
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
             var bodySegment = this.body[bodyI];
             bodySegment.attackNearby();
         }
         return this.behaviorNormal(...arguments);
     }
-});
+}
+BlobArchetype.prototype.character = 'B';
+BlobArchetype.prototype.bodyCharacter = 'B';
+BlobArchetype.prototype.bodyColor = undefined;
+BlobArchetype.prototype.bodyBackground = undefined;
+BlobArchetype.prototype.bodyMass = 4;
+BlobArchetype.prototype.turnDelay = 2;
+BlobArchetype.prototype.body = undefined;
     
 
 //== Enemy Archetype: Snake ====================================================
@@ -592,13 +593,8 @@ const snakeBody = Object.extend(new Enemy(), {
 });
 
 //-- Archetype -----------------------------------
-const snakeArchetype = Object.extend(new Enemy(), {
-    bodyCharacter: 'o',
-    bodyColor: undefined,
-    bodyBackground: undefined,
-    bodyLength: 4,
-    placements: undefined,
-    initializer(options){
+class SnakeArchetype extends Enemy {
+    initializer(options) {
         Enemy.prototype.initializer.apply(this, arguments);
         this.body = [];
         this.placements = [];
@@ -610,17 +606,17 @@ const snakeArchetype = Object.extend(new Enemy(), {
             this.body[bodyI] = segment;
         }
         return this;
-    },
+    }
     toJSON() {
         let result = Enemy.prototype.toJSON.apply(this, arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
-    },
-    fromJSON(data){
+    }
+    fromJSON(data) {
         Enemy.prototype.fromJSON.apply(this, arguments);
         // TO DO
-    },
-    move(direction){
+    }
+    move(direction) {
         var oldPlacement = {
             x: this.x,
             y: this.y,
@@ -669,79 +665,100 @@ const snakeArchetype = Object.extend(new Enemy(), {
             }
         }
         return success;
-    },
-    dispose(){
+    }
+    dispose() {
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
             var bodySegment = this.body[bodyI];
             bodySegment.dispose();
         }
         Enemy.prototype.dispose.apply(this, arguments);
-    },
-    behavior(){
+    }
+    behavior() {
         for(var bodyI = 0; bodyI < this.body.length; bodyI++){
             var bodySegment = this.body[bodyI];
             bodySegment.attackNearby();
         }
         return this.behaviorNormal(...arguments);
     }
-});
+}
+SnakeArchetype.prototype.bodyCharacter = 'o';
+SnakeArchetype.prototype.bodyColor = undefined;
+SnakeArchetype.prototype.bodyBackground = undefined;
+SnakeArchetype.prototype.bodyLength = 4;
+SnakeArchetype.prototype.placements = undefined;
 
 
 //== Generate Enemy Library from Data ==========================================
 
 import enemyModels from './models_enemy.js';
 const enemyArchetypes = {
-    blob: blobArchetype,
-    snake: snakeArchetype
+    blob: BlobArchetype,
+    snake: SnakeArchetype
 };
-for(let modelIndex = 0; modelIndex < enemyModels.length; modelIndex++){
-    let indexedModel = enemyModels[modelIndex]
-    if(indexedModel.behavior){
-        indexedModel.behavior = Enemy.prototype[indexedModel.behavior];
+enemyModels.forEach(enemyModel => {
+    let parentModel = Enemy;
+    if(enemyModel.enemyArchetype){
+        parentModel = enemyArchetypes[enemyModel.enemyArchetype];
     }
-    let enemyArchetype = enemyArchetypes[indexedModel.enemyArchetype] || new Enemy();
-    modelLibrary.registerModel('enemy', Object.extend(enemyArchetype, indexedModel));
-}
-modelLibrary.registerModel('special', Object.extend(new Enemy(), { // emperor wight
+    if(!parentModel){
+        throw `No parentModel for ${enemyModel.generationId}: ${enemyModel.enemyArchetype}`
+    }
+    let enemyClass = class extends parentModel {};
+    Object.keys(enemyModel).forEach(key => {
+        switch(key){
+            case 'enemyArchetype': break;
+            case 'behavior':
+                enemyClass.prototype[key] = Enemy.prototype[enemyModel[key]];
+                break;
+            default:
+                enemyClass.prototype[key] = enemyModel[key];
+        }
+    })
+    modelLibrary.registerModel('enemy', enemyClass);
+});
+modelLibrary.registerModel('special', (() => {// emperor wight
+    class Wight extends Enemy { // emperor wight
+        breed() {
+            this.breedId = pick('skeletal dwarf', 'zombie dwarf');
+            var result = Enemy.prototype.breed.apply(this, arguments);
+            return result;
+        }
+        die() {
+            //var crown = modelLibrary.getModel('special', 'crown');
+            //crown.place(this.x, this.y);
+            gameManager.currentGame.win();
+            return Enemy.die.apply(this, arguments);
+        }
+    }
     // Id:
-    generationId: 'emperor wight',
-    generationType: 'special',
-    name: 'Emperor Wight',
+    Wight.prototype.generationId = 'emperor wight';
+    Wight.prototype.generationType = 'special';
+    Wight.prototype.name = 'Emperor Wight';
     // Display:
-    character: "W",
-    color: "#fd9",
+    Wight.prototype.character = "W";
+    Wight.prototype.color = "#fd9";
     // Stats:
-    baseAttack: 8,
-    rewardExperience: 400,
-    forgetful: 15,
-    baseHp: 150,
+    Wight.prototype.baseAttack = 8;
+    Wight.prototype.rewardExperience = 400;
+    Wight.prototype.forgetful = 15;
+    Wight.prototype.baseHp = 150;
     // Behavior:
-    breedRate: 8,
-    breedRateDecay: 1/2,
-    opensDoors: 1,
-    erratic: 3/4,
-    turnDelay: 1/2,
-    vigilance: 10,
-    skills: ['attack', 'attack', 'attack', 'wail', 'wail', 'breed'],
+    Wight.prototype.breedRate = 8;
+    Wight.prototype.breedRateDecay = 1/2;
+    Wight.prototype.opensDoors = 1;
+    Wight.prototype.erratic = 3/4;
+    Wight.prototype.turnDelay = 1/2;
+    Wight.prototype.vigilance = 10;
+    Wight.prototype.skills = ['attack', 'attack', 'attack', 'wail', 'wail', 'breed'];
     // Description:
-    viewText: "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.",
-    breed(){
-        this.breedId = pick('skeletal dwarf', 'zombie dwarf');
-        var result = Enemy.prototype.breed.apply(this, arguments);
-        return result;
-    },
-    die(){
-        //var crown = modelLibrary.getModel('special', 'crown');
-        //crown.place(this.x, this.y);
-        gameManager.currentGame.win();
-        return Enemy.die.apply(this, arguments);
-    },
-}));
+    Wight.prototype.viewText = "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.";
+    return Wight;
+})());
 
 
 //== Exports ===================================================================
 
-export {Enemy, snakeArchetype, blobArchetype};
+export default Enemy;
 
 
 //==============================================================================

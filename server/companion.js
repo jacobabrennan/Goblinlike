@@ -158,19 +158,30 @@ class Companion extends Person {
         switch(randomIndex){
             case 0:
             case 1:
-                this.equip(Object.instantiate(modelLibrary.getModel('item', 'short bow')));
-                this.equip(Object.instantiate(modelLibrary.getModel('item', 'arrow10')));
+                let shortBow = modelLibrary.getModel('item', 'short bow');
+                shortBow = new shortBow();
+                shortBow.initializer();
+                let newArrow = modelLibrary.getModel('item', 'arrow10');
+                newArrow = new newArrow();
+                newArrow.initializer()
+                this.equip(shortBow);
+                this.equip(newArrow);
                 break;
             case 2:
             case 4:
             case 5:
-                var aRock = Object.instantiate(modelLibrary.getModel('item', 'rock'));
+                var aRock = modelLibrary.getModel('item', 'rock');
+                aRock = new aRock();
+                aRock.initializer();
                 if(this.equip(aRock)){
                     break;
                 }
                 // No break here. Equip club if rock not equipped.
             case 3:
-                this.equip(Object.instantiate(modelLibrary.getModel('item', 'club')));
+                let aClub = modelLibrary.getModel('item', 'club');
+                aClub = new aClub();
+                aClub.initializer();
+                this.equip(aClub);
                 break;
         }
         gameManager.currentGame.companionInfo.push(this);

@@ -5,9 +5,9 @@
 const modelLibrary = {
     models: {},
     modelWeights: {},
-    registerModel(modelType, newPrototype){
-        newPrototype.generationType = modelType;
-        var generationId = newPrototype.generationId;
+    registerModel(modelType, newClass){
+        newClass.prototype.generationType = modelType;
+        var generationId = newClass.prototype.generationId;
         var typeModels = this.models[modelType];
         var typeWeights = this.modelWeights[modelType];
         if(!typeModels){
@@ -18,7 +18,7 @@ const modelLibrary = {
             typeWeights = [];
             this.modelWeights[modelType] = typeWeights;
         }
-        var generationWeight = newPrototype.generationWeight;
+        var generationWeight = newClass.prototype.generationWeight;
         if(generationWeight){
             var weightClass = typeWeights[generationWeight];
             if(!weightClass){
@@ -27,7 +27,11 @@ const modelLibrary = {
             }
             weightClass.push(generationId);
         }
-        typeModels[generationId] = newPrototype;
+        if(modelType === 'skill'){
+            typeModels[generationId] = new newClass();
+            return;
+        }
+        typeModels[generationId] = newClass;
     },
     getModel(modelType, modelId){
         var typeModels = this.models[modelType];

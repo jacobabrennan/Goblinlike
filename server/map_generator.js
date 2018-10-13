@@ -227,13 +227,14 @@ const protoLevel = {
         while(enemyPoints >= 10/* && this.rooms.length > 1*/){
             var mean = this.depth*10;
             var attemptedWeight = Math.max(5, Math.round(gaussRandom(mean, mean/3)));
-            var enemyPrototype = modelLibrary.getModelByWeight('enemy', attemptedWeight);
-            var actualWeight = enemyPrototype.generationWeight;
-            if(!enemyPrototype){
+            var enemyClass = modelLibrary.getModelByWeight('enemy', attemptedWeight);
+            if(!enemyClass){
                 break;
             }
+            var actualWeight = enemyClass.prototype.generationWeight;
             enemyPoints -= actualWeight;
-            var randomEnemy = Object.instantiate(enemyPrototype);
+            var randomEnemy = new enemyClass();
+            randomEnemy.initializer();
             var placed = false;
             while(!placed){
                 /*var randomRoom = arrayPick(this.rooms);
@@ -263,13 +264,14 @@ const protoLevel = {
         while(itemPoints >= 0 && this.rooms.length > 1){
             var iMean = this.depth;
             var iAttemptedWeight = Math.max(1, Math.round(gaussRandom(iMean, iMean/3)));
-            var itemPrototype = modelLibrary.getModelByWeight('item', iAttemptedWeight);
-            if(!itemPrototype){
+            var itemClass = modelLibrary.getModelByWeight('item', iAttemptedWeight);
+            if(!itemClass){
                 break;
             }
-            var iActualWeight = itemPrototype.generationWeight;
+            var iActualWeight = itemClass.prototype.generationWeight;
             itemPoints -= iActualWeight;
-            var randomItem = Object.instantiate(itemPrototype);
+            var randomItem = new itemClass();
+            randomItem.initializer();
             var iPlaced = false;
             while(!iPlaced){
                 //var iRandomRoom = arrayPick(this.rooms);

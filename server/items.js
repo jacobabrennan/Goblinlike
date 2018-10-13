@@ -656,7 +656,7 @@ let itemModels = [
 ];
 
 
-//== ===========================================================================
+//==============================================================================
 
 itemModels.forEach(itemModel => {
     let parentModel = Item;
@@ -677,7 +677,7 @@ itemModels.forEach(itemModel => {
                 itemClass.prototype[key] = itemModel[key];
         }
     })
-    modelLibrary.registerModel('item', new itemClass());
+    modelLibrary.registerModel('item', itemClass);
 });
 
 

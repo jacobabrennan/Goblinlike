@@ -118,7 +118,9 @@ const mapManager = {
                     depthLevel.stairsDownCoords.y,
                     depthLevel.tileTypes['.']
                 );
-                var boss = Object.instantiate(modelLibrary.getModel('special', 'emperor wight'));
+                var boss = modelLibrary.getModel('special', 'emperor wight');
+                boss = new boss();
+                boss.initializer();
                 boss.place(
                     depthLevel.stairsDownCoords.x,
                     depthLevel.stairsDownCoords.y,
@@ -219,9 +221,9 @@ mapManager.idManager = {
         data.forEach(idData => {
             // Reconstitute from Model Library
             if(idData.generationId){
-                let instance = Object.instantiate(
-                    modelLibrary.getModel(idData.generationType, idData.generationId)
-                );
+                let instance = modelLibrary.getModel(idData.generationType, idData.generationId);
+                instance = new instance();
+                instance.initializer();
                 instance.fromJSON(idData);
             //
             } else if(idData.loadInstruction){
