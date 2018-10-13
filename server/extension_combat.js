@@ -4,7 +4,7 @@
 
 //-- Dependencies --------------------------------
 import {Movable} from './mappables.js';
-import item from './item.js';
+import Item from './item.js';
 import Actor from './actor.js';
 import Person from './person.js';
 import gameManager from './game_manager.js';
@@ -318,16 +318,7 @@ Person.prototype.commandThrow = function (options){
     TODO: Refactor projectiles. It's a real mess, really.*/
 
 //-- Basic Weapon --------------------------------
-const weapon = Object.extend(item, {
-    // Redefined Properties
-    character: '/',
-    placement: EQUIP_MAINHAND,
-    // New Properties
-    damageType: DAMAGE_PHYSICAL,
-    baseDamage: 1,
-    damageSigma: 0,
-    twoHanded: false,
-    throwable: false,
+class Weapon extends Item {
     // New Methods
     attack(attacker, target){
         /**
@@ -348,20 +339,19 @@ const weapon = Object.extend(item, {
         // Return that actual damage done.
         return damageDone;
     }
-});
+}
+// Redefined Properties
+Weapon.prototype.character = '/';
+Weapon.prototype.placement = EQUIP_MAINHAND;
+// New Properties
+Weapon.prototype.damageType = DAMAGE_PHYSICAL;
+Weapon.prototype.baseDamage = 1;
+Weapon.prototype.damageSigma = 0;
+Weapon.prototype.twoHanded = false;
+Weapon.prototype.throwable = false;
 
 //-- Bow Weapon Type -----------------------------
-const bow = Object.extend(item, {
-    // Redefined Properties
-    character: '}',
-    placement: EQUIP_MAINHAND,
-    // Redefined Methods
-    // New Properties
-    damageScale: 1,
-    range: 6,
-    ammoType: 'arrow',
-        // TODO: Better ammo types, perhaps with bit flags. That way, you could
-            // fire 'blizzard arrows' or silly stuff like that.
+class Bow extends Item {
     // New Methods
     shoot(attacker, direction, forceTarget){
         /**
@@ -409,10 +399,19 @@ const bow = Object.extend(item, {
             return null;
         }
     }
-});
+}
+// Redefined Properties
+Bow.prototype.character = '}';
+Bow.prototype.placement = EQUIP_MAINHAND;
+// New Properties
+Bow.prototype.damageScale = 1;
+Bow.prototype.range = 6;
+Bow.prototype.ammoType = 'arrow';
+    // TODO: Better ammo types, perhaps with bit flags. That way, you could
+        // fire 'blizzard arrows' or silly stuff like that.
 
 //-- Item Projecting Behavior --------------------
-item.project = function (direction, options){
+Item.prototype.project = function (direction, options){
     // Returns damage done, if any.
     delete this.projectDamageDone;
     var originalStackable = this.stackable;
@@ -458,7 +457,7 @@ item.project = function (direction, options){
     this.stackable = false;
     return this.projectDamageDone;
 };
-item.bump = (function (parentFunction){
+Item.prototype.bump = (function (parentFunction){
     return function (obstruction){
         if(obstruction.type == TYPE_ACTOR){
             if((typeof obstruction.hurt) == 'function'){
@@ -471,10 +470,10 @@ item.bump = (function (parentFunction){
         }
         return parentFunction.apply(this, arguments);
     };
-})(item.bump);
-weapon.bump = function (obstruction){
+})(Item.prototype.bump);
+Weapon.prototype.bump = function (obstruction){
     if(!this.throwable){
-        return item.bump.apply(this, arguments);
+        return Item.prototype.bump(...arguments);
     }
     if(obstruction.type == TYPE_ACTOR){
         if((typeof obstruction.hurt) == 'function'){
@@ -489,9 +488,7 @@ weapon.bump = function (obstruction){
 };
 
 //-- Projectiles ---------------------------------
-const projectile = Object.extend(weapon, {
-    placement: EQUIP_OFFHAND,
-    ephemeral: true,
+class Projectile extends Weapon {
     project(direction, options){
         // Returns damage done, if any.
         delete this.projectDamageDone;
@@ -572,10 +569,10 @@ const projectile = Object.extend(weapon, {
             this.dispose();
         }
         return this.projectDamageDone;
-    },
+    }
     bump(obstruction){
         if(!this.damageScale){
-            return weapon.bump.apply(this, arguments);
+            return super.bump(...arguments);
         }
         if(obstruction.type == TYPE_ACTOR){
             if((typeof obstruction.hurt) == 'function'){
@@ -588,7 +585,7 @@ const projectile = Object.extend(weapon, {
             delete this.damageScale;
         }
         return Movable.prototype.bump.apply(this, arguments);
-    },
+    }
     attack(attacker, target){
         /**
          *  This function handles one attacker attacking an enemy actor via a
@@ -608,14 +605,16 @@ const projectile = Object.extend(weapon, {
         // Return that actual damage done.
         return damageDone;
     }
-});
+}
+Projectile.prototype.placement = EQUIP_OFFHAND;
+Projectile.prototype.ephemeral = true;
 
 
 //== Armor (redefine item to work as armor) ====================================
 
-item.defense = 0;
-item.evade = 0;
-item.defend = function (damage, damageType, attacker, proxy){
+Item.prototype.defense = 0;
+Item.prototype.evade = 0;
+Item.prototype.defend = function (damage, damageType, attacker, proxy){
     var defended = 0;
     if(damageType & DAMAGE_PHYSICAL){
         if(this.evade && Math.random() < this.evade){
@@ -630,4 +629,4 @@ item.defend = function (damage, damageType, attacker, proxy){
 
 //== Exports ===================================================================
 
-export {weapon, bow, projectile};
+export {Weapon, Bow, Projectile};

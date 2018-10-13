@@ -5,17 +5,17 @@
 //-- Dependencies --------------------------------
 import Person from './person.js';
 import Hero from './hero.js';
-import item from './item.js';
+import Item from './item.js';
 import mapManager from './map_manager.js';
 
 
 //== Extend Item ===============================================================
 
 //-- New Properties ------------------------------
-item.placement = undefined;
+Item.prototype.placement = undefined;
 
 //-- Redefined Methods ---------------------------
-item.pack = (function (parentFunction){
+Item.prototype.pack = (function (parentFunction){
     return function (){
         /**
             This function creates a "sensory package" of the object for use
@@ -37,7 +37,7 @@ item.pack = (function (parentFunction){
         sensoryData.placement = this.placement;
         return sensoryData;
     };
-})(item.pack);
+})(Item.prototype.pack);
     
 
 //== Extend Person =============================================================

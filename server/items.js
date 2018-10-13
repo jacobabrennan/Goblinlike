@@ -3,57 +3,38 @@
 //== Items =====================================================================
 
 //-- Dependencies --------------------------------
-import item from './item.js';
+import Item from './item.js';
 import modelLibrary from './model_library.js';
-import {weapon, bow, projectile} from './extension_combat.js';
+import {Weapon, Bow, Projectile} from './extension_combat.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
 
 //== Base Prototypes (wands, rings, etc.) ======================================
 
-const wand = Object.extend(item, {
-    // Redefined Properties
-    character: '-',
-    placement: EQUIP_MAINHAND,
-    targetClass: TARGET_DIRECTION,
-    lore: 10,
-    // New Properties
-    charges: 5,
-    range: 15,
-    projectileType: Object.extend(projectile, {
-        // Stats:
-        damageType: DAMAGE_FIRE,
-        damageSigma: 0,
-        baseDamage: 3,
-        attack(attacker, target){
-            this.baseDamage = attacker.wisdom+attacker.level;
-            attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
-            return projectile.attack.apply(this, arguments);
-        }
-    }),
+class Wand extends Item {
     // Redefined Methods
-    description(){
+    description() {
         return mapManager.idManager.describeWand(this);
-    },
+    }
     toJSON() {
-        let result = item.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.charges = this.charges;
         return result;
-    },
-    fromJSON(data){
-        item.fromJSON.apply(this, arguments);
+    }
+    fromJSON(data) {
+        super.fromJSON(...arguments);
         this.charges = data.charges;
-    },
+    }
     // New Methods
-    effect(user, targetData){
+    effect(user, targetData) {
         if(!targetData.direction){
             user.inform('You failed to use the '+this.description()+' properly.');
             return;
         }
         this.shoot(user, targetData.direction);
-    },
-    shoot(attacker, direction, forceTarget){
+    }
+    shoot(attacker, direction, forceTarget) {
         if(this.charges <= 0){
             attacker.inform('There wand is out of charges!');
             return 0;
@@ -90,18 +71,32 @@ const wand = Object.extend(item, {
             return 0;
         }
     }
+}
+// Redefined Properties
+Wand.prototype.character = '-';
+Wand.prototype.placement = EQUIP_MAINHAND;
+Wand.prototype.targetClass = TARGET_DIRECTION;
+Wand.prototype.lore = 10;
+// New Properties
+Wand.prototype.charges = 5;
+Wand.prototype.range = 15;
+Wand.prototype.projectileType = Object.extend(new Projectile(), {
+    // Stats:
+    damageType: DAMAGE_FIRE,
+    damageSigma: 0,
+    baseDamage: 3,
+    attack(attacker, target){
+        this.baseDamage = attacker.wisdom+attacker.level;
+        attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
+        return Projectile.prototype.attack.apply(this, arguments);
+    }
 });
-const scroll = Object.extend(item, {
-    // Redefined Properties
-    character: '$',
-    stackable: true,
-    consumable: true,
-    targetClass: TARGET_ANYONE,
-    lore: 20,
-    description(){
+
+class Scroll extends Item {
+    description() {
         return mapManager.idManager.describeScroll(this);
-    },
-    use: function(user, targetData){
+    }
+    use(user, targetData) {
         var deltaLore = gameManager.currentGame.hero.lore() - this.lore;
         var loreAttempt = deltaLore;/*gaussRandom(
             deltaLore,
@@ -112,29 +107,36 @@ const scroll = Object.extend(item, {
             //this.consume(user);
             //user.update('inventory');
         } else{
-            item.use.apply(this, arguments);
+            super.use(...arguments);
         }
     }
-});
-const potion = Object.extend(item, {
-    // Redefined Properties
-    character: '¡',
-    stackable: true,
-    consumable: true,
-    targetClass: TARGET_SELF,
-    lore: 30,
+}
+// Redefined Properties
+Scroll.prototype.character = '$';
+Scroll.prototype.stackable = true;
+Scroll.prototype.consumable = true;
+Scroll.prototype.targetClass = TARGET_ANYONE;
+Scroll.prototype.lore = 20;
+
+class Potion extends Item {
     description(){
         return mapManager.idManager.describePotion(this);
-    },
+    }
     bump(obstruction){
         this.use(obstruction);
     }
-});
+}
+// Redefined Properties
+Potion.prototype.character = '¡';
+Potion.prototype.stackable = true;
+Potion.prototype.consumable = true;
+Potion.prototype.targetClass = TARGET_SELF;
+Potion.prototype.lore = 30;
 
 
 //== Specific Mappable Items ===================================================
 
-modelLibrary.registerModel('item', Object.extend(potion, {
+modelLibrary.registerModel('item', Object.extend(new Potion(), {
     generationId: 'weak health potion',
     generationWeight: 2,
     potency: 10,
@@ -149,7 +151,7 @@ modelLibrary.registerModel('item', Object.extend(potion, {
                 Math.max(this.potency/2, gaussRandom(this.potency,1))
             );
         }
-        potion.effect.apply(this, arguments);
+        Potion.prototype.effect.apply(this, arguments);
     },
     // Description:
     viewText: 'You see a weak health potion. Drinking this potion will restore a small amount of health.'
@@ -174,7 +176,7 @@ modelLibrary.registerModel('item', Object.extend(
     // Description:
     viewText: 'You see a strong health potion. Drinking this potion will restore a large amount of health.'
 }));
-modelLibrary.registerModel('item', Object.extend(potion, {
+modelLibrary.registerModel('item', Object.extend(new Potion(), {
     generationId: 'acid potion',
     generationWeight: 3,
     potency: 10,
@@ -190,12 +192,12 @@ modelLibrary.registerModel('item', Object.extend(potion, {
                 DAMAGE_ACID
             );
         }
-        potion.effect.apply(this, arguments);
+        Potion.prototype.effect.apply(this, arguments);
     },
     // Description:
     viewText: 'You see an acid potion. Most organic materials will corrode when covered in this liquid.'
 }));
-modelLibrary.registerModel('item', Object.extend(potion, {
+modelLibrary.registerModel('item', Object.extend(new Potion(), {
     generationId: 'cowardice potion',
     generationWeight: 4,
     potency: 40,
@@ -212,12 +214,12 @@ modelLibrary.registerModel('item', Object.extend(potion, {
                 );
             }
         }
-        potion.effect.apply(this, arguments);
+        Potion.prototype.effect.apply(this, arguments);
     },
     // Description:
     viewText: 'You see a cowardice potion. Drinking this potion will lower your moral.'
 }));
-modelLibrary.registerModel('item', Object.extend(potion, {
+modelLibrary.registerModel('item', Object.extend(new Potion(), {
     generationId: 'courage potion',
     generationWeight: 5,
     potency: 100,
@@ -234,12 +236,12 @@ modelLibrary.registerModel('item', Object.extend(potion, {
                 );
             }
         }
-        potion.effect.apply(this, arguments);
+        Potion.prototype.effect.apply(this, arguments);
     },
     // Description:
     viewText: 'You see a courage potion. Drinking this potion will raise your moral.'
 }));
-modelLibrary.registerModel('item', Object.extend(wand, {// Test Wand
+modelLibrary.registerModel('item', Object.extend(new Wand(), {// Test Wand
     // Id:
     generationId: 'fire wand',
     generationWeight: 4,
@@ -256,7 +258,7 @@ modelLibrary.registerModel('item', Object.extend(wand, {// Test Wand
     generationWeight: 4
 }));*/
 
-modelLibrary.registerModel('item', Object.extend(scroll, {
+modelLibrary.registerModel('item', Object.extend(new Scroll(), {
     generationId: 'fire scroll',
     generationWeight: 2,
     name: 'FireScroll',
@@ -273,14 +275,14 @@ modelLibrary.registerModel('item', Object.extend(scroll, {
             user.inform('A fireball envelopes '+testTarget.name+'!');
             testTarget.hurt(15+user.level, DAMAGE_FIRE, user);
         }
-        scroll.effect.apply(this, arguments);
+        Scroll.prototype.effect.apply(this, arguments);
         // TODO: Other kinds of checks.
         
     },
     // Description:
     viewText: 'You see a fire scroll. This magical item can summon a blast of fire to envelope your enemy.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Rock
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Rock
     // Id:
     generationId: 'rock',
     generationWeight: 1,
@@ -298,7 +300,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Rock
     // Description:
     viewText: "You see a heavy rock, a weapon of last resort. Many goblins have lived another day thanks to a well thrown rock."
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Club
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Club
     // Id:
     generationId: 'club',
     generationWeight: 2,
@@ -313,7 +315,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Club
     // Description:
     viewText: 'You see a wooden club. This is a crude weapon, but effective.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Cleaver
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Cleaver
     // Id:
     generationId: 'cleaver',
     generationWeight: 4,
@@ -328,7 +330,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Cleaver
     // Description:
     viewText: 'You see a cleaver. This hacking weapon is much more effective in the hands of a goblin than when wielded by a dwarf.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Spear
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Spear
     // Id:
     generationId: 'spear',
     generationWeight: 5,
@@ -345,7 +347,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Spear
     // Description:
     viewText: 'You see a spear, a favorite weapon of goblin when hunting. It is equally effected when thrown.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Sword
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Sword
     // Id:
     generationId: 'sword',
     generationWeight: 7,
@@ -360,7 +362,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Sword
     // Description:
     viewText: 'You see a sword. Goblins are less familiar than humans with this weapon, but no less deadly.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Hand Axe
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Hand Axe
     // Id:
     generationId: 'hand axe',
     generationWeight: 8,
@@ -375,7 +377,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Hand Axe
     // Description:
     viewText: 'You see a dwarven hand axe - heavier than a sword, but alse more savage.'
 }));
-modelLibrary.registerModel('item', Object.extend(weapon, { // Hammer
+modelLibrary.registerModel('item', Object.extend(new Weapon(), { // Hammer
     // Id:
     generationId: 'hammer',
     generationWeight: 9,
@@ -391,7 +393,7 @@ modelLibrary.registerModel('item', Object.extend(weapon, { // Hammer
     // Description:
     viewText: 'You see a dwarven hammer. This finely crafted stone weapon is what dwarven warcraft is all about. You doubt you could weild it.'
 }));
-modelLibrary.registerModel('specials', Object.extend(bow, { // Short Bow
+modelLibrary.registerModel('specials', Object.extend(new Bow(), { // Short Bow
     // Id:
     generationId: 'short bow',
     generationWeight: 2,
@@ -406,7 +408,7 @@ modelLibrary.registerModel('specials', Object.extend(bow, { // Short Bow
     // Description:
     viewText: 'You see a short bow. Most goblin carry a short bow to hunt and defend themselves in the wilderness.'
 }));
-modelLibrary.registerModel('item', Object.extend(bow, { // Crossbow
+modelLibrary.registerModel('item', Object.extend(new Bow(), { // Crossbow
     // Id:
     generationId: 'crossbow',
     generationWeight: 4,
@@ -421,7 +423,7 @@ modelLibrary.registerModel('item', Object.extend(bow, { // Crossbow
     // Description:
     viewText: "You see a dwarven crossbow. It's heavy, and looks more complicated than it needs to be."
 }));
-modelLibrary.registerModel('item', Object.extend(bow, { // Short Bow
+modelLibrary.registerModel('item', Object.extend(new Bow(), { // Short Bow
     // Id:
     generationId: 'long bow',
     generationWeight: 6,
@@ -436,7 +438,7 @@ modelLibrary.registerModel('item', Object.extend(bow, { // Short Bow
     // Description:
     viewText: 'You see a long bow.'
 }));
-modelLibrary.registerModel('item', Object.extend(projectile, { // arrow
+modelLibrary.registerModel('item', Object.extend(new Projectile(), { // arrow
     // Id:
     generationId: 'arrow1',
     generationWeight: 200,
@@ -473,7 +475,7 @@ modelLibrary.registerModel('item', Object.extend(
         stackCount: 10
     }
 ));
-modelLibrary.registerModel('item', Object.extend(projectile, { // arrow
+modelLibrary.registerModel('item', Object.extend(new Projectile(), { // arrow
     // Id:
     generationId: 'arrowBarbed1',
     generationWeight: 300,
@@ -514,7 +516,7 @@ modelLibrary.registerModel('item', Object.extend(
 
 //== Armor =====================================================================
 
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'leather shield',
     generationWeight: 2,
     character: '(',
@@ -525,7 +527,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a leather shield.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'leather armor',
     generationWeight: 3,
     character: ']',
@@ -536,7 +538,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see leather body armor. It was made by dwarves, but you could probably wear it.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'leather cap',
     generationWeight: 2,
     character: '^',
@@ -547,7 +549,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a leather cap.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'chain cowl',
     generationWeight: 4,
     character: '^',
@@ -558,7 +560,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a chainmail cowl. It\'s rusty, but well made.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'wood shield',
     generationWeight: 4,
     character: '(',
@@ -569,7 +571,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a tough wooden shield, like those favored by goblin everywhere.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'chainmail armor',
     generationWeight: 5,
     character: ']',
@@ -580,7 +582,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see chainmail body armor. It\'s rusty, but well made.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'dwarven helmet',
     generationWeight: 6,
     character: '^',
@@ -591,7 +593,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a Dwarven Helmet. The thick plates of metal make you feel very safe.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'dwarven shield',
     generationWeight: 7,
     character: '(',
@@ -602,7 +604,7 @@ modelLibrary.registerModel('item', Object.extend(item, {
     // Description:
     viewText: 'You see a Dwarven Shield. The thick plates of metal make you feel very safe.'
 }));
-modelLibrary.registerModel('item', Object.extend(item, {
+modelLibrary.registerModel('item', Object.extend(new Item(), {
     generationId: 'dwarven armor',
     generationWeight: 9,
     character: ']',

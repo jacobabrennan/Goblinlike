@@ -14,23 +14,7 @@
 import {Movable, Containable} from './mappables.js';
 
 //-- Implementation ------------------------------
-const item = Object.extend(new Movable(), {
-    // Redefined Properties
-    character: '~',
-    color: '#963',
-    type: TYPE_ITEM,
-    dense: false,
-    // New Properties
-    generationId: undefined,
-    generationWeight: 1,
-    targetClass: TARGET_SELF,
-    targetRange: RANGE_VIEW,
-    stackable: false,
-    stackCount: 1,
-    consumable: false,
-    loreLevel: 0,
-    weight: 1,
-    effectFlags: 0,
+class Item extends Movable {
     // Redefined Methods
     toJSON() {
         let result = Movable.prototype.toJSON.apply(this, arguments);
@@ -39,14 +23,14 @@ const item = Object.extend(new Movable(), {
             result.stackCount = this.stackCount;
         }
         return result;
-    },
+    }
     fromJSON(data){
         Movable.prototype.fromJSON.apply(this, arguments);
         this.generationId = data.generationId;
         if(data.stackCount){ this.stackCount = data.stackCount;}
-    },
+    }
     // New Methods
-    effect(user, targetData){},
+    effect(user, targetData){}
     use(user, targetData){
         /**
             Structure of targetData:
@@ -65,7 +49,7 @@ const item = Object.extend(new Movable(), {
         if(this.consumable){
             this.consume(user);
         }
-    },
+    }
     pack(){
         /**
             This function creates a "sensory package" of the object for use by a
@@ -93,10 +77,10 @@ const item = Object.extend(new Movable(), {
             sensoryData.name = this.description()+'*'+this.stackCount;
         }
         return sensoryData;
-    },
+    }
     description(){
         return this.name;
-    },
+    }
     unstack(){
         if(!(this.stackable && this.stackCount > 1)){
             return null;
@@ -106,17 +90,17 @@ const item = Object.extend(new Movable(), {
         clone1.stackCount = 1;
         this.stackCount--;
         return clone1;
-    },
+    }
     stack(newItem){
         if(!(this.stackable && newItem.name == this.name)){
             return;
         }
         this.stackCount += newItem.stackCount;
         newItem.dispose();
-    },
+    }
     getWeight(){
         return this.stackCount * this.weight;
-    },
+    }
     consume(user){
         if(this.stackCount > 1){
             this.stackCount--;
@@ -128,7 +112,23 @@ const item = Object.extend(new Movable(), {
             this.dispose();
         }
     }
-});
+}
+// Redefined Properties
+Item.prototype.character = '~';
+Item.prototype.color = '#963';
+Item.prototype.type = TYPE_ITEM;
+Item.prototype.dense = false;
+// New Properties
+Item.prototype.generationId = undefined;
+Item.prototype.generationWeight = 1;
+Item.prototype.targetClass = TARGET_SELF;
+Item.prototype.targetRange = RANGE_VIEW;
+Item.prototype.stackable = false;
+Item.prototype.stackCount = 1;
+Item.prototype.consumable = false;
+Item.prototype.loreLevel = 0;
+Item.prototype.weight = 1;
+Item.prototype.effectFlags = 0;
 
 //-- Export --------------------------------------
-export default item;
+export default Item;
