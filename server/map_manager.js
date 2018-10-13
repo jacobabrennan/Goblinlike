@@ -6,8 +6,8 @@
 import modelLibrary from './model_library.js';
 import gameManager from './game_manager.js';
 import level from './level.js';
-import hero from './hero.js';
-import companion from './companion.js';
+import Hero from './hero.js';
+import Companion from './companion.js';
 
 //-- Implementation ------------------------------
 const mapManager = {
@@ -227,13 +227,14 @@ mapManager.idManager = {
             } else if(idData.loadInstruction){
                 switch(idData.loadInstruction){
                     case 'hero': {
-                        let instance = Object.instantiate(hero);
+                        let instance = new Hero();
+                        instance.initializer()
                         instance.fromJSON(idData);
-                        console.log(hero)
                         break;
                     }
                     case 'companion': {
-                        let instance = Object.instantiate(companion);
+                        let instance = new Companion();
+                        instance.instantiate();
                         instance.fromJSON(idData);
                         break;
                     }

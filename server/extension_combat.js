@@ -6,7 +6,7 @@
 import {Movable} from './mappables.js';
 import item from './item.js';
 import Actor from './actor.js';
-import person from './person.js';
+import Person from './person.js';
 import gameManager from './game_manager.js';
 import mapManager from './map_manager.js';
 
@@ -152,31 +152,31 @@ Actor.prototype.attack = function (target){
 //== Extend Person =============================================================
 
 //-- New Properties ------------------------------
-person.lastHeal = 0;
+Person.prototype.lastHeal = 0;
 
 //-- Redefined Methods ---------------------------
-person.initializer = (function (parentFunction){
+Person.prototype.initializer = (function (parentFunction){
     return function (){
         parentFunction.apply(this, arguments);
         this.update('hp');
         this.update('maxHp');
         return this;
     };
-})(person.initializer);
-person.toJSON = (function (parentFunction){
+})(Person.prototype.initializer);
+Person.prototype.toJSON = (function (parentFunction){
     return function (){
         let result = parentFunction.apply(this, arguments);
         result.lastHeal = this.lastHeal;
         return result;
     }
-})(person.toJSON);
-person.fromJSON = (function (parentFunction){
+})(Person.prototype.toJSON);
+Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
         parentFunction.apply(this, arguments);
         this.lastHeal = data.lastHeal;
     }
-})(person.fromJSON);
-person.packageUpdates = (function (parentFunction){
+})(Person.prototype.fromJSON);
+Person.prototype.packageUpdates = (function (parentFunction){
     return function (){
         /**
             This function creates a data package containing information about
@@ -198,8 +198,8 @@ person.packageUpdates = (function (parentFunction){
         }, this);
         return updatePackage;
     };
-})(person.packageUpdates);
-person.adjustHp = (function (parentFunction){
+})(Person.prototype.packageUpdates);
+Person.prototype.adjustHp = (function (parentFunction){
     return function (){
         var result = parentFunction.apply(this, arguments);
         if(result){
@@ -207,8 +207,8 @@ person.adjustHp = (function (parentFunction){
         }
         return result;
     };
-})(person.adjustHp);
-person.takeTurn = (function (parentFunction){
+})(Person.prototype.adjustHp);
+Person.prototype.takeTurn = (function (parentFunction){
     return function (){
         /**
             This function causes the actor to perform their turn taking
@@ -232,10 +232,10 @@ person.takeTurn = (function (parentFunction){
         }
         return parentFunction.apply(this, arguments);
     };
-})(person.takeTurn);
+})(Person.prototype.takeTurn);
 
 //-- New Methods ---------------------------------
-person.throwItem = function (theItem, direction){
+Person.prototype.throwItem = function (theItem, direction){
     var throwOptions = {
         thrower: this,
         range: this.strength
@@ -251,7 +251,7 @@ person.throwItem = function (theItem, direction){
     var damageDone = theItem.project(direction, throwOptions);
     return damageDone;
 };
-person.commandFire = function (options){
+Person.prototype.commandFire = function (options){
     /**
         This command from the player directs the person to fire their equipped
         weapon in the specified direction.
@@ -279,7 +279,7 @@ person.commandFire = function (options){
     // End turn.
     this.endTurn();
 };
-person.commandThrow = function (options){
+Person.prototype.commandThrow = function (options){
     /**
         This command from the player directs the person to throw the specified
         item from inventory in the specified direction.

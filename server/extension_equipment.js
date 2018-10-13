@@ -3,8 +3,8 @@
 // === Equipment System ========================================================
 
 //-- Dependencies --------------------------------
-import person from './person.js';
-import hero from './hero.js';
+import Person from './person.js';
+import Hero from './hero.js';
 import item from './item.js';
 import mapManager from './map_manager.js';
 
@@ -43,18 +43,18 @@ item.pack = (function (parentFunction){
 //== Extend Person =============================================================
 
 //-- New Properties ------------------------------
-person.equipment = undefined;
+Person.prototypeequipment = undefined;
 
 //-- Redefined Methods ---------------------------
-person.initializer = (function (parentFunction){
+Person.prototype.initializer = (function (parentFunction){
     return function (){
         this.equipment = {};
         this.update('equipment');
         parentFunction.apply(this, arguments);
         return this;
     };
-})(person.initializer);
-person.toJSON = (function (parentFunction){
+})(Person.prototype.initializer);
+Person.prototype.toJSON = (function (parentFunction){
     return function (){
         let result = parentFunction.apply(this, arguments);
         let equipmentKeys = Object.keys(this.equipment);
@@ -65,14 +65,14 @@ person.toJSON = (function (parentFunction){
         }
         return result;
     }
-})(person.toJSON);
-person.fromJSON = (function (parentFunction){
+})(Person.prototype.toJSON);
+Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
         parentFunction.apply(this, arguments);
         // TO DO
     }
-})(person.fromJSON);
-person.packageUpdates = (function (parentFunction){
+})(Person.prototype.fromJSON);
+Person.prototype.packageUpdates = (function (parentFunction){
     return function (){
         /**
             This function creates a data package containing information
@@ -100,10 +100,10 @@ person.packageUpdates = (function (parentFunction){
         }, this);
         return updatePackage;
     };
-})(person.packageUpdates);
+})(Person.prototype.packageUpdates);
 
 //-- New Methods ---------------------------------
-person.equip = function (equipItem){
+Person.prototype.equip = function (equipItem){
     /**
         This function handles all aspects of equipping items.
         It returns true if the equip was successful, false otherwise.
@@ -161,7 +161,7 @@ person.equip = function (equipItem){
     this.update('equipment');
     return true;
 };
-person.unequip = function (equipItem){
+Person.prototype.unequip = function (equipItem){
     /**
         This function handles all aspects of unequipping items.
         
@@ -186,7 +186,7 @@ person.unequip = function (equipItem){
     this.update('equipment');
     return true;
 };
-person.getWeight = (function (parentFunction){
+Person.prototype.getWeight = (function (parentFunction){
     return  function (){
         var totalWeight = parentFunction.apply(this, arguments);
         for(var key in this.equipment){
@@ -200,12 +200,12 @@ person.getWeight = (function (parentFunction){
         }
         return totalWeight;
     };
-})(person.getWeight);
+})(Person.prototype.getWeight);
 
 
 //== Extend Hero (New Methods) ===================================================
 
-hero.commandEquip = function (options){
+Hero.prototype.commandEquip = function (options){
     /**
         This command from the player directs the person to equip the specified
         item from inventory.
@@ -234,7 +234,7 @@ hero.commandEquip = function (options){
     // End turn.
     this.endTurn();
 };
-hero.commandUnequip = function (options){
+Hero.prototype.commandUnequip = function (options){
     /**
         This command from the player directs the person to unequip the
         specified item.

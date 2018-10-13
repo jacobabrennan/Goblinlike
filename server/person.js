@@ -16,22 +16,9 @@
 import Actor from './actor.js';
 
 //-- Implementaton -------------------------------
-const person = Object.extend(new Actor(), {
-    // Redefined properties
-    character: '@',
-    faction: FACTION_GOBLIN,
-    name: 'person',
-    color: '#0f0',
-    colorNatural: undefined,
-    // New properties
-    gender: undefined,
-    updates: undefined,
-    messages: undefined,
-    inventory: undefined,
-    turnActive: false,
-    turnCallback: undefined,
+class Person extends Actor {
     // Redefined Methods
-    initializer(){
+    initializer() {
         /**
             A standard initializer, used for inheritence and setup.
             The function updates several values so that the player will know
@@ -55,29 +42,29 @@ const person = Object.extend(new Actor(), {
         this.update('viewRange');
         this.inventory = [];
         return this;
-    },
+    }
     toJSON() {
         let result = Actor.prototype.toJSON.apply(this, arguments);
         result.gender = this.gender;
         result.inventory = this.inventory.map(item => item.id);
         result.colorNatural = this.colorNatural;
         return result;
-    },
+    }
     fromJSON(data) {
         Actor.prototype.fromJSON.apply(this, arguments);
         this.gender = data.gender;
         // TO DO
         this.colorNatural = data.colorNatural;
-    },
-    place(){
+    }
+    place() {
         var success = Actor.prototype.place.apply(this, arguments);
         if(success){
             this.update('y');
             this.update('x');
         }
         return success;
-    },
-    camp(){
+    }
+    camp() {
         if(!this.camping){
             return false;
         }
@@ -87,12 +74,12 @@ const person = Object.extend(new Actor(), {
         }
         this.camping = false;
         return false;
-    },
-    takeTurn(callback){
+    }
+    takeTurn(callback) {
         /**
             This function alerts the player, possibly over a network, that it
                 is their turn. This function supercedes the parent function,
-                person.takeTurn, and should not call that function.
+                Person.takeTurn, and should not call that function.
             The supplied callback function must be called at the end of the
                 player's turn, otherwise the game will not continue.
             It does not return anything.
@@ -119,8 +106,8 @@ const person = Object.extend(new Actor(), {
             this.behavior();
         }
         this.endTurn();
-    },
-    endTurn(){
+    }
+    endTurn() {
         /**
             This function must be called whenever the person ends their turn,
                 usually by performing an action from the player.
@@ -130,8 +117,8 @@ const person = Object.extend(new Actor(), {
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
         callbackTemp(true);
-    },
-    move(direction){
+    }
+    move(direction) {
         /**
             This function is used to move the object in a specific direction,
                 one of:
@@ -153,9 +140,9 @@ const person = Object.extend(new Actor(), {
             content.activate();
         }, this);*/
         return success;
-    },
+    }
     // New Methods
-    update(which){
+    update(which) {
         /**
             This function is used to maintain a list of all aspects of the person
                 which have changed since their last turn. Items in this list
@@ -169,8 +156,8 @@ const person = Object.extend(new Actor(), {
         if(this.updates.indexOf(which) == -1){
             this.updates.push(which);
         }
-    },
-    packageUpdates(){
+    }
+    packageUpdates() {
         /**
             This function creates a data package containing information about
                 aspects of the person that have changed since the person's last
@@ -202,13 +189,13 @@ const person = Object.extend(new Actor(), {
             }
         }, this);
         return updatePackage;
-    },
-    hear(tamber, amplitude, source, message){
+    }
+    hear(tamber, amplitude, source, message) {
         if(message && source != this){
             this.inform(message);
         }
-    },
-    inform(message){
+    }
+    inform(message) {
         /**
             This function sends a message to the player. These messages are
                 displayed, one at a time, at the start of the player's next
@@ -220,8 +207,8 @@ const person = Object.extend(new Actor(), {
             //this.messages.push(message);
         //var oldMessage = this.messages[0];
         this.messages.push(message);
-    },
-    inventoryAdd(newItem){
+    }
+    inventoryAdd(newItem) {
         // Remove from current Location.
         newItem.unplace();
         // Handle stackable items.
@@ -249,8 +236,8 @@ const person = Object.extend(new Actor(), {
         this.inventory.push(newItem);
         this.update('inventory');
         return true;
-    },
-    getItem(newItem, single){
+    }
+    getItem(newItem, single) {
         // TODO: There is some sort of error here sometimes.
         /**
             This function handles the movement of items into the person's
@@ -285,8 +272,8 @@ const person = Object.extend(new Actor(), {
         //
         this.inventoryAdd(newItem);
         return true;
-    },
-    inventoryRemove(oldItem){
+    }
+    inventoryRemove(oldItem) {
         /**
             This function handles removal of an item from inventory, but not
                 the moving of that item to any other location. Dropping an item
@@ -299,8 +286,8 @@ const person = Object.extend(new Actor(), {
         arrayRemove(this.inventory, oldItem);
         this.update('inventory');
         return true;
-    },
-    getWeight(){
+    }
+    getWeight() {
         var totalWeight = 0;
         for(var invIndex = 0; invIndex < this.inventory.length; invIndex++){
             var indexedItem = this.inventory[invIndex];
@@ -309,7 +296,20 @@ const person = Object.extend(new Actor(), {
         }
         return totalWeight;
     }
-});
+}
+// Redefined properties
+Person.prototype.character = '@';
+Person.prototype.faction = FACTION_GOBLIN;
+Person.prototype.name = 'person';
+Person.prototype.color = '#0f0';
+Person.prototype.colorNatural = undefined;
+// New properties
+Person.prototype.gender = undefined;
+Person.prototype.updates = undefined;
+Person.prototype.messages = undefined;
+Person.prototype.inventory = undefined;
+Person.prototype.turnActive = false;
+Person.prototype.turnCallback = undefined;
 
 //-- Export --------------------------------------
-export default person;
+export default Person;

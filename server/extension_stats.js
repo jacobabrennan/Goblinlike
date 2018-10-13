@@ -3,23 +3,23 @@
 // === Statistics System =======================================================
 
 //-- Dependencies --------------------------------
-import person from './person.js';
+import Person from './person.js';
 
 
 //== Extend Actor ==============================================================
 
 //-- Redefined Properties ------------------------
-person.viewRange = 10;
+Person.prototype.viewRange = 10;
 
 //-- New Properties ------------------------------
-person.vitality   = undefined;
-person.strength   = undefined;
-person.wisdom     = undefined;
-person.charisma   = undefined;
-person.experience = undefined;
+Person.prototype.vitality   = undefined;
+Person.prototype.strength   = undefined;
+Person.prototype.wisdom     = undefined;
+Person.prototype.charisma   = undefined;
+Person.prototype.experience = undefined;
 
 //-- Redefined Methods ---------------------------
-person.initializer = (function (parentFunction){
+Person.prototype.initializer = (function (parentFunction){
     return function (options){
         this.setLevel(1);
         this.experience = 0;
@@ -61,8 +61,8 @@ person.initializer = (function (parentFunction){
         parentFunction.apply(this, arguments);
         return this;
     };
-})(person.initializer);
-person.toJSON = (function (parentFunction){
+})(Person.prototype.initializer);
+Person.prototype.toJSON = (function (parentFunction){
     return function (){
         let result = parentFunction.apply(this, arguments);
         result.vitality   = this.vitality  ;
@@ -72,8 +72,8 @@ person.toJSON = (function (parentFunction){
         result.experience = this.experience;
         return result;
     }
-})(person.toJSON);
-person.fromJSON = (function (parentFunction){
+})(Person.prototype.toJSON);
+Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
         parentFunction.apply(this, arguments);
         this.vitality   = data.vitality  ;
@@ -82,8 +82,8 @@ person.fromJSON = (function (parentFunction){
         this.charisma   = data.charisma  ;
         this.experience = data.experience;
     }
-})(person.fromJSON);
-person.packageUpdates = (function (parentFunction){
+})(Person.prototype.fromJSON);
+Person.prototype.packageUpdates = (function (parentFunction){
     return function (){
         /**
             This function creates a data package containing information
@@ -110,23 +110,23 @@ person.packageUpdates = (function (parentFunction){
         }, this);
         return updatePackage;
     };
-})(person.packageUpdates);
+})(Person.prototype.packageUpdates);
 
 //-- New Methods ---------------------------------
-person.maxHp = function (){
+Person.prototype.maxHp = function (){
     var base = this.vitality;
     var subTotal = (base + this.level + Math.ceil(base*this.level * 0.85));
     return subTotal;
 };
-person.meanMoral = function (){
+Person.prototype.meanMoral = function (){
     var base = this.charisma;
     var subTotal = (base + this.level + Math.ceil(base*(this.level-1) * 0.50));
     return subTotal;
 };
-person.carryCapacity = function (){
+Person.prototype.carryCapacity = function (){
     return this.strength * (1+this.level/2);
 };
-person.lore = function (){
+Person.prototype.lore = function (){
     return this.wisdom * (1+(this.level/2));
     /* Progression
     Wisdom 1:
@@ -160,14 +160,14 @@ person.lore = function (){
         1: 15
     */
 };
-person.influence = function (){
+Person.prototype.influence = function (){
     return this.charisma * (1+this.level);
 };
-person.healDelay = function (){
+Person.prototype.healDelay = function (){
     if(this.camping){ return 5;}
     return 30 - this.vitality;
 };
-person.adjustExperience = function (amount){
+Person.prototype.adjustExperience = function (amount){
     /**
      **/
     // TODO: Magic Numbers!
@@ -185,7 +185,7 @@ person.adjustExperience = function (amount){
     this.experience += amount;
     this.update('experience');
 };
-person.setLevel = function (newLevel){
+Person.prototype.setLevel = function (newLevel){
     this.level = newLevel;
     this.update('level');
     this.update('experience');

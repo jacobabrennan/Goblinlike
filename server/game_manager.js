@@ -10,7 +10,7 @@ function getClient() {
 //-- Imports -------------------------------------
 import timeManager from './time_manager.js';
 import mapManager from './map_manager.js';
-import hero from './hero.js';
+import Hero from './hero.js';
 
 //-- Implementation ------------------------------
 const gameManager = {
@@ -171,7 +171,8 @@ class Game {
         // Generate New Game
         } else{
             startLevel = mapManager.generateLevel(1);
-            this.hero = Object.instantiate(hero, options);
+            this.hero = new Hero();
+            this.hero.initializer(options);
             this.hero.place(
                 startLevel.startCoords.x, startLevel.startCoords.y, startLevel.id);
             this.hero.update('levelId');

@@ -3,8 +3,8 @@
 //== Extend Basic Types ========================================================
 
 //-- Dependencies --------------------------------
-import hero from './hero.js';
-import person from './person.js';
+import Hero from './hero.js';
+import Person from './person.js';
 import pathFinder from './path_finder.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
@@ -16,20 +16,20 @@ import './extension_equipment.js';
 
 
 //== Extend Hero (All Redefines) ===============================================
-hero.initializer = (function (parentFunction){
+Hero.prototype.initializer = (function (parentFunction){
     return function (){
         this.companions = [];
         parentFunction.apply(this, arguments);
         return this;
     };
-})(hero.initializer);
-hero.die = (function (parentFunction){
+})(Hero.prototype.initializer);
+Hero.prototype.die = (function (parentFunction){
     return function (){
         this.companions = null;
         return parentFunction.apply(this, arguments);
     };
-})(hero.die);
-hero.setLevel = (function (parentFunction){
+})(Hero.prototype.die);
+Hero.prototype.setLevel = (function (parentFunction){
     return function (){
         var result = parentFunction.apply(this, arguments);
         this.companions.forEach(function (theCompanion){
@@ -37,8 +37,8 @@ hero.setLevel = (function (parentFunction){
         }, this);
         return result;
     };
-})(hero.setLevel);
-hero.camp = (function (parentFunction){
+})(Hero.prototype.setLevel);
+Hero.prototype.camp = (function (parentFunction){
     return function (setCamping){
         if(setCamping !== undefined){
             this.camping = setCamping;
@@ -57,8 +57,8 @@ hero.camp = (function (parentFunction){
         }
         return parentFunction.apply(this, arguments);
     };
-})(hero.camp);
-hero.hear = (function (parentFunction){
+})(Hero.prototype.camp);
+Hero.prototype.hear = (function (parentFunction){
     return function (tamber, amplitude, source, message){
         if(this.camping){
             if(tamber != 'courage'){
@@ -67,22 +67,22 @@ hero.hear = (function (parentFunction){
         }
         return parentFunction.apply(this, arguments);
     };
-})(hero.hear);
-hero.endTurn = (function (p){
+})(Hero.prototype.hear);
+Hero.prototype.endTurn = (function (p){
     return function (){
         window.setTimeout(function (){p.call(this);}.bind(this), 10);
     };
-})(hero.endTurn);
+})(Hero.prototype.endTurn);
 
 
 //== Extend Person =============================================================
 
 //-- New Properties ------------------------------
-person.moral = 0;
-person.terrified = false;
+Person.prototype.moral = 0;
+Person.prototype.terrified = false;
 
 //-- New Methods ---------------------------------
-person.adjustMoral = function (amount){
+Person.prototype.adjustMoral = function (amount){
     this.moral += amount;
     var terrify = false;
     if(this.moral < 0){ terrify = true;}
@@ -102,14 +102,14 @@ person.adjustMoral = function (amount){
 };
 
 //-- Redefined Methods ---------------------------
-person.initializer = (function (parentFunction){
+Person.prototype.initializer = (function (parentFunction){
     return function (){
         parentFunction.apply(this, arguments);
         this.moral = this.charisma;
         return this;
     };
-})(person.initializer);
-person.takeTurn = (function (parentFunction){
+})(Person.prototype.initializer);
+Person.prototype.takeTurn = (function (parentFunction){
     return function (){
         var mean = this.meanMoral();
         var moralTweak = -(this.moral-mean)/(25-this.charisma);
@@ -125,8 +125,8 @@ person.takeTurn = (function (parentFunction){
         }
         return parentFunction.apply(this, arguments);
     };
-})(person.takeTurn);
-person.adjustHp = (function (parentFunction){
+})(Person.prototype.takeTurn);
+Person.prototype.adjustHp = (function (parentFunction){
     return function (){
         var adjustment = parentFunction.apply(this,arguments);
         if(adjustment < 0 && this.hp <= 11-this.charisma){
@@ -136,18 +136,14 @@ person.adjustHp = (function (parentFunction){
         }
         return adjustment;
     };
-})(person.adjustHp);
+})(Person.prototype.adjustHp);
 
 
 //== Companion =================================================================
 
-const companion = Object.extend(person, {
-    character: 'g',
-    faction: FACTION_GOBLIN,
-    color: '#5c3',
-    companion: true,
+class Companion extends Person {
     initializer() {
-        person.initializer.apply(this, arguments);
+        Person.prototype.initializer.apply(this, arguments);
         var colorR = randomInterval(64,204);
         var colorG = randomInterval(102,255);
         var colorB = randomInterval(0,64);
@@ -179,30 +175,30 @@ const companion = Object.extend(person, {
         }
         gameManager.currentGame.companionInfo.push(this);
         return this;
-    },
+    }
     toJSON() {
-        let result = person.toJSON.apply(this, arguments);
+        let result = Person.prototype.toJSON.apply(this, arguments);
         result.loadInstruction = 'companion';
         result.companion = true;
         if(this.goal){ result.goal = this.goal.toJSON();}
         if(this.dead){ result.dead = this.dead;}
         if(this.lost){ result.lost = this.lost;}
         return result;
-    },
+    }
     fromJSON(data){
-        person.fromJSON.apply(this, arguments);
+        Person.prototype.fromJSON.apply(this, arguments);
         if(data.dead){ this.dead = data.dead;}
         if(data.lost){ this.lost = data.lost;}
         if(data.goal){
             // TO DO
         }
-    },
+    }
     adjustExperience(amount) {
         /**
         **/
         gameManager.currentGame.hero.adjustExperience(amount);
         return;
-    },
+    }
     activate() {
         /**
          *  This function actives the enemy, basically "waking it up". It is
@@ -224,11 +220,11 @@ const companion = Object.extend(person, {
             this.sound('greeting', 10, this, this.name+' joins you!');
         }
         this.active = true;
-    },
+    }
     hurt() {
         this.activate();
-        return person.hurt.apply(this, arguments);
-    },
+        return Person.prototype.hurt.apply(this, arguments);
+    }
     hear(tamber, amplitude, source, message) {
         if(source && (source != this) && (source.faction & this.faction)){
             switch(tamber){
@@ -239,8 +235,8 @@ const companion = Object.extend(person, {
                 case 'greeting': this.adjustMoral(10); break;
             }
         }
-        return person.hear.apply(this, arguments);
-    },
+        return Person.prototype.hear.apply(this, arguments);
+    }
     dispose() {
         if(!this.dead){
             this.lost = true;
@@ -251,17 +247,17 @@ const companion = Object.extend(person, {
                 gameManager.currentGame.hero.companions.splice(companionI, 1);
             }
         }
-        return person.dispose.apply(this, arguments);
-    },
+        return Person.prototype.dispose.apply(this, arguments);
+    }
     bumped(bumper) {
         if(bumper.companion && bumper.terrified && !this.terrified){
             mapManager.swapPlaces(this, bumper);
         } else{
-            person.bumped.apply(this, arguments);
+            Person.prototype.bumped.apply(this, arguments);
         }
-    },
+    }
     unequip(oldItem) {
-        var success = person.unequip.apply(this, arguments);
+        var success = Person.prototype.unequip.apply(this, arguments);
         if(success){
             success = this.inventoryRemove(oldItem);
             if(success){
@@ -270,11 +266,11 @@ const companion = Object.extend(person, {
             }
         }
         return false;
-    },
+    }
     camp() {
         this.camping = gameManager.currentGame.hero.camping;
         return this.camping;
-    },
+    }
     behavior() {
         var result = false;
         if(this.terrified){
@@ -295,13 +291,13 @@ const companion = Object.extend(person, {
             result = this.pursueGoal();
         }
         return;
-    },
+    }
     pursueHero() {
         this.setGoal(GoalHero);
-    },
+    }
     pursueEnemy() {
         this.setGoal(GoalEnemy);
-    },
+    }
     pursueSafety() {
         /**
             Each actor exerts a vector force on the companion. The terrified
@@ -342,7 +338,7 @@ const companion = Object.extend(person, {
             success = this.move(primaryDir) || this.move(secondaryDir);
         }
         return success;
-    },
+    }
     desperation() {
         /**
             Attack any nearby enemy.
@@ -368,7 +364,7 @@ const companion = Object.extend(person, {
         } else{
             return false;
         }
-    },
+    }
     pursueLoot() {
         var viewContents = this.getViewContents();
         var targetLoot;
@@ -390,7 +386,7 @@ const companion = Object.extend(person, {
         }
         if(!targetLoot){ return;}
         this.setGoal(GoalLoot, targetLoot);
-    },
+    }
     itemDesire(theItem) {
         var desire = 0;
         var desireMultiplier = 1;
@@ -466,21 +462,25 @@ const companion = Object.extend(person, {
         }
         // Return desire.
         return desire * desireMultiplier;
-    },
+    }
     setGoal(goalType, goalTarget) {
         if(!goalType){
             this.goal = null;
             return;
         }
         this.goal = new goalType(goalTarget);
-    },
-    pursueGoal: function() {
+    }
+    pursueGoal() {
         if(!this.goal){ return false;}
         var success = this.goal.behavior(this);
         if(!success){ this.setGoal();}
         return success;
     }
-});
+}
+Companion.prototype.character = 'g';
+Companion.prototype.faction = FACTION_GOBLIN;
+Companion.prototype.color = '#5c3';
+Companion.prototype.companion = true;
 
 //-- Goal Types ----------------------------------
 class Goal {
@@ -619,4 +619,4 @@ class GoalHero extends Goal {
 
 //== Exports ===================================================================
 
-export default companion;
+export default Companion;

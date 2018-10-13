@@ -13,24 +13,12 @@
  *===========================================================================*/
 
 //-- Dependencies --------------------------------
-import person from './person.js';
+import Person from './person.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
 //-- Implementaton -------------------------------
-const hero = Object.extend(person, {
-    // Redefined properties
-    character: 'g',
-    faction: FACTION_GOBLIN,
-    name: 'person',
-    color: '#0f0',
-    colorNatural: '#0f0',
-    // New properties
-    updates: undefined,
-    messages: undefined,
-    inventory: undefined,
-    turnActive: false,
-    turnCallback: undefined,
+class Hero extends Person {
     // Redefined Methods
     initializer(options){
         /**
@@ -39,7 +27,7 @@ const hero = Object.extend(person, {
                 about them immediately.
             Returns a reference to itself.
          **/
-        person.initializer.apply(this, arguments);
+        Person.prototype.initializer.apply(this, arguments);
         if(options && options.name){
             this.name = options.name;
         }
@@ -48,19 +36,19 @@ const hero = Object.extend(person, {
         this.update('viewRange');
         this.inventory = [];
         return this;
-    },
+    }
     toJSON() {
-        let result = person.toJSON.apply(this, arguments);
+        let result = Person.prototype.toJSON.apply(this, arguments);
         result.loadInstruction = 'hero';
         return result;
-    },
+    }
     die(){
         this.inform('');
         this.inform('You have died.');
         this.inform('');
         this.inform('Press Space to Continue');
         gameManager.gameOver();
-    },
+    }
     endTurn(){
         /**
             This function must be called whenever the person ends their turn,
@@ -71,7 +59,7 @@ const hero = Object.extend(person, {
         var callbackTemp = this.turnCallback;
         this.turnCallback = undefined;
         callbackTemp(true);
-    },
+    }
     move(direction){
         /**
             This function is used to move the object in a specific direction,
@@ -80,7 +68,7 @@ const hero = Object.extend(person, {
                     WEST, SOUTHWEST, SOUTH, SOUTHEAST.
             It returns true if the movement is successful, and false otherwise.
          **/
-        var success = person.move.apply(this, arguments);
+        var success = Person.prototype.move.apply(this, arguments);
         /*if(Math.random() < 1/15){
             this.sound('footsteps', 15, this);
         }*/
@@ -95,7 +83,7 @@ const hero = Object.extend(person, {
             content.hear('footsteps', 15, this);
         }, this);
         return success;
-    },
+    }
     // New Methods
     update(which){
         /**
@@ -111,7 +99,7 @@ const hero = Object.extend(person, {
         if(this.updates.indexOf(which) == -1){
             this.updates.push(which);
         }
-    },
+    }
     packageUpdates(){
         /**
             This function creates a data package containing information about
@@ -119,7 +107,7 @@ const hero = Object.extend(person, {
                 turn.
             It return said package. See following comments for structure.
          **/
-        var updatePackage = person.packageUpdates.apply(this, arguments);
+        var updatePackage = Person.prototype.packageUpdates.apply(this, arguments);
         if(!updatePackage){
             updatePackage = {};
         }
@@ -133,12 +121,12 @@ const hero = Object.extend(person, {
             }
         }, this);
         return updatePackage;
-    },
+    }
     hear(tamber, amplitude, source, message){
         if(message && source != this){
             this.inform(message);
         }
-    },
+    }
     inform(message){
         /**
             This function sends a message to the player. These messages are
@@ -156,7 +144,7 @@ const hero = Object.extend(person, {
         }
         oldMessage += message;
         this.messages[0] = oldMessage;*/
-    },
+    }
     
     
 /*===========================================================================
@@ -172,7 +160,7 @@ const hero = Object.extend(person, {
             This command from the player causes the person to wait (pass).
          **/
         this.endTurn();
-    },
+    }
     commandMove(options){
         /**
             This command from the player causes the person to move.
@@ -209,7 +197,7 @@ const hero = Object.extend(person, {
             this.move(direction);
             this.endTurn();
         }
-    },
+    }
     commandClose(options){
         /**
             This command from the player causes the person to close a door.
@@ -237,7 +225,7 @@ const hero = Object.extend(person, {
             this.inform('There is no door there.');
         }
         this.endTurn();
-    },
+    }
     commandAttack(options){
         /**
          *  This command from the player directs the person to attack an enemy,
@@ -283,7 +271,7 @@ const hero = Object.extend(person, {
                 this.endTurn();
             }
         }
-    },
+    }
     commandGet(options){
         /**
             This command from the player directs the person to place the
@@ -316,7 +304,7 @@ const hero = Object.extend(person, {
         }
         // End turn.
         this.endTurn();
-    },
+    }
     commandDrop(options){
         /**
             This command from the player directs the person to drop the specified
@@ -343,7 +331,7 @@ const hero = Object.extend(person, {
         }
         // End turn.
         this.endTurn();
-    },
+    }
     commandCamp(options){
         /**
             This command from the player directs the hero to rest here until all
@@ -355,7 +343,7 @@ const hero = Object.extend(person, {
         }, this);
         // End turn.
         this.endTurn();
-    },
+    }
     commandUse(options){
         /**
             This command from the player directs the person to use the specified
@@ -412,7 +400,7 @@ const hero = Object.extend(person, {
         }
         // End turn.
         this.endTurn();
-    },
+    }
     commandStairs(options){
         /**
             This command from the player directs the person to drop the specified
@@ -430,7 +418,19 @@ const hero = Object.extend(person, {
             }
         }
     }
-});
+}
+// Redefined properties
+Hero.prototype.character = 'g';
+Hero.prototype.faction = FACTION_GOBLIN;
+Hero.prototype.name = 'person';
+Hero.prototype.color = '#0f0';
+Hero.prototype.colorNatural = '#0f0';
+// New properties
+Hero.prototype.updates = undefined;
+Hero.prototype.messages = undefined;
+Hero.prototype.inventory = undefined;
+Hero.prototype.turnActive = false;
+Hero.prototype.turnCallback = undefined;
 
 //-- Export --------------------------------------
-export default hero;
+export default Hero;
