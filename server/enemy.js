@@ -28,12 +28,14 @@ class Enemy extends Actor {
         result.generationId = this.generationId;
         result.active = this.active;
         result.breedRate = this.breedRate;
+        if(this.active){ result.active = this.active;}
         return result;
     }
     fromJSON(data) {
         let config = super.fromJSON(...arguments);
         this.active = data.active;
         this.breedRate = data.breedRate;
+        if(data.active){ this.active = data.active;}
         return config;
     }
     takeTurn(callback) {

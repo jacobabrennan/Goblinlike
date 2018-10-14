@@ -167,6 +167,13 @@ class Game {
         mapManager.fromJSON(data.map);
         this.currentTime = data.time;
         this.hero = mapManager.idManager.get(data.hero);
+        mapManager.idManager.ids.forEach(mappable => {
+            if(!mappable){ return;}
+            if(!mappable.active){ return;}
+            if(!mappable.activate){ return;}
+            mappable.active = false;
+            mappable.activate();
+        });
         this.companionInfo = data.companions.map(id => mapManager.idManager.get(id));
     }
 

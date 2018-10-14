@@ -206,18 +206,17 @@ class Companion extends Person {
     toJSON() {
         let result = super.toJSON(...arguments);
         result.companion = true;
-        if(this.goal){ result.goal = this.goal.toJSON();}
-        if(this.dead){ result.dead = this.dead;}
-        if(this.lost){ result.lost = this.lost;}
+        if(this.goal  ){ result.goal   = this.goal.toJSON();}
+        if(this.dead  ){ result.dead   = this.dead  ;}
+        if(this.lost  ){ result.lost   = this.lost  ;}
+        if(this.active){ result.active = this.active;}
         return result;
     }
     fromJSON(data){
         let config = super.fromJSON(...arguments);
-        if(data.dead){ this.dead = data.dead;}
-        if(data.lost){ this.lost = data.lost;}
-        if(data.goal){
-            // TO DO
-        }
+        if(data.dead  ){ this.dead   = data.dead  ;}
+        if(data.lost  ){ this.lost   = data.lost  ;}
+        if(data.active){ this.active = data.active;}
         return config;
     }
     adjustExperience(amount) {
@@ -228,7 +227,7 @@ class Companion extends Person {
     }
     activate() {
         /**
-         *  This function actives the enemy, basically "waking it up". It is
+         *  This function activates the enemy, basically "waking it up". It is
          *  usually called when the player comes into view, makes loud noises
          *  nearby, or otherwise alerts the enemy to their presense. It can
          *  also be triggered by other non-player driven events, or even as
@@ -518,12 +517,6 @@ class Goal {
     }
     behavior(controllee){
         return false;
-    }
-    toJSON() {
-        return {};
-    }
-    fromJSON(data){
-        // TO DO
     }
 }
 class GoalLoot extends Goal {

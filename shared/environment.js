@@ -9,7 +9,7 @@ const fakeNetwork = {};
 
 //-- Misc. Configuration: ------------------------
 const debug = false;
-const VERSION = '1.1.6';
+const VERSION = '1.1.7';
 const displaySize = 21;
 const DEFAULT_MAP_SIZE = 48;
 const HIGHLIGHT = 'highlight';
