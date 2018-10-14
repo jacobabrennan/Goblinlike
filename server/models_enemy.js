@@ -5,11 +5,12 @@
 const enemyModels = [
     { // white rat
         // Id:
-        generationId: 'white rat',
+        generationId: 'White rat',
         generationWeight: 5,
         name: 'White Rat',
         // Display:
         character: "r",
+        color: '#fff',
         // Stats:
         rewardExperience: 5,
         vigilance: 0,
@@ -28,6 +29,7 @@ const enemyModels = [
         name: 'Giant Ant',
         // Display:
         character: "a",
+        color: '#800',
         // Stats:
         rewardExperience: 10,
         vigilance: 10,
@@ -43,7 +45,7 @@ const enemyModels = [
         generationWeight: 10,
         name: 'Cave Beetle',
         // Display:
-        color: "#666",
+        color: "#60c",
         character: "b",
         // Stats:
         rewardExperience: 10,
@@ -65,6 +67,7 @@ const enemyModels = [
         name: 'Floating Eye',
         // Display:
         character: "e",
+        color: '#fcc',
         // Stats:
         rewardExperience: 18,
         vigilance: 0,
@@ -102,10 +105,11 @@ const enemyModels = [
         name: 'Centipede',
         // Display:
         character: 'c',
-        //color: '',
+        color: '#60c',
+        background: '#105',
         bodyCharacter: 'o',
-        //bodyColor: '#a53',
-        bodyBackground: undefined,
+        bodyColor: '#60c',
+        bodyBackground: '#105',
         // Stats:
         rewardExperience: 20,
         //turnDelay: 1/2,
@@ -311,6 +315,7 @@ const enemyModels = [
         name: 'Phantom',
         // Display:
         character: "p",
+        color: '#fd9',
         // Stats:
         rewardExperience: 65,
         vigilance: 10,
@@ -352,6 +357,7 @@ const enemyModels = [
         name: 'Bloodshot Eye',
         // Display:
         character: "e",
+        color: '#fcc',
         // Stats:
         rewardExperience: 80,
         vigilance: 0,
