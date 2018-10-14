@@ -63,15 +63,12 @@ const timeManager = {
             nextActor.nextTurn = theTime;
         }
         gameManager.setTime(nextActor.nextTurn);
-        var callback = (function (self){
-            return function (active){
-                if(active){
-                    self.registerActor(nextActor);
-                }
-                self.turn();
-            };
-        })(this);
-        nextActor.takeTurn(callback);
+        nextActor.takeTurn(active => {
+            if(active){
+                this.registerActor(nextActor);
+            }
+            this.turn();
+        });
     },
     reset: function (){
         var oldActors = [];

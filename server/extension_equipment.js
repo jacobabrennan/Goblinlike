@@ -43,7 +43,7 @@ Item.prototype.pack = (function (parentFunction){
 //== Extend Person =============================================================
 
 //-- New Properties ------------------------------
-Person.prototypeequipment = undefined;
+Person.prototype.equipment = undefined;
 
 //-- Redefined Methods ---------------------------
 Person.prototype.initializer = (function (parentFunction){
@@ -57,19 +57,26 @@ Person.prototype.initializer = (function (parentFunction){
 Person.prototype.toJSON = (function (parentFunction){
     return function (){
         let result = parentFunction.apply(this, arguments);
-        let equipmentKeys = Object.keys(this.equipment);
-        result.equipment = [];
-        for(let keyIndex = 0; keyIndex < equipmentKeys.length; keyIndex++){
-            let equippedItem = this.equipment[equipmentKeys[keyIndex]];
-            result.equipment.push(equippedItem);
-        }
+        result.equipment = Object.keys(this.equipment).map(position => {
+            let testItem = this.equipment[position];
+            if(!testItem){ return null;}
+            return testItem.id;
+        });
         return result;
     }
 })(Person.prototype.toJSON);
 Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
-        parentFunction.apply(this, arguments);
-        // TO DO
+        let config = parentFunction.apply(this, arguments);
+        this.equipment = {};
+        return () => {
+            if(config){ config();}
+            data.equipment.forEach(equipId => {
+                let equipment = mapManager.idManager.get(equipId);
+                this.equip(equipment);
+            })
+            this.update('equipment');
+        }
     }
 })(Person.prototype.fromJSON);
 Person.prototype.packageUpdates = (function (parentFunction){

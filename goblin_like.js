@@ -10,6 +10,7 @@ import './server/view.js';
 import './server/skills.js';
 import './server/sound.js';
 import './server/enemy.js';
+import './server/companion.js';
 import './server/items.js';
 import './server/map_generator.js';
 import './server/models_enemy.js';

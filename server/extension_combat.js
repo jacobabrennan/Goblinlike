@@ -39,9 +39,10 @@ Actor.prototype.toJSON = (function (parentFunction){
 })(Actor.prototype.toJSON);
 Actor.prototype.fromJSON = (function (parentFunction){
     return function (data){
-        parentFunction.apply(this, arguments);
+        let config = parentFunction.apply(this, arguments);
         this.hp = data.hp;
         this.baseHp = data.baseHp;
+        return config;
     }
 })(Actor.prototype.fromJSON);
 
@@ -172,8 +173,9 @@ Person.prototype.toJSON = (function (parentFunction){
 })(Person.prototype.toJSON);
 Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
-        parentFunction.apply(this, arguments);
+        let config = parentFunction.apply(this, arguments);
         this.lastHeal = data.lastHeal;
+        return config;
     }
 })(Person.prototype.fromJSON);
 Person.prototype.packageUpdates = (function (parentFunction){

@@ -36,9 +36,9 @@ class Actor extends Movable {
         return result;
     }
     fromJSON(data){
-        console.log(this.name)
-        super.fromJSON(...arguments);
+        let config = super.fromJSON(...arguments);
         this.nextTurn = data.nextTurn;
+        return config;
     }
     takeTurn(callback){
         /**

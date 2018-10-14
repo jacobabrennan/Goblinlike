@@ -65,6 +65,17 @@ client.drivers.title = Object.extend(driver, {
         client.networking.sendMessage(COMMAND_NEWGAME, {});
         client.focus(gameDriver);*/
     },
+    loadGame() {
+        // TO DO: Document.
+        client.skin.clearCommands();
+        client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
+        clearInterval(this.drawInterval);
+        var gameDriver = client.drivers.gameplay;
+        gameDriver.memory.blank();
+        client.networking.sendMessage(COMMAND_LOADGAME);
+        client.focus(gameDriver);
+        gameDriver.display();
+    },
     display(options){
         // TODO: Document.
         var block = driver.display.apply(this, arguments);

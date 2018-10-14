@@ -25,11 +25,17 @@ class Mappable {
         if(this.generationType){ // Applied by modelLibrary
             result.generationType = this.generationType; 
         }
+        if(this.generationId){
+            result.generationId = this.generationId;
+        }
         return result;
     }
     fromJSON(data) {
         if(data.generationType){
             this.generationType = data.generationType;
+        }
+        if(data.generationId){
+            this.generationId = data.generationId;
         }
     }
 }
@@ -74,12 +80,8 @@ class Containable extends Mappable {
     }
     fromJSON(data) {
         super.fromJSON(...arguments);
-        let saveKeys = ['id', 'levelId', 'x', 'y', 'name'];
-        for(let saveIndex = 0; saveIndex < saveKeys.length; saveIndex++){
-            let indexedKey = saveKeys[saveIndex];
-            this[indexedKey] = data[indexedKey];
-        }
-        console.log(this.name, this.levelId)
+        mapManager.idManager.renewId(data.id, this);
+        this.place(data.x, data.y, data.levelId);
     }
     place(x, y, levelId){
         /**
@@ -197,7 +199,6 @@ class Movable extends Containable {
     }
 }
 // TODO: Document.
-Movable.prototype.MMM = true;
 Movable.prototype.dense = true;
 
 //-- Exports -------------------------------------

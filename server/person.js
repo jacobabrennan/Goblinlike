@@ -14,6 +14,7 @@
 
 //-- Dependencies --------------------------------
 import Actor from './actor.js';
+import mapManager from './map_manager.js';
 
 //-- Implementaton -------------------------------
 class Person extends Actor {
@@ -49,15 +50,26 @@ class Person extends Actor {
     toJSON() {
         let result = super.toJSON(...arguments);
         result.gender = this.gender;
+        result.name = this.name;
         result.inventory = this.inventory.map(item => item.id);
         result.colorNatural = this.colorNatural;
         return result;
     }
     fromJSON(data) {
-        super.fromJSON(...arguments);
+        let config = super.fromJSON(...arguments);
         this.gender = data.gender;
-        // TO DO
+        this.name = data.name;
         this.colorNatural = data.colorNatural;
+        this.update('gender');
+        this.update('id');
+        this.update('name');
+        this.update('viewRange');
+        return () => {
+            if(config){ config();}
+            data.inventory.forEach(
+                itemId => this.inventory.push(mapManager.idManager.get(itemId))
+            );
+        }
     }
     place() {
         var success = super.place(...arguments);

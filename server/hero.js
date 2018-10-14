@@ -16,6 +16,7 @@
 import Person from './person.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
+import modelLibrary from './model_library.js';
 
 //-- Implementaton -------------------------------
 class Hero extends Person {
@@ -38,7 +39,6 @@ class Hero extends Person {
     }
     toJSON() {
         let result = super.toJSON(...arguments);
-        result.loadInstruction = 'hero';
         return result;
     }
     die(){
@@ -410,9 +410,9 @@ class Hero extends Person {
                 if(typeof stairs.climb == 'function'){
                     stairs.climb(this);
                     // End turn.
-                    this.endTurn();
                     return;
                 }
+                this.endTurn();
             }
         }
     }
@@ -422,6 +422,8 @@ Hero.prototype.character = 'g';
 Hero.prototype.faction = FACTION_GOBLIN;
 Hero.prototype.color = '#0f0';
 Hero.prototype.colorNatural = '#0f0';
+Hero.prototype.generationId = 'hero';
 
 //-- Export --------------------------------------
+modelLibrary.registerModel('special', Hero);
 export default Hero;

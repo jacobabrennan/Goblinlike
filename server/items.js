@@ -27,8 +27,9 @@ class Wand extends Item {
         return result;
     }
     fromJSON(data) {
-        super.fromJSON(...arguments);
+        let config = super.fromJSON(...arguments);
         this.charges = data.charges;
+        return config;
     }
     // New Methods
     effect(user, targetData) {
@@ -40,7 +41,7 @@ class Wand extends Item {
     }
     shoot(attacker, direction, forceTarget) {
         if(this.charges <= 0){
-            attacker.inform('There wand is out of charges!');
+            attacker.inform('The wand is out of charges!');
             return 0;
         }
         this.charges--;

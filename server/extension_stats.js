@@ -31,11 +31,11 @@ Person.prototype.initializer = (function (parentFunction){
             this.wisdom   = options.wisdom  ;
             this.charisma = options.charisma;
         } else{
-            this.vitality = 1;
-            this.strength = 1;
-            this.wisdom = 1;
-            this.charisma = 1;
-            statTotal -= 4; // Total of innitial population of 1s.
+            this.vitality = 3;
+            this.strength = 3;
+            this.wisdom = 3;
+            this.charisma = 3;
+            statTotal -= 12; // Total of innitial population of 3s.
             while(statTotal){
                 switch(Math.floor(Math.random()*4)){
                     case 0:
@@ -69,18 +69,26 @@ Person.prototype.toJSON = (function (parentFunction){
         result.strength   = this.strength  ;
         result.wisdom     = this.wisdom    ;
         result.charisma   = this.charisma  ;
+        result.level      = this.level     ;
         result.experience = this.experience;
+        result.moral      = this.moral     ;
         return result;
     }
 })(Person.prototype.toJSON);
 Person.prototype.fromJSON = (function (parentFunction){
     return function (data){
-        parentFunction.apply(this, arguments);
+        let config = parentFunction.apply(this, arguments);
         this.vitality   = data.vitality  ;
         this.strength   = data.strength  ;
         this.wisdom     = data.wisdom    ;
         this.charisma   = data.charisma  ;
+        this.level      = data.level     ;
         this.experience = data.experience;
+        this.moral      = data.moral     ;
+        ['vitality', 'strength', 'wisdom', 'charisma',
+         'level', 'experience', 'inventory',
+         'hp', 'maxHp', 'moral'].forEach(stat => this.update(stat));
+        return config;
     }
 })(Person.prototype.fromJSON);
 Person.prototype.packageUpdates = (function (parentFunction){

@@ -31,10 +31,10 @@ class Enemy extends Actor {
         return result;
     }
     fromJSON(data) {
-        super.fromJSON(...arguments);
-        this.generationId = data.generationId;
+        let config = super.fromJSON(...arguments);
         this.active = data.active;
         this.breedRate = data.breedRate;
+        return config;
     }
     takeTurn(callback) {
         /**
@@ -360,9 +360,24 @@ class BlobBody extends Enemy {
         this.headId = undefined;
         this.rewardExperience = 0;
     }
-    initializer(options){
+    initializer(options) {
         super.initializer(...arguments);
-        var head = options.head;
+        this.setupFromHead(options.head);
+    }
+    toJSON() {
+        let result = super.toJSON(...arguments);
+        result.headId = this.headId;
+        return result;
+    }
+    fromJSON(data) {
+        let config = super.fromJSON(...arguments);
+        this.headId = data.headId;
+        return () => {
+            if(config){ config();}
+            this.setupFromHead(mapManager.idManager.get(this.headId));
+        }
+    }
+    setupFromHead(head) {
         this.headId = head.id;
         this.name = head.name;
         this.faction = head.faction;
@@ -376,19 +391,9 @@ class BlobBody extends Enemy {
         if(head.bodyBackground){
             this.background = head.bodyBackground;
         }
-        return this;
     }
-    toJSON() {
-        let result = super.toJSON(...arguments);
-        result.headId = this.headId;
-        return result;
-    }
-    fromJSON(data){
-        super.fromJSON(...arguments);
-        this.headId = result.headId;
-    }
-    activate(){}
-    attackNearby(){
+    activate() {}
+    attackNearby() {
         if(!(this.levelId && this.x && this.y)){ return;}
         var rangeContent = mapManager.getRangeContents(
             this.x, this.y, this.levelId, 1);
@@ -406,14 +411,14 @@ class BlobBody extends Enemy {
             this.attack(target);
         }
     }
-    bump(){
+    bump() {
         return Actor.prototype.bump.apply(this, arguments);
     }
-    hurt(){
+    hurt() {
         var head = mapManager.idManager.get(this.headId);
         return head.hurt.apply(head, arguments);
     }
-    pack(){
+    pack() {
         // Prevent multiple copies from showing up in the look list.
         var sensoryData = super.pack(...arguments);
         var head = mapManager.idManager.get(this.headId);
@@ -421,7 +426,7 @@ class BlobBody extends Enemy {
         sensoryData.id = head.id;
         return sensoryData;
     }
-    move(direction){
+    move(direction) {
         if(!(this.x && this.y && this.levelId) || (Math.random() < 1/4)){
             var dirs = [NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,
                 SOUTHEAST,SOUTHWEST];
@@ -438,6 +443,7 @@ class BlobBody extends Enemy {
         }
     }
 }
+BlobBody.prototype.generationId = 'blob body';
 
 //-- Archetype -----------------------------------
 class BlobArchetype extends Enemy {
@@ -461,8 +467,12 @@ class BlobArchetype extends Enemy {
         return result;
     }
     fromJSON(data) {
-        super.fromJSON(...arguments);
-        // TO DO
+        let config = super.fromJSON(...arguments);
+        this.body = [];
+        return () => {
+            if(config){ config();}
+            this.body = data.body.map(segmentId => mapManager.idManager.get(segmentId));
+        };
     }
     bump(obstruction) {
         if(this.body.indexOf(obstruction) >= 0){
@@ -544,7 +554,22 @@ class SnakeBody extends Enemy {
     }
     initializer(options){
         super.initializer(...arguments);
-        var head = options.head;
+        this.setupFromHead(options.head);
+    }
+    toJSON() {
+        let result = super.toJSON();
+        result.headId = this.headId;
+        return result;
+    }
+    fromJSON(data) {
+        let config = super.fromJSON(...arguments);
+        this.headId = data.headId;
+        return () => {
+            if(config){ config();}
+            this.setupFromHead(mapManager.idManager.get(this.headId));
+        }
+    }
+    setupFromHead(head) {
         this.headId = head.id;
         this.name = head.name;
         this.faction = head.faction;
@@ -558,15 +583,6 @@ class SnakeBody extends Enemy {
             this.background = head.bodyBackground;
         }
         return this;
-    }
-    toJSON() {
-        let result = Enemy.prototype.toJSON.apply(this, arguments);
-        result.head = this.headId;
-        return result;
-    }
-    fromJSON(data){
-        Enemy.prototype.fromJSON.apply(this, arguments);
-        // TO DO
     }
     activate(){}
     attackNearby(){
@@ -600,6 +616,7 @@ class SnakeBody extends Enemy {
         return sensoryData;
     }
 }
+SnakeBody.prototype.generationId = 'snake body';
 
 //-- Archetype -----------------------------------
 class SnakeArchetype extends Enemy {
@@ -618,13 +635,17 @@ class SnakeArchetype extends Enemy {
         return this;
     }
     toJSON() {
-        let result = Enemy.prototype.toJSON.apply(this, arguments);
+        let result = super.toJSON(...arguments);
         result.body = this.body.map(segment => segment.id);
         return result;
     }
     fromJSON(data) {
-        Enemy.prototype.fromJSON.apply(this, arguments);
-        // TO DO
+        let config = super.fromJSON(...arguments);
+        this.body = [];
+        return () => {
+            if(config){ config();}
+            this.body = data.body.map(segmentId => mapManager.idManager.get(segmentId));
+        };
     }
     move(direction) {
         var oldPlacement = {
@@ -763,6 +784,8 @@ modelLibrary.registerModel('special', (() => {// emperor wight
     Wight.prototype.viewText = "You see a pale dwarf with sharp eyes, undead arms reach up from beneath the ground all around it. On it's face is a contorted mixture of pain and rage.";
     return Wight;
 })());
+modelLibrary.registerModel('special', SnakeBody);
+modelLibrary.registerModel('special', BlobBody);
 
 
 //== Exports ===================================================================

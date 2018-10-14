@@ -70,6 +70,7 @@ const gameManager = {
         saveJSON = JSON.parse(saveJSON);
         this.currentGame = new Game();
         this.currentGame.start({gameSave: saveJSON});
+        return this.currentGame;
     },
     // Time Management passthrough functions:
     currentTime() {
@@ -107,28 +108,40 @@ const gameManager = {
         return timeManager.turn.apply(timeManager, arguments);
     },
     clientCommand(command, options) {
-        if(command == COMMAND_NEWGAME){
-            var name     = options.name || '';
-            var vitality = options.vitality || 0;
-            var strength = options.strength || 0;
-            var wisdom   = options.wisdom || 0;
-            var charisma = options.charisma || 0;
-            var reroll = false;
-            if(!vitality.toPrecision || vitality > 10 || vitality < 0 ||
-                (vitality != Math.round(vitality))){ reroll = true;}
-            if(!strength.toPrecision || strength > 10 || strength < 0 ||
-                (strength != Math.round(strength))){ reroll = true;}
-            if(!wisdom.toPrecision || wisdom > 10 || wisdom < 0 ||
-                (wisdom != Math.round(wisdom))){ reroll = true;}
-            if(!charisma.toPrecision || charisma > 10 || charisma < 0 ||
-                (charisma != Math.round(charisma))){ reroll = true;}
-            if(!name.substring || name.length < 1 || name.length > 8){
-                reroll = true;
+        switch(command){
+            case COMMAND_NEWGAME: {
+                // Accept character options from client
+                var name     = options.name || '';
+                var vitality = options.vitality || 0;
+                var strength = options.strength || 0;
+                var wisdom   = options.wisdom || 0;
+                var charisma = options.charisma || 0;
+                // If options are invalid, reroll character
+                var reroll = false;
+                if(!vitality.toPrecision || vitality > 10 || vitality < 0 ||
+                    (vitality != Math.round(vitality))){ reroll = true;}
+                if(!strength.toPrecision || strength > 10 || strength < 0 ||
+                    (strength != Math.round(strength))){ reroll = true;}
+                if(!wisdom.toPrecision || wisdom > 10 || wisdom < 0 ||
+                    (wisdom != Math.round(wisdom))){ reroll = true;}
+                if(!charisma.toPrecision || charisma > 10 || charisma < 0 ||
+                    (charisma != Math.round(charisma))){ reroll = true;}
+                // TO DO: Check total stats in case client requested all 10s, etc.
+                if(!name.substring || name.length < 1 || name.length > 8){
+                    reroll = true;
+                }
+                if(reroll){ options = null;}
+                // Begin new game
+                this.newGame(options);
+                break;
             }
-            if(reroll){ options = null;}
-            this.newGame(options);
-        } else{
-            this.currentGame.clientCommand(command, options);
+            case COMMAND_LOADGAME: {
+                this.load();
+                break;
+            }
+            default: {
+                this.currentGame.clientCommand(command, options);
+            }
         }
     }
 };
@@ -152,11 +165,7 @@ class Game {
     }
     fromJSON(data) {
         mapManager.fromJSON(data.map);
-        //console.log(mapManager.idManager.ids)
-        console.log(mapManager.idManager.ids[15])
-        console.log(mapManager.idManager.get(15));
-        console.log(data.hero)
-        this.currentTime = data.currentTime;
+        this.currentTime = data.time;
         this.hero = mapManager.idManager.get(data.hero);
         this.companionInfo = data.companions.map(id => mapManager.idManager.get(id));
     }
@@ -168,6 +177,7 @@ class Game {
         if(options.gameSave){
             this.fromJSON(options.gameSave);
             startLevel = mapManager.getLevel(this.hero.levelId);
+            this.hero.update('levelId');
         // Generate New Game
         } else{
             startLevel = mapManager.generateLevel(1);

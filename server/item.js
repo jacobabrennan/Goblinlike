@@ -25,9 +25,10 @@ class Item extends Movable {
         return result;
     }
     fromJSON(data){
-        super.fromJSON(...arguments);
+        let config = super.fromJSON(...arguments);
         this.generationId = data.generationId;
         if(data.stackCount){ this.stackCount = data.stackCount;}
+        return config;
     }
     // New Methods
     effect(user, targetData){}

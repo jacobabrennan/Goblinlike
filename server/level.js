@@ -45,8 +45,10 @@ class level {
             width: this.width,
             height: this.height,
         };
-        if(this.stairsUpCoords  ){ result.stairsUpCoords   = Object.create(this.stairsUpCoords  );}
-        if(this.stairsDownCoords){ result.stairsDownCoords = Object.create(this.stairsDownCoords);}
+        if(this.stairsUpCoords  ){
+            result.stairsUpCoords   = {x: this.stairsUpCoords.x  , y: this.stairsUpCoords.y  };}
+        if(this.stairsDownCoords){
+            result.stairsDownCoords = {x: this.stairsDownCoords.x  , y: this.stairsDownCoords.y  };}
         // Format indexTable
         let tileModels = Object.keys(this.tileTypes).map(key => this.tileTypes[key])
         let tileHash = {};
@@ -75,8 +77,10 @@ class level {
         this.depth = data.depth;
         this.width = data.width;
         this.height = data.height;
-        if(data.stairsUpCoords  ){ this.stairsUpCoords   = Object.create(data.stairsUpCoords  );}
-        if(data.stairsDownCoords){ this.stairsDownCoords = Object.create(data.stairsDownCoords);}
+        if(data.stairsUpCoords  ){
+            this.stairsUpCoords   = {x: data.stairsUpCoords.x  , y: data.stairsUpCoords.y  };}
+        if(data.stairsDownCoords){
+            this.stairsDownCoords = {x: data.stairsDownCoords.x, y: data.stairsDownCoords.y};}
         // Create copy of generic type types hash. TODO: Refactor This.
         var tileTypes = {};
         for(var key in genericTileTypes){
@@ -506,18 +510,8 @@ class level {
         var maxX = -Infinity;
         var maxY = -Infinity;
         // Create a sensory package for each coordinate in range.
-        var contentPusher = function (content, index){
+        var contentPacker = content => content.pack();
             // Used in double for loop, to push content into list.
-            // 'this' is the contents list.
-            var contentData = content.pack();
-            /*var contentData = {
-                id: content.id,
-                character: content.character,
-                color: content.color,
-                background: content.background
-            }*/
-            this.push(contentData);
-        };
         for(var offsetY = -range; offsetY <= range; offsetY++){
             for(var offsetX = -range; offsetX <= range; offsetX++){
                 let viewOffsetX = offsetX + range;
@@ -533,9 +527,8 @@ class level {
                 maxY = Math.max(tileY, maxY);
                 var offsetTile = this.getTile(tileX, tileY);
                 // Add a data package for each object contained in this tile.
-                var contents = [];
                 var offsetTileContents = this.getTileContents(tileX, tileY);
-                offsetTileContents.forEach(contentPusher, contents);
+                var contents = offsetTileContents.map(contentPacker);
                 // Maintain list of unique types of tiles in view.
                 if(!tileTypesInView[offsetTile.id]){
                     var tileTypeData = {

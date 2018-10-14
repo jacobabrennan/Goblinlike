@@ -135,7 +135,7 @@ const memory = {
             Returns the memory representation of the current level, for display
             in the map.
         **/
-        var currentLevelId = client.drivers.gameplay.memory.character.levelId;
+        var currentLevelId = this.character.levelId;
         var currentLevelMemory = this.map.getLevel(currentLevelId);
         return currentLevelMemory;
     },
@@ -175,44 +175,9 @@ const memory = {
         if(!this.character){
             this.character = new CharacterMemory();
         }
-        // Handle each aspect of the update data separately.
-        /* TODO: Revisit this before release. If no special handling is needed,
-        refactor into simple statement: this.character[key] = updateData[key] */
-        /*if(updateData.id !== undefined){ this.character.id = updateData.id;}
-        if(updateData.name !== undefined){
-            this.character.name = updateData.name;}
-        if(updateData.x !== undefined){ this.character.x = updateData.x;}
-        if(updateData.y !== undefined){ this.character.y = updateData.y;}
-        if(updateData.hp !== undefined){ this.character.hp = updateData.hp;}
-        if(updateData.mp !== undefined){ this.character.mp = updateData.mp;}
-        if(updateData.maxHp !== undefined){
-            this.character.maxHp = updateData.maxHp;}
-        if(updateData.maxMp !== undefined){
-            this.character.maxMp = updateData.maxMp;}
-        if(updateData.viewRange !== undefined){
-            this.character.viewRange = updateData.viewRange;}
-        if(updateData.inventory !== undefined){
-            this.character.inventory = updateData.inventory;}
-        if(updateData.levelId !== undefined){
-            this.character.levelId = updateData.levelId;}
-        if(updateData.equipment !== undefined){
-            this.character.equipment = updateData.equipment;}
-        if(updateData.experience !== undefined){
-            this.character.experience = updateData.experience;}
-        if(updateData.level !== undefined){
-            this.character.level = updateData.level;}
-        if(updateData.vitality !== undefined){
-            this.character.vitality = updateData.vitality;}
-        if(updateData.strength !== undefined){
-            this.character.strength = updateData.strength;}
-        if(updateData.wisdom !== undefined){
-            this.character.wisdom = updateData.wisdom;}
-        if(updateData.charisma !== undefined){
-            this.character.charisma = updateData.charisma;}*/
         for(var key in updateData){
-            if(updateData.hasOwnProperty(key)){
-                this.character[key] = updateData[key];
-            }
+            if(!updateData.hasOwnProperty(key)){ continue;}
+            this.character[key] = updateData[key];
         }
         var statusText = 'Health: '+this.character.hp+'/'+this.character.maxHp+',  ';
         statusText += 'Morale: ' + Math.floor(this.character.moral);

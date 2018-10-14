@@ -32,7 +32,6 @@ import mapManager from './map_manager.js';
 import level from './level.js';
 import modelLibrary from './model_library.js';
 import {genericTileTypes} from './tiles.js';
-import Companion from './companion.js';
 
 //------------------------------------------------
 mapManager.generateLevel = function (depth, options){
@@ -286,7 +285,8 @@ const protoLevel = {
         }
         // Place one companion per level, except on final level (none).
         var createC = function (index){
-            var C = new Companion();
+            let C = modelLibrary.getModel('special', 'companion');
+            C = new C();
             C.initializer();
             var cPlaced = false;
             var tries = 100;

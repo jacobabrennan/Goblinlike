@@ -778,7 +778,7 @@ const helpMenu = Object.extend(driver, {
             case 'win':
                 var aboutText = "You won't win the first several times you play, and that's OK. The game is about making hard choices and surviving as long as possible.";
                 var lines = client.skin.drawParagraph(1, 18, aboutText);
-                aboutText = "Over time you're going to get better. Better at dancing around enemies, better at managing your items, and better at leading your goblin tribe."
+                aboutText = "Over time you're going to get better. Better at dancing around enemies, better at managing your items, and better at leading your goblin team."
                 lines += client.skin.drawParagraph(1, 18-lines, aboutText);
                 aboutText = "Pretty soon you'll find yourself at the bottom of the dungeon, facing down the final enemy. When you do, let us know what happens!";
                 lines += client.skin.drawParagraph(1, 18-lines, aboutText);

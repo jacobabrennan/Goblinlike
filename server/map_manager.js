@@ -6,8 +6,6 @@
 import modelLibrary from './model_library.js';
 import gameManager from './game_manager.js';
 import level from './level.js';
-import Hero from './hero.js';
-import Companion from './companion.js';
 
 //-- Implementation ------------------------------
 const mapManager = {
@@ -32,13 +30,13 @@ const mapManager = {
         return result;
     },
     fromJSON(data) {
-        this.idManager.fromJSON(data.ids);
         data.levels.forEach(levelData => {
             let newLevel = new level();
             newLevel.fromJSON(levelData);
             this.levels[newLevel.id] = newLevel;
             this.depths[newLevel.depth] = newLevel;
         });
+        this.idManager.fromJSON(data.ids);
     },
     reset() {
         // TODO: document.
@@ -214,32 +212,25 @@ mapManager.idManager = {
         let result = this.ids.map(aMappable => {
             if(!aMappable){ return undefined;}
             return aMappable.toJSON();
-        });
+        }).filter(data => data);
         return result;
     },
     fromJSON(data) {
+        let configurationCallbacks = [];
         data.forEach(idData => {
             // Reconstitute from Model Library
             if(idData.generationId){
                 let instance = modelLibrary.getModel(idData.generationType, idData.generationId);
                 instance = new instance();
-                instance.fromJSON(idData);
-            //
-            } else if(idData.loadInstruction){
-                switch(idData.loadInstruction){
-                    case 'hero': {
-                        let instance = new Hero();
-                        instance.fromJSON(idData);
-                        break;
-                    }
-                    case 'companion': {
-                        let instance = new Companion();
-                        instance.fromJSON(idData);
-                        break;
-                    }
+                let configCallback = instance.fromJSON(idData);
+                if(configCallback){
+                    configurationCallbacks.push(configCallback);
                 }
+            } else{
+                throw `Error loading model: ${idData.generationType}/${idData.generationId}`;
             }
         });
+        configurationCallbacks.forEach(config => config());
     },
     reset: function (){
         this.recycledIds = [];
@@ -266,6 +257,17 @@ mapManager.idManager = {
         }
         this.ids[newId] = thing;
         return newId;
+    },
+    renewId(id, thing) {
+        if(!id && id !== 0){
+            throw `Cannot renew unspecified id for (${thing.name}) ${thing.generationId}/${this.generationType}`;
+        }
+        let oldThing = this.ids[id];
+        if(oldThing){
+            throw `Id conflict for (${thing.name}) ${thing.generationId}/${this.generationType}`;
+        }
+        thing.id = id;
+        this.ids[id] = thing;
     },
     cancelId(id) {
         // TODO: Document.

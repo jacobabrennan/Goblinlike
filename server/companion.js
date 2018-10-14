@@ -23,6 +23,22 @@ Hero.prototype.initializer = (function (parentFunction){
         return this;
     };
 })(Hero.prototype.initializer);
+Hero.prototype.toJSON = (function (parentFunction){
+    return function (){
+        let result = parentFunction.apply(this, arguments);
+        result.companions = this.companions.map(companion => companion.id);
+        return result;
+    }
+})(Hero.prototype.toJSON)
+Hero.prototype.fromJSON = (function (parentFunction){
+    return function (data){
+        let config = parentFunction.apply(this, arguments);
+        return () => {
+            if(config){ config();}
+            this.companions = data.companions.map(id => mapManager.idManager.get(id));
+        };
+    }
+})(Hero.prototype.fromJSON)
 Hero.prototype.die = (function (parentFunction){
     return function (){
         this.companions = null;
@@ -189,7 +205,6 @@ class Companion extends Person {
     }
     toJSON() {
         let result = super.toJSON(...arguments);
-        result.loadInstruction = 'companion';
         result.companion = true;
         if(this.goal){ result.goal = this.goal.toJSON();}
         if(this.dead){ result.dead = this.dead;}
@@ -197,12 +212,13 @@ class Companion extends Person {
         return result;
     }
     fromJSON(data){
-        super.fromJSON(...arguments);
+        let config = super.fromJSON(...arguments);
         if(data.dead){ this.dead = data.dead;}
         if(data.lost){ this.lost = data.lost;}
         if(data.goal){
             // TO DO
         }
+        return config;
     }
     adjustExperience(amount) {
         /**
@@ -492,6 +508,7 @@ Companion.prototype.character = 'g';
 Companion.prototype.faction = FACTION_GOBLIN;
 Companion.prototype.color = '#5c3';
 Companion.prototype.companion = true;
+Companion.prototype.generationId = 'companion';
 
 //-- Goal Types ----------------------------------
 // TO DO
@@ -631,4 +648,5 @@ class GoalHero extends Goal {
 
 //== Exports ===================================================================
 
+modelLibrary.registerModel('special', Companion);
 export default Companion;
