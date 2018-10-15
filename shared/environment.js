@@ -9,7 +9,8 @@ const fakeNetwork = {};
 
 //-- Misc. Configuration: ------------------------
 const debug = false;
-const VERSION = '1.1.7';
+const VERSION = '1.2.0';
+const STORAGE_VERSION = '1.2';
 const displaySize = 21;
 const DEFAULT_MAP_SIZE = 48;
 const HIGHLIGHT = 'highlight';
@@ -26,6 +27,7 @@ const INTRO_TITLE = 'You descend into darkness';
 const INTRO_BODY = 'While running from humans in the forest, you stumble on a secret passage into an abandoned dwarven city. The once magnificent halls and chambers are now littered with trash and debris. It smells of decay. You think you hear the sound of another goblin up ahead, but you think you also saw something hideous crawling in the darkness.';
 const GOBLIN_SCORE = 100;
 const URL_SCORE_REPORT = 'http://jacobabrennan.com:7231/scores';
+const SAVE_STORAGE = 'gameSave';
 
 //-- Directions: ---------------------------------
 const WAIT      = 0;

@@ -3,7 +3,9 @@
 function getClient() {
     return fakeNetwork.client;
 }
-
+window.addEventListener('beforeunload', function () {
+    gameManager.save();
+});
 
 //== Game Manager ==============================================================
 
@@ -156,6 +158,7 @@ class Game {
     //-- Saving & Loading ----------------------------
     toJSON() {
         let result = {
+            version: STORAGE_VERSION,
             map: mapManager.toJSON(),
             time: this.currentTime,
             hero: this.hero.id,

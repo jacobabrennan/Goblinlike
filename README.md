@@ -1,6 +1,8 @@
 # Goblin-Like
 Old School Roguelike featuring a Goblin protagonist.
 
+Now autosaves when you leave the page.
+
 Try out a live version of the game:
 http://jacobabrennan.github.io/Goblinlike/
 

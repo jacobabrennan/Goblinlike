@@ -36,6 +36,7 @@ client.drivers.gameplay = Object.extend(driver, {
         this.memory.sense(gameData);
     },
     gameOver(deathData){
+        localStorage.removeItem(SAVE_STORAGE);
         this.dead = true;
         this.takeTurn(deathData);
     },

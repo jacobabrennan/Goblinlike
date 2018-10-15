@@ -34,7 +34,11 @@ client.drivers.title = Object.extend(driver, {
             case COMMAND_ENTER:
             case COMMAND_CANCEL:
                 clearInterval(this.drawInterval);
-                this.newGame();
+                if(localStorage.getItem(SAVE_STORAGE)){
+                    this.loadGame();
+                } else{
+                    this.newGame();
+                }
                 return true;
             case COMMAND_HELP:
                 clearInterval(this.drawInterval);
@@ -86,7 +90,7 @@ client.drivers.title = Object.extend(driver, {
             client.skin.drawString(0,19,'                                          ','#008');
             client.skin.drawString(0,18,'                                          ','#008');
             client.skin.drawString(0,17,'                                    /\\    ','#008');
-            client.skin.drawString(0,16,'                                   /D \\ _ ','#008');
+            client.skin.drawString(0,16,'                                   /  \\ _ ','#008');
             client.skin.drawString(0,15,'                     ____-----  __/   \\\\  ','#008');
             client.skin.drawString(0,14,'                      _ ____     /     \\\\ ','#008');
             client.skin.drawString(0,13,'                              /\\/        \\','#008');
@@ -103,7 +107,12 @@ client.drivers.title = Object.extend(driver, {
             client.skin.drawString(0, 2,':.:.:. . ./T\\ /T\\//T\\|/T:|:~-  ~~~: ./T\\/T','#008');
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
-            client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
+            if(localStorage.getItem(SAVE_STORAGE)){
+                client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
+            } else{
+                client.skin.drawCommand(6, 11, 'A', 'Continue', COMMAND_ENTER);
+            }
+
             //client.skin.drawCommand(8,  9, 'B', 'About', COMMAND_HELP);
         };
         var maxCloud = 40;
