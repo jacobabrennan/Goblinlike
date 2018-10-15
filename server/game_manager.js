@@ -275,6 +275,7 @@ class Game {
         };
         this.hero.intelligence.win(winData);
         getClient().reportScores(true);
+        localStorage.removeItem(SAVE_STORAGE);
         this.dispose();
     }
     compileScores(win) {
