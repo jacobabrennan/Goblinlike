@@ -109,10 +109,10 @@ const EQUIP_FINGER = 'finger';
 
 //-- Damage Types (bit flags) --------------------
 const DAMAGE_PHYSICAL = 1;
-const DAMAGE_FIRE =  2;
-const DAMAGE_ACID =  4;
+const DAMAGE_FIRE  =  2;
+const DAMAGE_ACID  =  4;
 const DAMAGE_MAGIC =  8;
-const DAMAGE_0000000000010000 = 16;
+const DAMAGE_ICE   = 16;
 const DAMAGE_0000000000100000 = 32;
 const DAMAGE_0000000000000000 =  0;
 
@@ -122,6 +122,10 @@ const P_DIJKSTRA_FINISHED  = 1;
 const P_DIJKSTRA_ADD_PATH  = 2;
 const P_INCLUDE_INTERIOR   = 1;
 const P_INCLUDE_FINISHED   = 2;
+
+//-- Creature Types --------------------------------
+const CREATURE_NONE   = 0;
+const CREATURE_UNDEAD = 1;
 
 
 /*===========================================================================

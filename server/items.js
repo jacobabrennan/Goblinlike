@@ -6,6 +6,7 @@
 import Item from './item.js';
 import modelLibrary from './model_library.js';
 import {Weapon, Bow, Projectile} from './extension_combat.js';
+import Actor from './actor.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
 
@@ -13,10 +14,6 @@ import gameManager from './game_manager.js';
 //== Base Prototypes (wands, rings, etc.) ======================================
 
 class Wand extends Item {
-    constructor() {
-        super(...arguments);
-        this.charges = 5;
-    }
     // Redefined Methods
     description() {
         return mapManager.idManager.describeWand(this);
@@ -84,20 +81,9 @@ Wand.prototype.placement = EQUIP_MAINHAND;
 Wand.prototype.targetClass = TARGET_DIRECTION;
 Wand.prototype.lore = 10;
 // New Properties
+Wand.prototype.charges = 5;
 Wand.prototype.range = 15;
-Wand.prototype.projectileType = (() => {
-    class WandProjectile extends Projectile {
-        attack(attacker, target) {
-            this.baseDamage = attacker.wisdom+attacker.level;
-            attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
-            return super.attack(...arguments);
-        }
-    }
-    WandProjectile.prototype.damageType = DAMAGE_FIRE;
-    WandProjectile.prototype.damageSigma = 0;
-    WandProjectile.prototype.baseDamage = 3;
-    return WandProjectile;
-})();
+Wand.prototype.projectileType = undefined;
 
 class Scroll extends Item {
     description() {
@@ -158,6 +144,101 @@ Arrow.prototype.ephemeral = false;
 Arrow.prototype.viewText = 'You see an arrow.';
 
 
+//== Un-data-reduced item types ================================================
+
+modelLibrary.registerModel('special', (() => {// Ice Block
+    class IceBlock extends Actor {
+        constructor() {
+            super(...arguments);
+            this.lifeSpan = gaussRandom(20, 1);
+        }
+        place() {
+            this.initializer();
+            gameManager.registerActor(this);
+            this.dense = false;
+            let result = super.place(...arguments);
+            this.dense = true;
+            return result;
+        }
+        takeTurn(callback) {
+            this.lifeSpan--;
+            if(this.trapped){
+                if(this.trapped.dead){ this.trapped = null;}
+                else{ this.trapped.nextTurn += this.turnDelay;}
+            }
+            if(!this.trapped){
+                this.color = '#0ff';
+                this.character = '#';
+            }
+            if(this.lifeSpan <= 0){
+                this.dispose();
+                callback(false);
+            } else{
+                super.takeTurn(...arguments);
+            }
+        }
+        trap(target) {
+            this.trapped = target;
+            this.trapped.nextTurn += this.turnDelay;
+            this.color = target.color;
+            this.character = target.character;
+        }
+    }
+    IceBlock.prototype.generationId = 'iceBlock';
+    IceBlock.prototype.faction = ~0;
+    IceBlock.prototype.dense = true;
+    IceBlock.prototype.character = '#';
+    IceBlock.prototype.color = '#0ff';
+    IceBlock.prototype.background = '#00f';
+    IceBlock.prototype.name = 'ice block';
+    IceBlock.prototype.viewText = 'You see a large block of ice.'
+    return IceBlock;
+})());
+
+class FireProjectile extends Projectile {
+    attack(attacker, target) {
+        this.baseDamage = attacker.wisdom+attacker.level;
+        attacker.hear(null, 10, target, 'A fireball engulfs the '+target.name+'!');
+        return super.attack(...arguments);
+    }
+}
+FireProjectile.prototype.damageType = DAMAGE_FIRE;
+FireProjectile.prototype.damageSigma = 0;
+FireProjectile.prototype.baseDamage = 3;
+
+class IceProjectile extends Projectile {
+    attack(attacker, target) {
+        attacker.hear(null, 10, target, 'Ice engulfs the '+target.name+'!');
+        let ice = modelLibrary.getModel('special', 'iceBlock');
+        ice = new ice();
+        ice.place(target.x, target.y, target.levelId);
+        ice.trap(target);
+    }
+    move() {
+        let success = super.move(...arguments);
+        if(!success){ return success;}
+        let ice = modelLibrary.getModel('special', 'iceBlock');
+        ice = new ice();
+        ice.place(this.x, this.y, this.levelId);
+        return success;
+    }
+}
+IceProjectile.prototype.damageType = DAMAGE_ICE;
+IceProjectile.prototype.damageSigma = 0;
+IceProjectile.prototype.baseDamage = 0;
+
+class HealProjectile extends Projectile {
+    attack(attacker, target) {
+        if(target.creatureType & CREATURE_UNDEAD){
+            attacker.hear(null, 10, target, `${target.name} resists the effects!`);
+            return;
+        }
+        attacker.hear(null, 10, target, `${target.name} is healed!`);
+        return target.adjustHp(30);
+    }
+}
+
+
 //== Specific Mappable Items ===================================================
 
 let itemArchetypes = {
@@ -216,7 +297,7 @@ const effects = {
             }
         }
     },
-    fireScroll: function(user, targetData){
+    scrollFire: function(user, targetData){
         // Attempt to find the target, by ID within view.
         var targetId = targetData.target.id;
         var testTarget = mapManager.idManager.get(targetId);
@@ -277,7 +358,7 @@ let itemModels = [
         // Description:
         viewText: 'You see an acid potion. Most organic materials will corrode when covered in this liquid.'
     },
-    {// cowardice potion
+    /*{// cowardice potion
         modelType: 'potion',
         generationId: 'cowardice potion',
         generationWeight: 4,
@@ -287,7 +368,7 @@ let itemModels = [
         effectId: 'cowardicePotion',
         // Description:
         viewText: 'You see a cowardice potion. Drinking this potion will lower your moral.'
-    },
+    },*/
     {// courage potion
         modelType: 'potion',
         generationId: 'courage potion',
@@ -308,8 +389,33 @@ let itemModels = [
         generationWeight: 4,
         lore: 20,
         name: 'Wand of Fire',
+        projectileType: FireProjectile,
         // Description:
         viewText: 'You see a wand of fire. This magical item can shoot fireballs at your enemies.'
+    },
+    {// ice wand
+        modelType: 'wand',
+        // Id:
+        generationId: 'ice wand',
+        generationWeight: 5,
+        lore: 30,
+        charges: 2,
+        name: 'Wand of Ice',
+        projectileType: IceProjectile,
+        // Description:
+        viewText: 'You see a wand of ice. This magical item creates a wall of ice to freeze your enemies.'
+    },
+    {// heal wand
+        modelType: 'wand',
+        // Id:
+        generationId: 'heal wand',
+        generationWeight: 4,
+        lore: 25,
+        charges: 3,
+        name: 'Wand of Healing',
+        projectileType: HealProjectile,
+        // Description:
+        viewText: `You see a wand of Healing. This magical item will heal your companions' wounds.`
     },
     /*
     {// Test Wand
@@ -320,7 +426,7 @@ let itemModels = [
     },*/
 
     //-- Scrolls -------------------------------------
-    {// fire scroll
+    /*{// fire scroll
         modelType: 'scroll',
         generationId: 'fire scroll',
         generationWeight: 2,
@@ -329,7 +435,7 @@ let itemModels = [
         effectId: 'scrollFire',
         // Description:
         viewText: 'You see a fire scroll. This magical item can summon a blast of fire to envelope your enemy.'
-    },
+    },*/
 
     //-- Weapons -------------------------------------
     { // Rock
@@ -662,9 +768,7 @@ let itemModels = [
     }
 ];
 
-
-//==============================================================================
-
+//-- Load Data into Model Library ----------------
 itemModels.forEach(itemModel => {
     let parentModel = Item;
     if(itemModel.modelType){
@@ -679,6 +783,9 @@ itemModels.forEach(itemModel => {
             case 'modelType': break;
             case 'effectId':
                 itemClass.prototype.effect = effects[itemModel[key]];
+                if(itemClass.prototype.effect === undefined){
+                    throw `Error assigning effect to item: ${itemModel.generationId}`;
+                }
                 break;
             default:
                 itemClass.prototype[key] = itemModel[key];

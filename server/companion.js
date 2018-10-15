@@ -206,7 +206,6 @@ class Companion extends Person {
     toJSON() {
         let result = super.toJSON(...arguments);
         result.companion = true;
-        if(this.goal  ){ result.goal   = this.goal.toJSON();}
         if(this.dead  ){ result.dead   = this.dead  ;}
         if(this.lost  ){ result.lost   = this.lost  ;}
         if(this.active){ result.active = this.active;}

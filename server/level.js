@@ -238,9 +238,14 @@ class level {
         } else if(content.type == TYPE_ACTOR){
             // Find head of new linked list, attach it as a tail on content.
             var firstContent = this.getTileContents(x, y, true);
-            content.nextContent = firstContent;
-            var compoundIndex = y*this.width + x;
-            this.tileContentsGrid[compoundIndex] = content;
+            if(!content.dense && firstContent && firstContent.dense){ // Give priority to dense content
+                content.nextContent = firstContent.nextContent;
+                firstContent.nextContent = content;
+            } else{
+                content.nextContent = firstContent;
+                var compoundIndex = y*this.width + x;
+                this.tileContentsGrid[compoundIndex] = content;
+            }
         } else{
             // Find tail of new linked list, and add content to it.
             if(contents.length){

@@ -175,6 +175,7 @@ const enemyModels = [
         rewardExperience: 40,
         forgetful: 15,
         baseHp: 30,
+        creatureType: CREATURE_UNDEAD,
         // Behavior:
         opensDoors: 1,
         // Description:
@@ -194,6 +195,7 @@ const enemyModels = [
         forgetful: 15,
         turnDelay: 2,
         baseHp: 60,
+        creatureType: CREATURE_UNDEAD,
         // Behavior:
         opensDoors: 1,
         // Description:
@@ -323,6 +325,7 @@ const enemyModels = [
         turnDelay: 2/3,
         baseHp: 50,
         behavior: 'behaviorDirect',
+        creatureType: CREATURE_UNDEAD,
         // Behavior:
         skills: ['attack', 'wail'],
         // Description:

@@ -181,8 +181,8 @@ Enemy.prototype.baseAttack = 1;
 Enemy.prototype.faction = FACTION_ENEMY;
 Enemy.prototype.behavior = undefined;
 Enemy.prototype.skills = ["attack"];
-Enemy.prototype.undead = false;
 Enemy.prototype.opensDoors = 0;
+Enemy.prototype.creatureType = CREATURE_NONE,
     // Percentage chance to successfully open door.
 Enemy.prototype.vigilance = 3;
     // The minimum distance from which the enemy can be activated by sound.
@@ -774,6 +774,7 @@ modelLibrary.registerModel('special', (() => {// emperor wight
     Wight.prototype.rewardExperience = 400;
     Wight.prototype.forgetful = 15;
     Wight.prototype.baseHp = 150;
+    Wight.prototype.creatureType = CREATURE_UNDEAD;
     // Behavior:
     Wight.prototype.breedRate = 8;
     Wight.prototype.breedRateDecay = 1/2;

@@ -184,11 +184,17 @@ class Hero extends Person {
         );
         // If enemy found, attack and end turn.
         if(obstruction && obstruction.type == TYPE_ACTOR){
-            if(obstruction.faction & this.faction){
+            // Trade Places with companions
+            if(this.companions.includes(obstruction)){
                 mapManager.swapPlaces(this, obstruction);
                 this.endTurn();
-            } else{
+            // Attack non-faction members
+            } else if(!(this.faction & obstruction.faction)){
                 this.commandAttack({id: obstruction.id});
+            // Attempt to move
+            } else{
+                this.move(direction);
+                this.endTurn();
             }
         } else{
         // Else, move and end turn.

@@ -192,10 +192,8 @@ Tile.prototype.adjacent = function (instanceData, closed){
             if(!tileModel){
                 continue;
             }
-            if(tileModel.dense){
-                if(!tileModel.pathable){
-                    continue;
-                }
+            if(tileModel.dense && !tileModel.pathable){
+                continue;
             }
             adjacentArray.push({
                 x: posX,
