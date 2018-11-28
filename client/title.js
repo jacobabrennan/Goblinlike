@@ -108,9 +108,9 @@ client.drivers.title = Object.extend(driver, {
             client.skin.drawString(0, 1,'.|  .   .:/T\\:/T\\:/T/T\\:::~ -   - ~:  .:/T','#008');
             client.skin.drawString(0, 0,': .   .  .::.:/T\\|::/T\\|: -  - -  ~ :. .::','#008');
             if(localStorage.getItem(SAVE_STORAGE)){
-                client.skin.drawCommand(8, 11, 'A', 'Continue', COMMAND_ENTER);
+                client.skin.drawCommand(6, 11, 'A', 'Continue', COMMAND_ENTER);
             } else{
-                client.skin.drawCommand(6, 11, 'A', 'Start', COMMAND_ENTER);
+                client.skin.drawCommand(8, 11, 'A', 'Start', COMMAND_ENTER);
             }
 
             //client.skin.drawCommand(8,  9, 'B', 'About', COMMAND_HELP);
