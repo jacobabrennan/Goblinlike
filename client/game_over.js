@@ -13,11 +13,12 @@
   ===========================================================================*/
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 
 //------------------------------------------------
-client.drivers.gameOver = Object.extend(driver, {
+client.drivers.gameOver = extend(driver, {
     displayPane: undefined,
     displayPane2: undefined,
     characterData: undefined,

@@ -3,11 +3,12 @@
 //== TODO: Document ============================================================
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 
 //------------------------------------------------
-client.skin = Object.extend(driver, {
+client.skin = extend(driver, {
     container: undefined,
     context: undefined,
     setup(configuration){

@@ -9,9 +9,10 @@ function getGameManager() {
 
 //-- Imports -------------------------------------
 import driver from './driver.js';
+import extend from './extend.js';
 
 //------------------------------------------------
-const client = Object.extend(driver, {
+const client = extend(driver, {
     drivers: {},
     setup(configuration){
         this.skin.setup(configuration);

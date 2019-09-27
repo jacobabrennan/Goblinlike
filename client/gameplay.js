@@ -12,12 +12,13 @@
 ==============================================================================*/
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 import memory from './memory.js';
 
 //------------------------------------------------
-client.drivers.gameplay = Object.extend(driver, {
+client.drivers.gameplay = extend(driver, {
     memory: memory,
     drivers: {},
     activeTurn: false,

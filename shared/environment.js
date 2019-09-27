@@ -121,32 +121,3 @@ const DAMAGE_0000000000000000 =  0;
 //-- Creature Types --------------------------------
 const CREATURE_NONE   = 0;
 const CREATURE_UNDEAD = 1;
-
-
-/*===========================================================================
-    Default Object Extentions
-    This is legacy code from before ECMA2015, and needs to be factored out.
-  ===========================================================================*/
-
-if(Object.extend){
-    console.log('Cannot attach method "extend" to Object.');
-} else{
-    Object.extend = function (aPrototype, extention){
-        const valueConfiguration = {};
-        for(let key in extention){
-            if(!extention.hasOwnProperty(key)){ continue;}
-            const keyValue = extention[key];
-            if(keyValue && keyValue.value){
-                valueConfiguration[key] = keyValue;
-                continue;
-            }
-            valueConfiguration[key] = {
-                value: extention[key],
-                configurable: true,
-                enumerable: true,
-                writable: true
-            }
-        }
-        return Object.create(aPrototype, valueConfiguration);
-    };
-};

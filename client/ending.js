@@ -3,11 +3,12 @@
 //== Ending ====================================================================
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 
 //------------------------------------------------
-client.drivers.ending = Object.extend(driver, {
+client.drivers.ending = extend(driver, {
     endLines: 10, // Set in display. Any number > ~2 will do for initial setting.
     focused(){
         //this.winInfo = client.drivers.gameplay.won; // Set separately by menu

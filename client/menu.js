@@ -11,6 +11,7 @@
 ==============================================================================*/
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 // To Do: Refactor the following:
@@ -21,7 +22,7 @@ import mapManager from '../server/map_manager.js'
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 //------------------------------------------------
-const menu = Object.extend(driver, {
+const menu = extend(driver, {
     displayWidth: displaySize,
     displayHeight: displaySize,
     defaultMenu: undefined,
@@ -146,7 +147,7 @@ client.drivers.gameplay.drivers.menu = menu;
     
 ==============================================================================*/
 
-const descriptionMenu = Object.extend(driver, {
+const descriptionMenu = extend(driver, {
     setup(){},
     display(title, description){
         /**
@@ -176,7 +177,7 @@ const descriptionMenu = Object.extend(driver, {
         return false;
     }
 });
-const commandsMenu = Object.extend(driver, {
+const commandsMenu = extend(driver, {
     /**
         The statusMenu is used by the menuing system to display information
             about the character. It is the default display state of the
@@ -235,7 +236,7 @@ const commandsMenu = Object.extend(driver, {
         return false;
     }
 });
-const infoMenu = Object.extend(driver, {
+const infoMenu = extend(driver, {
     /**
         The infoMenu is used by the menuing system to display blocks of
         text to the player.
@@ -344,7 +345,7 @@ const infoMenu = Object.extend(driver, {
         client.drivers.gameplay.drivers.map.display();
     }
 });
-const statusMenu = Object.extend(driver, {
+const statusMenu = extend(driver, {
     /**
         The statusMenu is used by the menuing system to display information
             about the character. It is the default display state of the
@@ -451,7 +452,7 @@ const statusMenu = Object.extend(driver, {
         return false;
     }
 });
-const optionsMenu = Object.extend(driver, {
+const optionsMenu = extend(driver, {
     /**
         The optionsMenu is used to prompt the player to make a selection
             from several provided options.
@@ -595,7 +596,7 @@ const optionsMenu = Object.extend(driver, {
         this.actionCallback(indexedOption, selectionIndex);
     } 
 });
-const directionSelectMenu = Object.extend(driver, {
+const directionSelectMenu = extend(driver, {
     /**
         The directionSelectMenu is used by the menuing system to prompt the
             player to select a direction. This is used in targeting spells,
@@ -637,7 +638,7 @@ const directionSelectMenu = Object.extend(driver, {
         this.directionCallback = undefined;
     }
 });
-const helpMenu = Object.extend(driver, {
+const helpMenu = extend(driver, {
     setup(){},
     display(which){
         menu.blank();
@@ -818,7 +819,7 @@ const helpMenu = Object.extend(driver, {
         return true;
     }
 });
-/*var helpMenu = Object.extend(driver, {
+/*var helpMenu = extend(driver, {
     setup(){},
     display(title, description){
         menu.blank();

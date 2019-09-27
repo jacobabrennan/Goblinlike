@@ -11,11 +11,12 @@
 ==============================================================================*/
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
 
 //------------------------------------------------
-client.drivers.gameplay.drivers.map = Object.extend(driver, {
+client.drivers.gameplay.drivers.map = extend(driver, {
     displayWidth: displaySize,
     displayHeight: displaySize,
     setup(configuration){

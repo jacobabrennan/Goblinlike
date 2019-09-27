@@ -5,12 +5,13 @@
   ===========================================================================*/
 
 //-- Imports -------------------------------------
+import extend from './extend.js';
 import sWerd from '../shared/swerd.js';
 import client from './client.js';
 import driver from './driver.js';
 
 //------------------------------------------------
-client.drivers.title = Object.extend(driver, {
+client.drivers.title = extend(driver, {
     drivers: {},
     setup(configuration){
         /**
@@ -228,7 +229,7 @@ client.drivers.title = Object.extend(driver, {
         //client.displayText(picture);
     }
 });
-client.drivers.title.drivers.rollCharacter = Object.extend(driver, {
+client.drivers.title.drivers.rollCharacter = extend(driver, {
     roll(){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
@@ -367,7 +368,7 @@ client.drivers.title.drivers.rollCharacter = Object.extend(driver, {
         gameDriver.display();
     }
 });
-client.drivers.title.drivers.about = Object.extend(driver, {
+client.drivers.title.drivers.about = extend(driver, {
     display(){
         client.skin.clearCommands();
         client.skin.fillRect(0, 0, displaySize*2, displaySize, '#000');
