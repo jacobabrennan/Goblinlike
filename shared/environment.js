@@ -118,13 +118,6 @@ const DAMAGE_ICE   = 16;
 const DAMAGE_0000000000100000 = 32;
 const DAMAGE_0000000000000000 =  0;
 
-//-- Path Finding ----------------------------------
-const P_DIJKSTRA_NOT_FOUND = 0;
-const P_DIJKSTRA_FINISHED  = 1;
-const P_DIJKSTRA_ADD_PATH  = 2;
-const P_INCLUDE_INTERIOR   = 1;
-const P_INCLUDE_FINISHED   = 2;
-
 //-- Creature Types --------------------------------
 const CREATURE_NONE   = 0;
 const CREATURE_UNDEAD = 1;
@@ -156,16 +149,4 @@ if(Object.extend){
         }
         return Object.create(aPrototype, valueConfiguration);
     };
-};
-
-
-/*===========================================================================
-    Useful functions.
-  ===========================================================================*/
-
-const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const characterIndex = function (character){
-    // Converts a letter to it's position in the alphabet. Returns a number.
-    character = character.toLowerCase();
-    return alphabet.indexOf(character);
 };

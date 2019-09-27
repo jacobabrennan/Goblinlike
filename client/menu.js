@@ -16,6 +16,10 @@ import driver from './driver.js';
 // To Do: Refactor the following:
 import mapManager from '../server/map_manager.js'
 
+
+//-- Module Constants ----------------------------
+const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
 //------------------------------------------------
 const menu = Object.extend(driver, {
     displayWidth: displaySize,
@@ -509,7 +513,6 @@ const optionsMenu = Object.extend(driver, {
             };
             for(var displayIndex = 0; displayIndex < displayMax; displayIndex++){
                 var indexedOption = this.actionOptions[displayIndex+pagedOffset];
-                var alphabet = 'abcdefghijklmnopqrstuvwxyz';
                 var indexCharacter = alphabet.charAt(displayIndex);
                 var selectFunction = optionLinkFunction(indexCharacter);
                 client.skin.drawCommand(
@@ -568,8 +571,11 @@ const optionsMenu = Object.extend(driver, {
                 return true;
             default:
                 if(options.key){
+                    let keyChar = options.key.toLowerCase();
+                    const characterIndex = alphabet.indexOf(keyChar);
                     var selectionIndex = Math.min(
-                        this.optionsDisplayMax, characterIndex(options.key)
+                        this.optionsDisplayMax,
+                        characterIndex,
                     );
                     selectionIndex += this.optionsPage*this.optionsDisplayMax;
                     if(

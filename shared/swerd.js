@@ -46,7 +46,7 @@ sWerd.rules.W.forEach(function (pattern){
 //== Swerd =====================================================================
 
 //-- Dependencies --------------------------------
-import * as random from '../shared/ramdom.js';
+import * as random from '../shared/random.js';
 
 //-- Utility -------------------------------------
 const sWerdRepeat = function (ruleArray){

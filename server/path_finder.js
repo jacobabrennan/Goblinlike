@@ -173,6 +173,13 @@ import {Tile, genericTileTypes} from './tiles.js';
 import PriorityQueue from './priority_queue.js';
 import mapManager from './map_manager.js';
 
+//-- Project Constants ---------------------------
+const P_DIJKSTRA_NOT_FOUND = 0;
+const P_DIJKSTRA_FINISHED  = 1;
+const P_DIJKSTRA_ADD_PATH  = 2;
+const P_INCLUDE_INTERIOR   = 1;
+const P_INCLUDE_FINISHED   = 2;
+
 //------------------------------------------------
 Tile.prototype.adjacent = function (instanceData, closed){
     var adjacentArray = [];
