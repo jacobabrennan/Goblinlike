@@ -5,6 +5,7 @@
   ===========================================================================*/
 
 //-- Imports -------------------------------------
+import sWerd from '../shared/swerd.js';
 import client from './client.js';
 import driver from './driver.js';
 

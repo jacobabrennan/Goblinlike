@@ -45,6 +45,9 @@ sWerd.rules.W.forEach(function (pattern){
 
 //== Swerd =====================================================================
 
+//-- Dependencies --------------------------------
+import * as random from '../shared/ramdom.js';
+
 //-- Utility -------------------------------------
 const sWerdRepeat = function (ruleArray){
     var finishArray = [];
@@ -64,7 +67,7 @@ const sWerdRepeat = function (ruleArray){
 };
 
 //-- Definition ----------------------------------
-const sWerd = {
+export default {
     rules: {
         // Orc Rules
         W: sWerdRepeat(['VCR','VRK','BVXK*2','VXK*2','BVXR*2','VXR*2']), // Master Rule
@@ -123,7 +126,7 @@ const sWerd = {
         var subList = this.rules[rule];
         var selection;
         if(subList){
-            selection = arrayPick(subList);
+            selection = random.arrayPick(subList);
         } else if(rule && ((rule.length != 1) || (rule.toUpperCase() != rule))){
             selection = rule;
         } else{
@@ -144,6 +147,3 @@ const sWerd = {
         return substitution;
     }
 };
-
-//-- Export --------------------------------------
-//export default sWerd;

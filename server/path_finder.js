@@ -169,7 +169,6 @@ include - A parameter which determines which datums to return
 */
 
 //-- Dependencies --------------------------------
-import * as mathExtension from '../shared/math.js';
 import {Tile, genericTileTypes} from './tiles.js';
 import PriorityQueue from './priority_queue.js';
 import mapManager from './map_manager.js';

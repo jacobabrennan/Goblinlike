@@ -28,7 +28,7 @@
 ==============================================================================*/
 
 //-- Dependencies --------------------------------
-import * as mathExtension from '../shared/math.js';
+import * as random from '../shared/random.js';
 import mapManager from './map_manager.js';
 import level from './level.js';
 import modelLibrary from './model_library.js';
@@ -133,7 +133,7 @@ const protoLevel = {
             } else{
                 startY = options.startY;
             }
-            var roomDirection = arrayPick([NORTH,SOUTH,EAST,WEST]);
+            var roomDirection = random.arrayPick([NORTH,SOUTH,EAST,WEST]);
             var roomDimentions = this.placeRoom(startX, startY, roomDirection);
             if(roomDimentions){
                 upRoom = roomDimentions;
@@ -144,7 +144,7 @@ const protoLevel = {
         // Place More Rooms and Halls
         this.halls = [];
         while(this.openings.length){
-            var opening = arrayPick(this.openings);
+            var opening = random.arrayPick(this.openings);
             var rotatedCoords = this.getCoordsRotate(opening.x, opening.y, 1, 0, opening.direction);
             if(Math.random() > 1/4 && false){
                 this.closeOpening(opening.x, opening.y, '#');
@@ -168,7 +168,7 @@ const protoLevel = {
         var cRoom;
         if(this.rooms.length === 1){ cRoom = this.rooms[0];}
         else{
-            let crIndex = mathExtension.randomInterval(1, this.rooms.length-1);
+            let crIndex = random.randomInterval(1, this.rooms.length-1);
             cRoom = this.rooms[crIndex];
         }
         // Place stairs, down and up.
@@ -184,10 +184,10 @@ const protoLevel = {
         if(this.placeStairsDown){
             var downRoom;
             do{
-                downRoom = arrayPick(this.rooms);
+                downRoom = random.arrayPick(this.rooms);
             } while(this.rooms.length > 1 && downRoom == upRoom);
-            stairsDownX = mathExtension.randomInterval(0, downRoom.width -1) + downRoom.x;
-            stairsDownY = mathExtension.randomInterval(0, downRoom.height-1) + downRoom.y;
+            stairsDownX = random.randomInterval(0, downRoom.width -1) + downRoom.x;
+            stairsDownY = random.randomInterval(0, downRoom.height-1) + downRoom.y;
             this.setTile(stairsDownX, stairsDownY, '>');
         }
         // Create copy of generic type types hash. TODO: Refactor This.
@@ -226,7 +226,7 @@ const protoLevel = {
         enemyPoints *= 10; // TODO: MAGIC NUMBERS! 100 to go up a level, 10 points per enemy per level.
         while(enemyPoints >= 10/* && this.rooms.length > 1*/){
             var mean = this.depth*10;
-            var attemptedWeight = Math.max(5, Math.round(mathExtension.gaussRandom(mean, mean/3)));
+            var attemptedWeight = Math.max(5, Math.round(random.gaussRandom(mean, mean/3)));
             var enemyClass = modelLibrary.getModelByWeight('enemy', attemptedWeight);
             if(!enemyClass){
                 break;
@@ -237,15 +237,15 @@ const protoLevel = {
             randomEnemy.initializer();
             var placed = false;
             while(!placed){
-                /*var randomRoom = arrayPick(this.rooms);
+                /*var randomRoom = random.arrayPick(this.rooms);
                 if(randomRoom == upRoom){
                     continue;
                 }
-                var xPos = randomRoom.x + mathExtension.randomInterval(0,randomRoom.width-1);
-                var yPos = randomRoom.y + mathExtension.randomInterval(0,randomRoom.height-1);
+                var xPos = randomRoom.x + random.randomInterval(0,randomRoom.width-1);
+                var yPos = randomRoom.y + random.randomInterval(0,randomRoom.height-1);
                 */
-                var xPos = mathExtension.randomInterval(1, this.width-1);
-                var yPos = mathExtension.randomInterval(1, this.height-1);
+                var xPos = random.randomInterval(1, this.width-1);
+                var yPos = random.randomInterval(1, this.height-1);
                 if(
                     (xPos >= upRoom.x && xPos <= upRoom.x+upRoom.width) &&
                     (yPos >= upRoom.y && yPos <= upRoom.y+upRoom.height)
@@ -263,7 +263,7 @@ const protoLevel = {
         var itemPoints = (this.width * this.height * this.depth) / 80; // TODO: MAGIC NUMBERS! Item Density.
         while(itemPoints >= 0 && this.rooms.length > 1){
             var iMean = this.depth;
-            var iAttemptedWeight = Math.max(1, Math.round(mathExtension.gaussRandom(iMean, iMean/3)));
+            var iAttemptedWeight = Math.max(1, Math.round(random.gaussRandom(iMean, iMean/3)));
             var itemClass = modelLibrary.getModelByWeight('item', iAttemptedWeight);
             if(!itemClass){
                 break;
@@ -274,11 +274,11 @@ const protoLevel = {
             randomItem.initializer();
             var iPlaced = false;
             while(!iPlaced){
-                //var iRandomRoom = arrayPick(this.rooms);
-                var iXPos = mathExtension.randomInterval(1, this.width-1);
-                var iYPos = mathExtension.randomInterval(1, this.height-1);
-                //var iXPos = iRandomRoom.x + mathExtension.randomInterval(0,iRandomRoom.width-1);
-                //var iYPos = iRandomRoom.y + mathExtension.randomInterval(0,iRandomRoom.height-1);
+                //var iRandomRoom = random.arrayPick(this.rooms);
+                var iXPos = random.randomInterval(1, this.width-1);
+                var iYPos = random.randomInterval(1, this.height-1);
+                //var iXPos = iRandomRoom.x + random.randomInterval(0,iRandomRoom.width-1);
+                //var iYPos = iRandomRoom.y + random.randomInterval(0,iRandomRoom.height-1);
                 var iTile = mapManager.getTile(iXPos, iYPos, newLevel.id);
                 if(iTile.id != 'floor' && iTile.id != 'hall'){ continue;}
                 iPlaced = randomItem.place(iXPos, iYPos, newLevel.id);
@@ -293,12 +293,12 @@ const protoLevel = {
             var tries = 100;
             while(!cPlaced && tries > 0){
                 tries--;
-                var crx = mathExtension.randomInterval(cRoom.x, cRoom.x+cRoom.width );
-                var cry = mathExtension.randomInterval(cRoom.y, cRoom.y+cRoom.height);
+                var crx = random.randomInterval(cRoom.x, cRoom.x+cRoom.width );
+                var cry = random.randomInterval(cRoom.y, cRoom.y+cRoom.height);
                 cPlaced = C.place(crx, cry, newLevel.id);
             }
             if(!cPlaced){
-                while(!C.place(mathExtension.randomInterval(0,31),mathExtension.randomInterval(0,31),newLevel.id)){}
+                while(!C.place(random.randomInterval(0,31),random.randomInterval(0,31),newLevel.id)){}
             }
         };
         var Cs = (this.depth === FINAL_DEPTH)? 0 : 1;
@@ -402,7 +402,7 @@ const protoLevel = {
          *      }
          **/
         if(!direction){
-            direction = arrayPick([EAST,WEST,NORTH,SOUTH]);
+            direction = random.arrayPick([EAST,WEST,NORTH,SOUTH]);
         }
         var max = this.roomSideMax-1;
         var min = -(this.roomSideMax-1);
@@ -444,15 +444,15 @@ const protoLevel = {
             return null;
         }
         //
-        var wallIndex = mathExtension.randomInterval(this.roomSideMin-1, intervals.length-1);
+        var wallIndex = random.randomInterval(this.roomSideMin-1, intervals.length-1);
         var wallDepth = wallIndex+1;
         var wallInterval = intervals[wallIndex];
         var intervalLength = 1+wallInterval[0]-wallInterval[1];
-        var wallBreadth = mathExtension.randomInterval(
+        var wallBreadth = random.randomInterval(
             this.roomSideMin, Math.min(this.roomSideMax,intervalLength));
         var cornerMaxOffset = Math.min(wallBreadth-1, wallInterval[0]);
         var cornerMinOffset = Math.max(0, -1+wallBreadth+wallInterval[1]);
-        var cornerBreadthOffset = mathExtension.randomInterval(cornerMaxOffset, cornerMinOffset);
+        var cornerBreadthOffset = random.randomInterval(cornerMaxOffset, cornerMinOffset);
         var backStep = this.getCoordsRotate(x, y, -1, 0, direction);
         var doorPlaced = this.placeDoor(backStep[0], backStep[1]);
         // Collect Info about room coordinates and size.
@@ -524,7 +524,7 @@ const protoLevel = {
          *      }
          **/
         if(!direction){
-            direction = arrayPick([EAST,WEST,NORTH,SOUTH]);
+            direction = random.arrayPick([EAST,WEST,NORTH,SOUTH]);
         }
         var max = this.hallLengthMax;
         var min = this.hallLengthMin;
@@ -533,7 +533,7 @@ const protoLevel = {
         // If something encountered, stop.
         var currentStep = [x,y];
         var nextStep;
-        var hallCount = mathExtension.randomInterval(min, max);
+        var hallCount = random.randomInterval(min, max);
         var path = [];
         path.push(currentStep);
         while(hallCount){

@@ -169,25 +169,3 @@ const characterIndex = function (character){
     character = character.toLowerCase();
     return alphabet.indexOf(character);
 };
-
-/*=== Common tasks when dealing with arrays. ================================*/
-
-const pick = function (){
-    return arrayPick(arguments);
-};
-const arrayPick = function (sourceArray){
-    // Returns a randomly chosen element from the source array.
-    const randomIndex = Math.floor(Math.random()*sourceArray.length);
-    const randomElement = sourceArray[randomIndex];
-    if(!randomElement){
-        console.log("Problem: "+randomIndex+'/'+sourceArray.length);
-    }
-    return randomElement;
-};
-const arrayRemove = function (sourceArray, element){
-    // Removes element from sourceArray, if present. Returns undefined.
-    const elementIndex = sourceArray.indexOf(element);
-    if(elementIndex != -1){
-        sourceArray.splice(elementIndex, 1);
-    }
-}

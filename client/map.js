@@ -41,7 +41,7 @@ client.drivers.gameplay.drivers.map = Object.extend(driver, {
         if(Math.max(Math.abs(centerX-x), Math.abs(centerY-y)) <= 1){
             direction = COMMAND_WAIT;
         } else{
-            direction = mathExtension.directionTo(centerX, centerY, x, y);
+            direction = geography.directionTo(centerX, centerY, x, y);
         }
         client.command(direction, {key: null});
         return true;

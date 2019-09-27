@@ -3,7 +3,8 @@
 /*== Map Manager ============================================================ */
 
 //-- Dependencies --------------------------------
-import * as mathExtension from '../shared/math.js';
+import * as random from '../shared/random.js';
+import sWerd from '../shared/swerd.js';
 import modelLibrary from './model_library.js';
 import gameManager from './game_manager.js';
 import level from './level.js';
@@ -340,7 +341,7 @@ mapManager.idManager = {
         }
         var potionColor = this.potionColors[item.name];
         if(!potionColor){
-            var randomIndex = mathExtension.randomInterval(0, this.unusedColors.length);
+            var randomIndex = random.randomInterval(0, this.unusedColors.length);
             var randomColor = this.unusedColors.splice(randomIndex, 1);
             randomColor = randomColor[0];
             this.potionColors[item.name] = randomColor;
@@ -361,7 +362,7 @@ mapManager.idManager = {
         }
         var wandMetal = this.wandMetals[item.name];
         if(!wandMetal){
-            var randomIndex = mathExtension.randomInterval(0, this.unusedMetals.length);
+            var randomIndex = random.randomInterval(0, this.unusedMetals.length);
             var randomMetal = this.unusedMetals.splice(randomIndex, 1);
             randomMetal = randomMetal[0];
             this.wandMetals[item.name] = randomMetal;

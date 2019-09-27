@@ -2,7 +2,11 @@
 
 //== TODO: Document. ===========================================================
 
-const modelLibrary = {
+//-- Dependencies --------------------------------
+import * as random from '../shared/random.js';
+
+//------------------------------------------------
+export default {
     models: {},
     modelWeights: {},
     registerModel(modelType, newClass){
@@ -52,7 +56,7 @@ const modelLibrary = {
                 weight--;
                 continue;
             }
-            let generationId = arrayPick(weightClass);
+            let generationId = random.arrayPick(weightClass);
             model = this.getModel(modelType, generationId);
             if(model){
                 break;
@@ -61,5 +65,3 @@ const modelLibrary = {
         return model;
     }
 };
-
-export default modelLibrary;

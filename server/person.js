@@ -13,6 +13,7 @@
  *===========================================================================*/
 
 //-- Dependencies --------------------------------
+import sWerd from '../shared/swerd.js';
 import Actor from './actor.js';
 import mapManager from './map_manager.js';
 
@@ -296,7 +297,10 @@ class Person extends Actor {
                 in the future.
          **/
         // TODO: Implement inventory limits, perhaps in a plugin.
-        arrayRemove(this.inventory, oldItem);
+        const elementIndex = this.inventory.indexOf(oldItem);
+        if(elementIndex != -1) {
+            this.inventory.splice(elementIndex, 1);
+        }
         this.update('inventory');
         return true;
     }

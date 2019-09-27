@@ -3,7 +3,9 @@
 //== Extend Basic Types ========================================================
 
 //-- Dependencies --------------------------------
-import * as mathExtension from '../shared/math.js';
+import * as random from '../shared/random.js';
+import * as geography from '../shared/geography.js';
+import sWerd from '../shared/swerd.js';
 import Hero from './hero.js';
 import Person from './person.js';
 import pathFinder from './path_finder.js';
@@ -161,16 +163,16 @@ Person.prototype.adjustHp = (function (parentFunction){
 class Companion extends Person {
     initializer() {
         super.initializer(...arguments);
-        var colorR = mathExtension.randomInterval(64,204);
-        var colorG = mathExtension.randomInterval(102,255);
-        var colorB = mathExtension.randomInterval(0,64);
+        var colorR = random.randomInterval(64,204);
+        var colorG = random.randomInterval(102,255);
+        var colorB = random.randomInterval(0,64);
         this.colorNatural = 'rgb('+colorR+','+colorG+','+colorB+')';
         this.color = this.colorNatural;
         this.name = sWerd.name();//+' (g)';
         var theHero = gameManager.currentGame.hero;
         if(theHero){ this.setLevel(theHero.level);}
         this.adjustHp(this.maxHp());
-        var randomIndex = mathExtension.randomInterval(0, 5);
+        var randomIndex = random.randomInterval(0, 5);
         if(!theHero){ randomIndex = 0;}
         switch(randomIndex){
             case 0:
@@ -401,7 +403,7 @@ class Companion extends Person {
             if(theLoot.type != TYPE_ITEM){ continue;}
             var lootDesire = this.itemDesire(theLoot);
             if(lootDesire <= 0){ continue;}
-            var lootDist = mathExtension.distance(theLoot.x, theLoot.y, this.x, this.y);
+            var lootDist = geography.distance(theLoot.x, theLoot.y, this.x, this.y);
             var lootWeight = lootDesire / lootDist;
             if(lootWeight > highDesire){
                 targetLoot = theLoot;
@@ -529,7 +531,7 @@ class GoalLoot extends Goal {
             !this.target ||
             this.target.x === undefined || this.target.y === undefined
         ){ return false;}
-        var targetDistance = mathExtension.distance(
+        var targetDistance = geography.distance(
             this.target.x, this.target.y, controllee.x, controllee.y
         );
         if(targetDistance <= 1){
@@ -539,7 +541,7 @@ class GoalLoot extends Goal {
             }
             return true;
         }
-        var direction = mathExtension.directionTo(
+        var direction = geography.directionTo(
             controllee.x, controllee.y, this.target.x, this.target.y);
         // Else, move.
         return controllee.move(direction);
@@ -571,13 +573,13 @@ class GoalEnemy extends Goal {
             return false;
         }
         // Determine if target is in range of equipped weapon. Attack.
-        var range = mathExtension.distance(controllee.x, controllee.y, target.x, target.y);
+        var range = geography.distance(controllee.x, controllee.y, target.x, target.y);
         var weapon = controllee.equipment? controllee.equipment[EQUIP_MAINHAND] : undefined;
         if(weapon && weapon.shoot && weapon.range){
             if(weapon.range >= range){
                 var success = weapon.shoot(
                     controllee,
-                    mathExtension.directionTo(controllee.x, controllee.y, target.x, target.y),
+                    geography.directionTo(controllee.x, controllee.y, target.x, target.y),
                     target
                 );
                 if(success || success === 0){
@@ -596,7 +598,7 @@ class GoalEnemy extends Goal {
         if(!nextCoord){
             return false;
         }
-        var direction = mathExtension.directionTo(controllee.x, controllee.y, nextCoord.x, nextCoord.y);
+        var direction = geography.directionTo(controllee.x, controllee.y, nextCoord.x, nextCoord.y);
         return controllee.move(direction);
     }
 }
@@ -606,7 +608,7 @@ class GoalHero extends Goal {
         var pursueRange = Math.max(2, Math.min(3, target.companions.length));
         if(!target || (
             (target.levelId == controllee.levelId) &&
-            mathExtension.distance(controllee.x, controllee.y, target.x, target.y) <= pursueRange
+            geography.distance(controllee.x, controllee.y, target.x, target.y) <= pursueRange
         )){
             return false;
         }
@@ -625,7 +627,7 @@ class GoalHero extends Goal {
             controllee.place(nextCoord.x, nextCoord.y, nextCoord.levelId);
             return true;
         }
-        var direction = mathExtension.directionTo(controllee.x,controllee.y,nextCoord.x,nextCoord.y);
+        var direction = geography.directionTo(controllee.x,controllee.y,nextCoord.x,nextCoord.y);
         // Check for Door.
         var destination = mapManager.getTile(
             nextCoord.x, nextCoord.y, controllee.levelId

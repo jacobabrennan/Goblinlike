@@ -3,7 +3,8 @@
 //== Skills ====================================================================
 
 //-- Dependencies --------------------------------
-import * as mathExtension from '../shared/math.js';
+import * as random from '../shared/random.js';
+import * as geography from '../shared/geography.js';
 import modelLibrary from './model_library.js';
 
 //-- Skill Definition ----------------------------
@@ -36,7 +37,7 @@ const skillModels = [
         targetClass: TARGET_ENEMY,
         use(user, target){
             target.hear('fire', 10, user, 'The '+user.name+' breathes fire!');
-            var attemptedDamage = mathExtension.gaussRandom(user.baseIntelligence,1);
+            var attemptedDamage = random.gaussRandom(user.baseIntelligence,1);
             var damageDone = target.hurt(attemptedDamage, DAMAGE_FIRE, user);
             return damageDone;
         }
@@ -48,17 +49,17 @@ const skillModels = [
         targetClass: TARGET_ENEMY|TARGET_RANGE,
         use(user, target){
             var range = 3;
-            if(mathExtension.distance(user.x,user.y, target.x,target.y) <= range){ return false;}
+            if(geography.distance(user.x,user.y, target.x,target.y) <= range){ return false;}
             var possibles = [];
             for(var posY = target.y-range; posY <= target.y+range; posY++){
                 for(var posX = target.x-range; posX <= target.x+range; posX++){
-                    if(mathExtension.distance(posX, posY, target.x, target.y) >= 2){
+                    if(geography.distance(posX, posY, target.x, target.y) >= 2){
                         possibles.push({x: posX, y: posY});
                     }
                 }
             }
             while(possibles.length){
-                var rI = mathExtension.randomInterval(0, possibles.length-1);
+                var rI = random.randomInterval(0, possibles.length-1);
                 var testDest = possibles[rI];
                 possibles.splice(rI, 1);
                 if(user.place(testDest.x, testDest.y, target.levelId)){
