@@ -3,6 +3,7 @@
 // === Combat System ===========================================================
 
 //-- Dependencies --------------------------------
+import * as mathExtension from '../shared/math.js';
 import {Movable} from './mappables.js';
 import Item from './item.js';
 import Actor from './actor.js';
@@ -334,7 +335,7 @@ class Weapon extends Item {
         // TODO: Add strength stat from player, perhaps.
         var damage = Math.max(
             0,
-            gaussRandom(this.baseDamage, this.damageSigma)
+            mathExtension.gaussRandom(this.baseDamage, this.damageSigma)
         );
         var damageType = this.damageType;
         var damageDone = target.hurt(damage, damageType, attacker, this);
@@ -600,7 +601,7 @@ class Projectile extends Weapon {
         var scale = this.damageScale || 1;
         var damage = Math.max(
             0,
-            gaussRandom(this.baseDamage*scale, this.damageSigma)
+            mathExtension.gaussRandom(this.baseDamage*scale, this.damageSigma)
         );
         var damageType = this.damageType;
         var damageDone = target.hurt(damage, damageType, attacker, this);
@@ -622,7 +623,7 @@ Item.prototype.defend = function (damage, damageType, attacker, proxy){
         if(this.evade && Math.random() < this.evade){
             defended = damage;
         } else if(this.defense){
-            defended += Math.max(0, gaussRandom(this.defense, 1));
+            defended += Math.max(0, mathExtension.gaussRandom(this.defense, 1));
         }
     }
     return defended;

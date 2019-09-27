@@ -169,6 +169,7 @@ include - A parameter which determines which datums to return
 */
 
 //-- Dependencies --------------------------------
+import * as mathExtension from '../shared/math.js';
 import {Tile, genericTileTypes} from './tiles.js';
 import PriorityQueue from './priority_queue.js';
 import mapManager from './map_manager.js';
@@ -398,7 +399,10 @@ const findPath = function (start, end, limit){
     var pathArray = aStar(start, end, pathDist, 20, 10, limit, minDist);
     if(isActor && pathArray && pathArray.length){
         var firstStep = pathArray[0];
-        if(!distance(start, firstStep)){ pathArray.shift();}
+        const deltaX = Math.abs(start.x-firstStep.x);
+        const deltaY = Math.abs(start.y-firstStep.y);
+        var displacement = Math.max(deltaX, deltaY);
+        if(!displacement) { pathArray.shift();}
     }
     return pathArray;
 };

@@ -3,6 +3,7 @@
 //== Enemies ===================================================================
 
 //-- Dependencies --------------------------------
+import * as mathExtension from '../shared/math.js';
 import Actor from './actor.js';
 import modelLibrary from './model_library.js';
 import mapManager from './map_manager.js';
@@ -71,7 +72,7 @@ class Enemy extends Actor {
         if(this.active){ return;}
         if(
             source &&
-            distance(this.x, this.y, source.x, source.y) > this.vigilance
+            mathExtension.distance(this.x, this.y, source.x, source.y) > this.vigilance
         ){ return;}
         if(source && source.faction && !(source.faction & this.faction)){
             this.activate(source);
@@ -80,7 +81,7 @@ class Enemy extends Actor {
     move(direction) {
         var success = super.move(...arguments);
         if(!success){
-            var dest = getStepCoords(this.x, this.y, direction);
+            var dest = mathExtension.getStepCoords(this.x, this.y, direction);
             var testDoor = mapManager.getTile(dest.x, dest.y, this.levelId);
             if(
                 testDoor && testDoor.toggleDoor &&
@@ -150,7 +151,7 @@ class Enemy extends Actor {
             NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST];
         var success;
         while(!success && directions.length){
-            var rI = randomInterval(0, directions.length-1);
+            var rI = mathExtension.randomInterval(0, directions.length-1);
             var randomDirection = directions[rI];
             directions.splice(rI, 1);
             success = this.move(randomDirection);
@@ -214,7 +215,7 @@ Enemy.prototype.behaviorDirect = function (){
     } else{
         target = gameManager.currentGame.hero;
     }
-    this.move(directionTo(this.x, this.y, target.x, target.y));
+    this.move(mathExtension.directionTo(this.x, this.y, target.x, target.y));
 };
 Enemy.prototype.trySkill = function (target){
     // Breed
@@ -223,7 +224,7 @@ Enemy.prototype.trySkill = function (target){
         return true;
     }
     // Determine if target is in view and in range of any skills. Use a skill.
-    var range = distance(this.x, this.y, target.x, target.y);
+    var range = mathExtension.distance(this.x, this.y, target.x, target.y);
     for(var skillI = 0; skillI < this.skills.length; skillI++){
         var skillSkipChance = Math.random() < 1/2;
         if(skillI == this.skills.length-1 || skillSkipChance){
@@ -261,7 +262,7 @@ Enemy.prototype.getViewTarget = function (){
     testContent.forEach(function (content){
         if(content.faction & this.faction){ return;}
         if(content.type != TYPE_ACTOR){ return;}
-        var testDistance = distance(this.x, this.y, content.x, content.y);
+        var testDistance = mathExtension.distance(this.x, this.y, content.x, content.y);
         if(testDistance < closeDistance){
             closeTarget = content;
             closeDistance = testDistance;
@@ -272,19 +273,19 @@ Enemy.prototype.getViewTarget = function (){
 };
 Enemy.prototype.simplePursue = function (target, simpleThreshold){
     if(this.sedentary){ return false;}
-    var targetDist = distance(this.x, this.y, target.x, target.y);
+    var targetDist = mathExtension.distance(this.x, this.y, target.x, target.y);
     if(!simpleThreshold){ simpleThreshold = 3;}
     var stepDir;
     // If enemy is far away, just move foward. Save aStar to get close in.
     if(targetDist > simpleThreshold){
-        stepDir = directionTo(this.x, this.y, target.x, target.y);
+        stepDir = mathExtension.directionTo(this.x, this.y, target.x, target.y);
         return this.move(stepDir);
     }
     // Otherwise, use aStar to make sure you can get close in and attack.
     var path = pathFinder.findPath(this, target);
     if(!(path && path.length)){ return false;}
     var nextStep = path.shift();
-    stepDir = directionTo(this.x, this.y, nextStep.x, nextStep.y);
+    stepDir = mathExtension.directionTo(this.x, this.y, nextStep.x, nextStep.y);
     return this.move(stepDir);
 };
 Enemy.prototype.behaviorNormal = Enemy.prototype.behavior = function (){
@@ -318,7 +319,7 @@ Enemy.prototype.behaviorNormal = Enemy.prototype.behavior = function (){
     if(target && (!path || !path.length)){
         this.targetPath = null;
         success = this.move(
-            directionTo(this.x, this.y, target.x, target.y));
+            mathExtension.directionTo(this.x, this.y, target.x, target.y));
         if(!success){
             path = pathFinder.findPath(this, target);
             this.targetPath = path;
@@ -348,7 +349,7 @@ Enemy.prototype.behaviorNormal = Enemy.prototype.behavior = function (){
             return;
         }
     }
-    var direction = directionTo(this.x,this.y,nextStep.x,nextStep.y);
+    var direction = mathExtension.directionTo(this.x,this.y,nextStep.x,nextStep.y);
     this.move(direction);
 };
 
@@ -401,7 +402,7 @@ class BlobBody extends Enemy {
             this.x, this.y, this.levelId, 1);
         var target;
         while(!target && rangeContent.length){
-            var rI = randomInterval(0, rangeContent.length-1);
+            var rI = mathExtension.randomInterval(0, rangeContent.length-1);
             var rTarget = rangeContent[rI];
             rangeContent.splice(rI,1);
             if(rTarget.faction&this.faction){ continue;}
@@ -436,7 +437,7 @@ class BlobBody extends Enemy {
                 var dir = dirs.shift();
                 var head = mapManager.idManager.get(this.headId);
                 if(!head){ return false;}
-                var dCoords = getStepCoords(head.x, head.y, dir);
+                var dCoords = mathExtension.getStepCoords(head.x, head.y, dir);
                 this.place(dCoords.x, dCoords.y, head.levelId);
             }
             return true;
@@ -494,7 +495,7 @@ class BlobArchetype extends Enemy {
     move(direction) {
         var success = super.move(...arguments);
         this.body.forEach(function (segment){
-            var moveDirection = directionTo(
+            var moveDirection = mathExtension.directionTo(
                 segment.x, segment.y, this.x, this.y);
             var success = segment.move(moveDirection);
             var dirVert = moveDirection & (NORTH|SOUTH);
@@ -593,7 +594,7 @@ class SnakeBody extends Enemy {
             this.x, this.y, this.levelId, 1);
         var target;
         while(!target && rangeContent.length){
-            var rI = randomInterval(0, rangeContent.length-1);
+            var rI = mathExtension.randomInterval(0, rangeContent.length-1);
             var rTarget = rangeContent[rI];
             rangeContent.splice(rI,1);
             if(rTarget.faction&this.faction){ continue;}

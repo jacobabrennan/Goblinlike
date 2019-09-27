@@ -3,9 +3,14 @@
 //== Items =====================================================================
 
 //-- Dependencies --------------------------------
+import * as mathExtension from '../shared/math.js';
 import Item from './item.js';
 import modelLibrary from './model_library.js';
-import {Weapon, Bow, Projectile} from './extension_combat.js';
+import {
+    Weapon,
+    Bow,
+    Projectile
+} from './extension_combat.js';
 import Actor from './actor.js';
 import mapManager from './map_manager.js';
 import gameManager from './game_manager.js';
@@ -48,7 +53,7 @@ class Wand extends Item {
             attacker.update('inventory');
         }
         var deltaLore = gameManager.currentGame.hero.lore() - this.lore;
-        var loreAttempt = deltaLore;/*gaussRandom(
+        var loreAttempt = deltaLore;/*mathExtension.gaussRandom(
             deltaLore,
             10-gameManager.currentGame.hero.wisdom
         );*/
@@ -91,7 +96,7 @@ class Scroll extends Item {
     }
     use(user, targetData) {
         var deltaLore = gameManager.currentGame.hero.lore() - this.lore;
-        var loreAttempt = deltaLore;/*gaussRandom(
+        var loreAttempt = deltaLore;/*mathExtension.gaussRandom(
             deltaLore,
             10-gameManager.currentGame.hero.wisdom
         );*/
@@ -150,7 +155,7 @@ modelLibrary.registerModel('special', (() => {// Ice Block
     class IceBlock extends Actor {
         constructor() {
             super(...arguments);
-            this.lifeSpan = gaussRandom(20, 1);
+            this.lifeSpan = mathExtension.gaussRandom(20, 1);
         }
         place() {
             this.initializer();
@@ -258,7 +263,7 @@ const effects = {
                 user.inform("You quaff the potion. You're healed!");
             }
             user.adjustHp(
-                Math.max(this.potency/2, gaussRandom(this.potency,1))
+                Math.max(this.potency/2, mathExtension.gaussRandom(this.potency,1))
             );
         }
     },
@@ -268,7 +273,7 @@ const effects = {
                 user.inform("You quaff the potion. It's Acid!");
             }
             user.hurt(
-                Math.max(this.potency/2, gaussRandom(this.potency,1)),
+                Math.max(this.potency/2, mathExtension.gaussRandom(this.potency,1)),
                 DAMAGE_ACID
             );
         }
@@ -280,7 +285,7 @@ const effects = {
             }
             if(user.adjustMoral){
                 user.adjustMoral(
-                    -Math.max(this.potency/2, gaussRandom(this.potency,1))
+                    -Math.max(this.potency/2, mathExtension.gaussRandom(this.potency,1))
                 );
             }
         }
@@ -292,7 +297,7 @@ const effects = {
             }
             if(user.adjustMoral){
                 user.adjustMoral(
-                    Math.max(this.potency/2, gaussRandom(this.potency,1))
+                    Math.max(this.potency/2, mathExtension.gaussRandom(this.potency,1))
                 );
             }
         }
