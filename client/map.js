@@ -11,6 +11,7 @@
 ==============================================================================*/
 
 //-- Imports -------------------------------------
+import * as geography from '../shared/geography.js';
 import extend from './extend.js';
 import client from './client.js';
 import driver from './driver.js';
